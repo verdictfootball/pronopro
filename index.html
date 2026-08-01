@@ -17,8 +17,10 @@
       <span class="text-2xl">⚽</span>
       <h1 class="text-xl font-extrabold tracking-wide text-emerald-400">PronoPro</h1>
     </div>
-    <div id="user-nav" class="hidden flex items-center gap-4">
-      <span id="nav-username" class="text-sm font-medium text-gray-300 bg-gray-700 px-3 py-1.5 rounded-full border border-gray-600">👤 Gast</span>
+    <div id="user-nav" class="hidden flex items-center gap-3">
+      <button onclick="toonScherm('settings')" id="nav-username" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
+        👤 Gast
+      </button>
       <button onclick="uitloggen()" class="text-xs bg-red-600/80 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded transition">
         Uitloggen
       </button>
@@ -33,26 +35,95 @@
   <div class="max-w-4xl mx-auto w-full px-4 py-6 flex-1">
 
     <!-- ========================================== -->
-    <!-- SCHERM 1: INLOGGEN                         -->
+    <!-- SCHERM 1: INLOGGEN / REGISTREREN / RESET   -->
     <!-- ========================================== -->
-    <section id="screen-login" class="flex items-center justify-center py-12">
+    <section id="screen-login" class="flex items-center justify-center py-6">
       <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl w-full max-w-md">
+        
         <div class="text-center mb-6">
           <div class="text-5xl mb-2">⚽</div>
           <h2 class="text-2xl font-bold text-white">Welkom bij PronoPro</h2>
-          <p class="text-gray-400 text-sm mt-1">Vul je naam in om deel te nemen</p>
+          <p class="text-gray-400 text-sm mt-1">Speel mee met de Jupiler Pro League</p>
         </div>
 
-        <form onsubmit="event.preventDefault(); inloggen();" class="space-y-4">
+        <!-- AUTH TABS -->
+        <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700 mb-6 gap-1">
+          <button type="button" onclick="switchAuthTab('login')" id="tab-btn-login" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition">
+            Inloggen
+          </button>
+          <button type="button" onclick="switchAuthTab('register')" id="tab-btn-register" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">
+            Registreren
+          </button>
+          <button type="button" onclick="switchAuthTab('reset')" id="tab-btn-reset" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">
+            Wachtwoord
+          </button>
+        </div>
+
+        <!-- FORMULIER 1: INLOGGEN -->
+        <form id="form-login" onsubmit="event.preventDefault(); inloggen();" class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Gebruikersnaam</label>
-            <input type="text" id="login-username" placeholder="Bijv. ProVoorspeller" required
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">E-mailadres</label>
+            <input type="email" id="login-email" placeholder="naam@voorbeeld.be" required
                    class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
           </div>
-          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
-            Starten / Inloggen
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Wachtwoord</label>
+            <input type="password" id="login-password" placeholder="••••••••" required
+                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <button type="submit" id="btn-submit-login" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
+            Inloggen
           </button>
         </form>
+
+        <!-- FORMULIER 2: REGISTREREN -->
+        <form id="form-register" onsubmit="event.preventDefault(); registreren();" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Gebruikersnaam</label>
+            <input type="text" id="reg-username" placeholder="Bijv. ProVoorspeller" required
+                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">E-mailadres</label>
+            <input type="email" id="reg-email" placeholder="naam@voorbeeld.be" required
+                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Wachtwoord</label>
+            <input type="password" id="reg-password" placeholder="••••••••" minlength="6" required
+                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <button type="submit" id="btn-submit-reg" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
+            Account Aanmaken
+          </button>
+        </form>
+
+        <!-- FORMULIER 3: WACHTWOORD RESET AANVRAAG -->
+        <form id="form-reset" onsubmit="event.preventDefault(); resetWachtwoordAanvragen();" class="space-y-4 hidden">
+          <p class="text-xs text-gray-400">Vul je e-mailadres in. We sturen je een link om je wachtwoord opnieuw in te stellen.</p>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">E-mailadres</label>
+            <input type="email" id="reset-email" placeholder="naam@voorbeeld.be" required
+                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <button type="submit" id="btn-submit-reset" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
+            Verstuur Reset Link
+          </button>
+        </form>
+
+        <!-- FORMULIER 4: NIEUW WACHTWOORD INSTELLEN -->
+        <form id="form-new-password" onsubmit="event.preventDefault(); opslaanNieuwWachtwoord();" class="space-y-4 hidden">
+          <p class="text-xs text-emerald-400 font-semibold">Stel hieronder je nieuwe wachtwoord in:</p>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Nieuw Wachtwoord</label>
+            <input type="password" id="new-password" placeholder="••••••••" minlength="6" required
+                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <button type="submit" id="btn-submit-newpass" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
+            Opslaan & Inloggen
+          </button>
+        </form>
+
       </div>
     </section>
 
@@ -61,7 +132,6 @@
     <!-- ========================================== -->
     <section id="screen-dashboard" class="hidden space-y-8">
       
-      <!-- HERO WELKOM MEER RECHTSBOVEN DEEL-KNOP -->
       <div class="bg-gradient-to-r from-emerald-900/60 to-gray-800 p-6 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative">
         <div>
           <h2 class="text-2xl font-bold text-white">Welkom, <span id="dash-username" class="text-emerald-400">Speler</span>! 👋</h2>
@@ -69,9 +139,8 @@
         </div>
         
         <div class="flex items-center gap-3">
-          <!-- SHARE BUTTON RECHTSBOVEN -->
           <button onclick="openShareModal()" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold py-2.5 px-3.5 rounded-xl shadow transition flex items-center gap-1.5">
-            <span>📲</span> Deel Liga / QR
+            <span>🎁</span> Nodig Uit (+2 Ptn)
           </button>
 
           <div class="bg-gray-900/80 px-4 py-2 rounded-xl border border-gray-700 text-center">
@@ -87,7 +156,6 @@
           <span>📊</span> Jouw Huidige Posities
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          
           <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center">
             <span class="text-2xl mb-1 block">🌍</span>
             <span class="text-xs text-gray-400 uppercase font-bold block">Wereldwijd</span>
@@ -105,11 +173,10 @@
             <span class="text-xs text-emerald-400 uppercase font-bold block">Maand (Aug)</span>
             <span id="pos-monthly" class="text-2xl font-extrabold text-emerald-300">#-</span>
           </div>
-
         </div>
       </div>
 
-      <!-- COMPETITIE TEGEL MET LOGO -->
+      <!-- COMPETITIE TEGEL -->
       <div>
         <h3 class="text-lg font-bold text-gray-200 mb-4 flex items-center gap-2">
           <span>🏆</span> Competities
@@ -124,7 +191,6 @@
               <span class="text-xs text-gray-400 font-semibold">2026 - 2027</span>
             </div>
 
-            <!-- LOGO + TITEL STROOK -->
             <div class="flex items-center gap-4 mb-3">
               <div class="w-14 h-14 bg-gray-900 rounded-xl p-2 border border-gray-700/80 flex items-center justify-center flex-shrink-0 shadow-inner">
                 <img src="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos%20competities/JPL.png" 
@@ -160,13 +226,12 @@
         <button onclick="toonScherm('dashboard')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition">
           ⬅️ Terug naar Dashboard
         </button>
-        <!-- SHARE BUTTON RECHTSBOVEN SCHERM 3 -->
         <button onclick="openShareModal()" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold py-2 px-3 rounded-xl shadow transition flex items-center gap-1.5">
-          <span>📲</span> Deel Liga / QR
+          <span>🎁</span> Nodig Uit (+2 Ptn)
         </button>
       </div>
 
-      <!-- TABBLADEN NAVIGATIE (DESKTOP) -->
+      <!-- TABBLADEN NAVIGATIE -->
       <div class="flex bg-gray-800 p-1.5 rounded-xl border border-gray-700 gap-1 overflow-x-auto">
         <button onclick="switchTab('tab-predict')" id="btn-tab-predict" class="flex-1 py-2 px-3 text-xs md:text-sm font-bold rounded-lg bg-emerald-600 text-white transition">
           ⚽ Voorspellen
@@ -207,9 +272,7 @@
                 <th class="p-3 text-right">Punten</th>
               </tr>
             </thead>
-            <tbody id="table-global-body">
-              <!-- Dynamisch via JS -->
-            </tbody>
+            <tbody id="table-global-body"></tbody>
           </table>
         </div>
       </div>
@@ -235,9 +298,7 @@
                 <th class="p-3 text-right">Punten</th>
               </tr>
             </thead>
-            <tbody id="table-private-body">
-              <!-- Dynamisch via JS -->
-            </tbody>
+            <tbody id="table-private-body"></tbody>
           </table>
         </div>
       </div>
@@ -246,7 +307,7 @@
       <div id="tab-monthly" class="tab-content hidden space-y-4">
         <div class="bg-emerald-950/40 p-4 rounded-xl border border-emerald-500/30">
           <h4 class="font-bold text-emerald-300 text-sm">💡 Maandbonus Regels (10 Punten Pot)</h4>
-          <p class="text-xs text-gray-300 mt-1">De winnaar van de maand pakt +10 bonuspunten. Bij gelijkspel worden de 10 punten verdeeld (2 winnaars = 5p, 3 winnaars = 3p, 4+ winnaars = 1p)!</p>
+          <p class="text-xs text-gray-300 mt-1">De winnaar van de maand pakt +10 bonuspunten. Bij gelijkspel worden de 10 punten verdeeld!</p>
         </div>
 
         <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
@@ -259,30 +320,68 @@
                 <th class="p-3 text-right">Bonus</th>
               </tr>
             </thead>
-            <tbody id="table-monthly-body">
-              <!-- Dynamisch via JS -->
-            </tbody>
+            <tbody id="table-monthly-body"></tbody>
           </table>
         </div>
       </div>
 
     </section>
 
+    <!-- ========================================== -->
+    <!-- SCHERM 4: ACCOUNT / INSTELLINGEN           -->
+    <!-- ========================================== -->
+    <section id="screen-settings" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <button onclick="toonScherm('dashboard')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition">
+          ⬅️ Terug naar Dashboard
+        </button>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl max-w-lg mx-auto space-y-6">
+        <div>
+          <h3 class="text-xl font-bold text-white flex items-center gap-2">
+            <span>⚙️</span> Accountinstellingen
+          </h3>
+          <p class="text-xs text-gray-400 mt-1">Beheer hier je profiel en instellingen.</p>
+        </div>
+
+        <!-- PROFIELEENHEID: NAAM WIJZIGEN -->
+        <div class="bg-gray-900 p-5 rounded-xl border border-gray-700 space-y-4">
+          <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wide">Gebruikersnaam Wijzigen</h4>
+          
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Huidige Weergavenaam</label>
+            <input type="text" id="setting-current-name" disabled class="w-full bg-gray-800 text-gray-400 border border-gray-700 rounded-lg px-3 py-2 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Nieuwe Weergavenaam</label>
+            <input type="text" id="setting-new-name" placeholder="Voer nieuwe naam in..." class="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <div class="bg-yellow-950/40 border border-yellow-600/30 p-3 rounded-lg text-xs text-yellow-200/90">
+            ⚠️ <strong>Regel:</strong> Je mag je gebruikersnaam <strong>maximaal 1x per maand (30 dagen)</strong> aanpassen.
+          </div>
+
+          <div id="name-change-cooldown-msg" class="hidden text-xs text-red-400 font-medium"></div>
+
+          <button id="btn-save-username" onclick="updateGebruikersnaam()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm">
+            💾 Opslaan & Naam Wijzigen
+          </button>
+        </div>
+      </div>
+    </section>
+
   </div>
 
-  <!-- ========================================== -->
-  <!-- SHARE & QR CODE MODAL POP-UP               -->
-  <!-- ========================================== -->
+  <!-- SHARE & QR CODE MODAL POP-UP -->
   <div id="share-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-sm w-full text-center relative shadow-2xl space-y-4">
-      
       <button onclick="closeShareModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
-      
-      <div class="text-3xl">🏆</div>
+      <div class="text-3xl">🎁</div>
       <h3 class="text-xl font-extrabold text-white">Nodig Vrienden Uit</h3>
-      <p class="text-xs text-gray-400">Laat anderen deze QR-code scannen of stuur de uitnodigingslink om ze uit te dagen in jouw privé-liga!</p>
+      <p class="text-xs text-gray-400">Verdien <strong>+2 extra bonuspunten</strong> wanneer iemand zich via jouw link registreert en zijn/haar eerste voorspelling invult!</p>
 
-      <!-- QR CODE CONTAINER -->
       <div class="bg-white p-4 rounded-xl flex items-center justify-center mx-auto w-48 h-48 shadow-inner" id="qrcode-container"></div>
 
       <div class="bg-gray-900 p-3 rounded-xl border border-gray-700 text-left">
@@ -290,11 +389,9 @@
         <span id="share-modal-code" class="text-emerald-400 font-extrabold text-base">PRIVATESQUAD</span>
       </div>
 
-      <!-- KOPIEER LINK BUTTON -->
       <button onclick="copyShareLink()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
-        <span>📋</span> Kopieer Uitnodigingslink
+        <span>📋</span> Kopieer Unieke Uitnodigingslink
       </button>
-
     </div>
   </div>
 
@@ -312,27 +409,33 @@
       <span class="text-lg">🌍</span>
       <span class="text-[10px] font-bold uppercase tracking-wider">Algemeen</span>
     </button>
-    <button onclick="mobileSwitch('private')" id="mnav-private" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
-      <span class="text-lg">🔒</span>
-      <span class="text-[10px] font-bold uppercase tracking-wider">Privé Liga</span>
+    <button onclick="mobileSwitch('settings')" id="mnav-settings" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
+      <span class="text-lg">⚙️</span>
+      <span class="text-[10px] font-bold uppercase tracking-wider">Account</span>
     </button>
   </div>
 
   <script>
     const SUPABASE_URL = 'https://pitvmvbtourmonkwzwoq.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
+    const SUPABASE_ANON_KEY = 'PLAK_HIER_JE_ANON_KEY'; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // CONTROLEER AUTOMATISCH OF ER EEN GROEPSCODE IN DE URL STAAT (?group=...)
+    // Bepaal URL parameters voor Groep & Referrer (Uitnodiger)
     const urlParams = new URLSearchParams(window.location.search);
     const inviteGroup = urlParams.get('group');
+    const inviteRef = urlParams.get('ref');
+
     if (inviteGroup) {
       localStorage.setItem('prono_group', inviteGroup.toUpperCase());
     }
+    if (inviteRef) {
+      localStorage.setItem('prono_ref', inviteRef);
+    }
 
-    let currentUser = localStorage.getItem('prono_username') || null;
+    let currentUser = null;
+    let currentUserProfile = null;
     let currentGroup = localStorage.getItem('prono_group') || 'DEFAULT_GROUP';
-    let qrcodeInstance = null;
+    let currentRef = localStorage.getItem('prono_ref') || null;
 
     const CLUB_LOGOS = {
       "Club Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/club-brugge.png",
@@ -367,10 +470,249 @@
       "Royal Antwerp FC - SK Beveren": "Zon 27/07 - 21:00"
     };
 
+    function switchAuthTab(tab) {
+      document.getElementById('form-login').classList.add('hidden');
+      document.getElementById('form-register').classList.add('hidden');
+      document.getElementById('form-reset').classList.add('hidden');
+      document.getElementById('form-new-password').classList.add('hidden');
+
+      const buttons = ['tab-btn-login', 'tab-btn-register', 'tab-btn-reset'];
+      buttons.forEach(id => {
+        const b = document.getElementById(id);
+        b.classList.remove('bg-emerald-600', 'text-white');
+        b.classList.add('text-gray-400');
+      });
+
+      if (tab === 'login') {
+        document.getElementById('form-login').classList.remove('hidden');
+        document.getElementById('tab-btn-login').classList.add('bg-emerald-600', 'text-white');
+      } else if (tab === 'register') {
+        document.getElementById('form-register').classList.remove('hidden');
+        document.getElementById('tab-btn-register').classList.add('bg-emerald-600', 'text-white');
+      } else if (tab === 'reset') {
+        document.getElementById('form-reset').classList.remove('hidden');
+        document.getElementById('tab-btn-reset').classList.add('bg-emerald-600', 'text-white');
+      }
+    }
+
+    async function inloggen() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-submit-login');
+
+      btn.innerText = '⌛ Inloggen...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+      btn.innerText = 'Inloggen';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+        return;
+      }
+
+      await initialiseerUserSessie(data.user);
+    }
+
+    async function registreren() {
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-submit-reg');
+
+      btn.innerText = '⌛ Account Aanmaken...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { username: username } }
+      });
+
+      btn.innerText = 'Account Aanmaken';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+        return;
+      }
+
+      // Sla op wie deze gebruiker heeft uitgenodigd (referred_by)
+      await _supabase.from('profiles').upsert({ 
+        username: username, 
+        email: email, 
+        group_code: currentGroup,
+        referred_by: currentRef 
+      }, { onConflict: 'username' });
+
+      toonMelding('✅ Account aangemaakt! Je bent ingelogd.');
+      await initialiseerUserSessie(data.user || (await _supabase.auth.getUser()).data.user, username);
+    }
+
+    async function resetWachtwoordAanvragen() {
+      const email = document.getElementById('reset-email').value.trim();
+      const btn = document.getElementById('btn-submit-reset');
+
+      btn.innerText = '⌛ Verzenden...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+
+      btn.innerText = 'Verstuur Reset Link';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+      } else {
+        toonMelding('📧 Reset-link is verzonden! Check je e-mail.');
+      }
+    }
+
+    async function opslaanNieuwWachtwoord() {
+      const newPassword = document.getElementById('new-password').value;
+      const btn = document.getElementById('btn-submit-newpass');
+
+      btn.innerText = '⌛ Opslaan...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.updateUser({ password: newPassword });
+
+      btn.innerText = 'Opslaan & Inloggen';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+      } else {
+        toonMelding('✅ Wachtwoord succesvol gewijzigd!');
+        await initialiseerUserSessie(data.user);
+      }
+    }
+
+    async function initialiseerUserSessie(userObj, optioneleNaam = null) {
+      if (!userObj) return;
+
+      let determinedUsername = optioneleNaam;
+      if (!determinedUsername) {
+        if (userObj.user_metadata && userObj.user_metadata.username) {
+          determinedUsername = userObj.user_metadata.username;
+        } else {
+          determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
+        }
+      }
+
+      const { data: profile } = await _supabase.from('profiles').select('*').eq('email', userObj.email).single();
+
+      if (profile) {
+        currentUser = profile.username;
+        currentUserProfile = profile;
+      } else {
+        currentUser = determinedUsername;
+        const newProf = { 
+          username: currentUser, 
+          email: userObj.email, 
+          group_code: currentGroup,
+          referred_by: currentRef 
+        };
+        await _supabase.from('profiles').upsert(newProf, { onConflict: 'username' });
+        currentUserProfile = newProf;
+      }
+
+      localStorage.setItem('prono_username', currentUser);
+      toonScherm('dashboard');
+    }
+
+    async function updateGebruikersnaam() {
+      const newName = document.getElementById('setting-new-name').value.trim();
+      const saveBtn = document.getElementById('btn-save-username');
+
+      if (!newName || newName === currentUser) {
+        toonMelding('⚠️ Voer een nieuwe geldige naam in.', true);
+        return;
+      }
+
+      if (currentUserProfile && currentUserProfile.last_name_change) {
+        const lastChange = new Date(currentUserProfile.last_name_change);
+        const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
+        if (diffDays < 30) {
+          toonMelding(`❌ Je hebt je naam recent gewijzigd! Je moet nog ${Math.ceil(30 - diffDays)} dagen wachten.`, true);
+          return;
+        }
+      }
+
+      saveBtn.innerText = '⌛ Bezig met opslaan...';
+      saveBtn.disabled = true;
+
+      const nowISO = new Date().toISOString();
+
+      const { error } = await _supabase
+        .from('profiles')
+        .update({ username: newName, last_name_change: nowISO })
+        .eq('username', currentUser);
+
+      saveBtn.innerText = '💾 Opslaan & Naam Wijzigen';
+      saveBtn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ Opslaan mislukt: ' + error.message, true);
+      } else {
+        await _supabase.from('predictions').update({ username: newName }).eq('username', currentUser);
+
+        currentUser = newName;
+        if(currentUserProfile) {
+          currentUserProfile.username = newName;
+          currentUserProfile.last_name_change = nowISO;
+        }
+
+        localStorage.setItem('prono_username', currentUser);
+        toonMelding('✅ Gebruikersnaam succesvol gewijzigd!');
+        laadSettingsScherm();
+        toonScherm('dashboard');
+      }
+    }
+
+    function laadSettingsScherm() {
+      document.getElementById('setting-current-name').value = currentUser;
+      document.getElementById('setting-new-name').value = '';
+
+      const cooldownMsg = document.getElementById('name-change-cooldown-msg');
+      const saveBtn = document.getElementById('btn-save-username');
+
+      if (currentUserProfile && currentUserProfile.last_name_change) {
+        const lastChange = new Date(currentUserProfile.last_name_change);
+        const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
+        
+        if (diffDays < 30) {
+          const overigeDagen = Math.ceil(30 - diffDays);
+          cooldownMsg.innerText = `⏳ Je kunt je naam pas weer wijzigen over ${overigeDagen} dag(en).`;
+          cooldownMsg.classList.remove('hidden');
+          saveBtn.disabled = true;
+          saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          return;
+        }
+      }
+
+      cooldownMsg.classList.add('hidden');
+      saveBtn.disabled = false;
+      saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    async function uitloggen() {
+      await _supabase.auth.signOut();
+      currentUser = null;
+      currentUserProfile = null;
+      localStorage.removeItem('prono_username');
+      toonScherm('login');
+    }
+
     function toonScherm(schermNaam) {
       document.getElementById('screen-login').classList.add('hidden');
       document.getElementById('screen-dashboard').classList.add('hidden');
       document.getElementById('screen-matches').classList.add('hidden');
+      document.getElementById('screen-settings').classList.add('hidden');
 
       if (schermNaam === 'login') {
         document.getElementById('screen-login').classList.remove('hidden');
@@ -391,6 +733,12 @@
         document.getElementById('mobile-nav').classList.remove('hidden');
         laadWedstrijden();
         laadKlassementen();
+      } else if (schermNaam === 'settings') {
+        document.getElementById('screen-settings').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+        updateMobileNavActive('mnav-settings');
+        laadSettingsScherm();
       }
     }
 
@@ -422,19 +770,14 @@
     }
 
     function mobileSwitch(target) {
-      if (target === 'dashboard') {
-        toonScherm('dashboard');
-      } else if (target === 'predict') {
-        openSpeeldagTab('tab-predict');
-      } else if (target === 'global') {
-        openSpeeldagTab('tab-global');
-      } else if (target === 'private') {
-        openSpeeldagTab('tab-private');
-      }
+      if (target === 'dashboard') toonScherm('dashboard');
+      else if (target === 'predict') openSpeeldagTab('tab-predict');
+      else if (target === 'global') openSpeeldagTab('tab-global');
+      else if (target === 'settings') toonScherm('settings');
     }
 
     function updateMobileNavActive(activeId) {
-      const items = ['mnav-dashboard', 'mnav-predict', 'mnav-global', 'mnav-private'];
+      const items = ['mnav-dashboard', 'mnav-predict', 'mnav-global', 'mnav-settings'];
       items.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -449,14 +792,14 @@
       });
     }
 
-    // SHARE & QR-CODE LOGICA
     function openShareModal() {
       const modal = document.getElementById('share-modal');
       const codeDisplay = document.getElementById('share-modal-code');
       const qrContainer = document.getElementById('qrcode-container');
 
       codeDisplay.innerText = currentGroup;
-      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}`;
+      
+      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
 
       qrContainer.innerHTML = '';
       new QRCode(qrContainer, {
@@ -476,31 +819,13 @@
     }
 
     function copyShareLink() {
-      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}`;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
       navigator.clipboard.writeText(shareUrl).then(() => {
-        toonMelding('📋 Uitnodigingslink gekopieerd naar klembord!');
+        toonMelding('📋 Unieke uitnodigingslink gekopieerd!');
         closeShareModal();
       }).catch(err => {
         prompt("Kopieer de onderstaande link:", shareUrl);
       });
-    }
-
-    async function inloggen() {
-      const input = document.getElementById('login-username').value.trim();
-      if (input) {
-        currentUser = input;
-        localStorage.setItem('prono_username', currentUser);
-        
-        await _supabase.from('profiles').upsert({ username: currentUser, group_code: currentGroup }, { onConflict: 'username' });
-        
-        toonScherm('dashboard');
-      }
-    }
-
-    function uitloggen() {
-      currentUser = null;
-      localStorage.removeItem('prono_username');
-      toonScherm('login');
     }
 
     async function wijzigGroepscode() {
@@ -531,7 +856,7 @@
       banner.classList.remove('hidden', 'bg-red-900/80', 'text-red-200', 'border-red-700', 'bg-emerald-900/80', 'text-emerald-200', 'border-emerald-700');
       banner.classList.add('border', isFout ? 'bg-red-900/80' : 'bg-emerald-900/80', isFout ? 'text-red-200' : 'text-emerald-200', isFout ? 'border-red-700' : 'border-emerald-700');
       banner.innerText = bericht;
-      setTimeout(() => banner.classList.add('hidden'), 4000);
+      setTimeout(() => banner.classList.add('hidden'), 5000);
     }
 
     async function laadWedstrijden() {
@@ -589,6 +914,8 @@
 
       try {
         const { data: matches } = await _supabase.from('matches').select('id');
+        let savedCount = 0;
+
         if (matches) {
           for (const match of matches) {
             const homeVal = document.getElementById(`home-${match.id}`)?.value;
@@ -601,6 +928,7 @@
                 home_prediction: parseInt(homeVal),
                 away_prediction: parseInt(awayVal)
               }, { onConflict: 'username,match_id' });
+              savedCount++;
             }
           }
         }
@@ -612,6 +940,20 @@
         saveBtn.innerText = '💾 Mijn Voorspellingen Opslaan';
         saveBtn.disabled = false;
       }
+    }
+
+    function berekenReferralBonus(profiles, predictions) {
+      const referralBonussen = {};
+      const spelersMetVoorspelling = new Set((predictions || []).map(p => p.username));
+
+      (profiles || []).forEach(profile => {
+        if (profile.referred_by && spelersMetVoorspelling.has(profile.username)) {
+          const inviter = profile.referred_by;
+          referralBonussen[inviter] = (referralBonussen[inviter] || 0) + 2;
+        }
+      });
+
+      return referralBonussen;
     }
 
     async function laadKlassementen() {
@@ -642,19 +984,24 @@
         }
       });
 
-      // 1. WERELDWIJD
+      const refBonussen = berekenReferralBonus(profiles, predictions);
+      Object.keys(refBonussen).forEach(inviter => {
+        if (scoresGlobal[inviter] !== undefined) {
+          scoresGlobal[inviter] += refBonussen[inviter];
+          scoresMonthly[inviter] += refBonussen[inviter];
+        }
+      });
+
       const sortedGlobal = Object.keys(scoresGlobal)
         .map(user => ({ user, score: scoresGlobal[user] }))
         .sort((a, b) => b.score - a.score);
 
       vulTabel('table-global-body', sortedGlobal);
 
-      // 2. PRIVÉ LIGA
       const privateUsers = (profiles || []).filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup).map(p => p.username);
       const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
       vulTabel('table-private-body', sortedPrivate);
 
-      // 3. MAANDELIJKS PRIVÉ
       const monthlyPrivate = Object.keys(scoresMonthly)
         .filter(user => privateUsers.includes(user))
         .map(user => ({ user, score: scoresMonthly[user] }))
@@ -729,6 +1076,14 @@
         }
       });
 
+      const refBonussen = berekenReferralBonus(profiles, predictions);
+      Object.keys(refBonussen).forEach(inviter => {
+        if (scoresGlobal[inviter] !== undefined) {
+          scoresGlobal[inviter] += refBonussen[inviter];
+          scoresMonthly[inviter] += refBonussen[inviter];
+        }
+      });
+
       const myScore = scoresGlobal[currentUser] || 0;
       document.getElementById('user-score').innerText = `${myScore} Ptn`;
 
@@ -746,9 +1101,23 @@
       document.getElementById('pos-monthly').innerText = myMonthlyPos > 0 ? `#${myMonthlyPos}` : '#-';
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      if (currentUser) toonScherm('dashboard');
-      else toonScherm('login');
+    document.addEventListener('DOMContentLoaded', async () => {
+      _supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          toonScherm('login');
+          document.getElementById('form-login').classList.add('hidden');
+          document.getElementById('form-register').classList.add('hidden');
+          document.getElementById('form-reset').classList.add('hidden');
+          document.getElementById('form-new-password').classList.remove('hidden');
+          return;
+        }
+
+        if (session && session.user) {
+          await initialiseerUserSessie(session.user);
+        } else {
+          toonScherm('login');
+        }
+      });
     });
   </script>
 </body>
