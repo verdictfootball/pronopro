@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
+  <meta name="google-site-verification" content="ps1OYPX18QHaXeVX1E8pbkPp2PU5qC0syfViuhtm1jE" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PronoPro - Jupiler Pro League 2026-2027</title>
@@ -28,10 +29,10 @@
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col font-sans pb-20 md:pb-0">
 
-  <!-- NAVIGATIEBAR (DESKTOP / BOVENAAN) -->
-  <nav class="bg-gray-800 border-b border-gray-700 px-6 py-1 flex justify-between items-center shadow-lg">
+  <!-- NAVIGATIEBAR (COMPACTERE HOOGTE) -->
+  <nav class="bg-gray-800 border-b border-gray-700 px-6 py-2 flex justify-between items-center shadow-lg">
     <div class="flex items-center cursor-pointer" onclick="toonScherm('dashboard')">
-      <!-- AFBEELDING AFGEDRUKT IN PLAATS VAN HET VOETBALLETJE -->
+      <!-- AFBEELDING AFGEDRUKT MET AANGEPASTE HOOGTE -->
       <img src="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png" alt="PronoPro Logo" class="h-20 w-auto object-contain" />
     </div>
     <div id="user-nav" class="hidden flex items-center gap-3">
@@ -225,13 +226,13 @@
               </div>
             </div>
 
-            <p class="text-gray-400 text-sm mt-2">Speel mee met Speeldag 1 en bekijk direct alle klassementen!</p>
+            <p class="text-gray-400 text-sm mt-2">Speel mee en vul al je pronostieken in tot 31 augustus!</p>
           </div>
           
           <div class="p-4 bg-gray-900/50 border-t border-gray-700/50 flex justify-between items-center">
-            <span class="text-xs text-gray-400 font-medium">18 Clubs • 9 Wedstrijden</span>
+            <span class="text-xs text-gray-400 font-medium">18 Clubs • Alle Wedstrijden</span>
             <button onclick="openSpeeldagTab('tab-predict')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center gap-1">
-              Open Speeldag & Rankings ➔
+              Open Wedstrijden & Rankings ➔
             </button>
           </div>
         </div>
@@ -273,10 +274,10 @@
         <!-- SPEELDAG SELECTIE HEADER -->
         <div class="flex justify-between items-center bg-gray-800 p-3.5 rounded-xl border border-gray-700">
           <span class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-            <span>📅</span> Actieve Speeldag:
+            <span>📅</span> Status Voorspellingen:
           </span>
           <span id="active-speeldag-badge" class="bg-emerald-500/10 text-emerald-400 font-extrabold text-xs px-3 py-1 rounded-full border border-emerald-500/20">
-            Speeldag 1 Geopend
+            Open t.m. 31 Augustus
           </span>
         </div>
 
@@ -448,9 +449,6 @@
     const SUPABASE_URL = 'https://pitvmvbtourmonkwzwoq.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // SPEELDAG INSTELLING: Bepaal welke Speeldag momenteel actief is!
-    const ACTIEVE_SPEELDAG = 1; 
 
     const urlParams = new URLSearchParams(window.location.search);
     const inviteGroup = urlParams.get('group');
@@ -926,13 +924,11 @@
     }
 
     function formatteerTijd(datumString, matchTimeVal, matchKey) {
-      // 1. Controleer of er expliciet een tijd is meegegeven via match_time
       if (matchTimeVal && matchTimeVal.includes(':')) {
         const m = matchTimeVal.match(/\d{1,2}:\d{2}/);
         if (m) return m[0].padStart(5, '0');
       }
 
-      // 2. Controleer op opgeslagen ISO datum (match_date)
       if (datumString) {
         const d = new Date(datumString);
         if (!isNaN(d.getTime())) {
@@ -944,32 +940,29 @@
         }
       }
 
-      // 3. Fallback naar DEFAULT_TIMES op basis van de match sleutel
       if (matchKey && DEFAULT_TIMES[matchKey]) {
         return DEFAULT_TIMES[matchKey];
       }
 
-      // 4. Standaard tijd
       return "20:00";
     }
 
+    // SLUITINGSDATUM INGESTELD OP 31 AUGUSTUS 2026
     function isMatchOpenVoorVoorspelling(match) {
-      const matchSpeeldag = match.speeldag || 1;
       const nu = new Date();
+      const deadline31Aug = new Date('2026-08-31T23:59:59');
 
-      if (matchSpeeldag > ACTIEVE_SPEELDAG) {
+      if (nu > deadline31Aug) {
         return { 
           open: false, 
-          reden: 'SPEELDAG_GESLOTEN', 
-          bericht: `🔒 Speeldag ${matchSpeeldag} is nog gesloten` 
+          reden: 'DEADLINE_PASSED', 
+          bericht: '🔒 Sluitingsdatum (31 aug) verstreken' 
         };
       }
 
       if (match.match_date) {
         const matchDatum = new Date(match.match_date);
-        const isVandaag = matchDatum.toDateString() === nu.toDateString();
-        
-        if (matchDatum < nu && !isVandaag) {
+        if (matchDatum < nu) {
           return { open: false, reden: 'AFGESLOTEN', bericht: '🔒 Wedstrijd al gestart' };
         }
       }
@@ -977,7 +970,7 @@
       return { open: true, reden: 'OPEN', bericht: '🟢 Geopend voor pronos' };
     }
 
-    // LAAD WEDSTRIJDEN FUNCTIE (VEILIG TEGEN ONTBREKENDE 'SPEELDAG' KOLOM)
+    // LAAD WEDSTRIJDEN FUNCTIE (LEEST GESCHRAAPTE MATCH_DATE UIT)
     async function laadWedstrijden() {
       const container = document.getElementById('matches-container');
       if (!container) return;
@@ -985,7 +978,6 @@
       container.innerHTML = '<p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>';
 
       try {
-        // SORTEER OP ID OM FOUTMELDINGEN BIJ ONTBREKENDE SPEELDAG-KOLOM TE VOORKOMEN
         const { data: matches, error: matchesErr } = await _supabase.from('matches').select('*').order('id', { ascending: true });
         const { data: teams } = await _supabase.from('teams').select('*');
         const { data: myPredictions } = await _supabase.from('predictions').select('*').eq('username', currentUser);
@@ -997,7 +989,7 @@
         }
 
         const badge = document.getElementById('active-speeldag-badge');
-        if (badge) badge.innerText = `Speeldag ${ACTIEVE_SPEELDAG} Geopend`;
+        if (badge) badge.innerText = `Open t.m. 31 Augustus`;
 
         const teamMap = {};
         (teams || []).forEach(t => teamMap[t.id] = t);
@@ -1018,7 +1010,6 @@
         matches.forEach(m => {
           const speeldagVanMatch = m.speeldag || 1;
 
-          // VISUELE SCHEIDINGSBALK WANNEER DE SPEELDAG VERANDERT
           if (huidigeSpeeldag !== null && huidigeSpeeldag !== speeldagVanMatch) {
             htmlBuilder += `
               <div class="my-6 flex items-center gap-4">
@@ -1044,6 +1035,7 @@
           const isSaved = homeVal !== '' && awayVal !== '';
           const matchKey = `${home.name} - ${away.name}`;
           
+          // GEBRUIK HIER DE GESCHRAAPTE MATCH_DATE
           const datumBron = m.match_date || m.created_at;
           const geformatteerdeDatum = formatteerDatum(datumBron);
           const geformatteerdeTijd = formatteerTijd(datumBron, m.match_time, matchKey);
