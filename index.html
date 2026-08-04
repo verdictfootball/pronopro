@@ -8,14 +8,31 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- QR Code Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- STYLING VOOR INGEVULDE SCORES EN OPGESLAGEN STATUS -->
+  <style>
+    .score-input.has-value,
+    .score-input:not(:placeholder-shown) {
+      background-color: #1e3a8a !important; /* Mild donkerblauw */
+      border-color: #3b82f6 !important;     /* Helderblauwe rand */
+      color: #ffffff !important;             /* Witte tekst */
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Extra visuele indicatie als de score definitief is opgeslagen */
+    .score-input.is-saved {
+      border-color: #10b981 !important;     /* Groene rand */
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4) !important;
+    }
+  </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col font-sans pb-20 md:pb-0">
 
   <!-- NAVIGATIEBAR (DESKTOP / BOVENAAN) -->
-  <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center shadow-lg">
-    <div class="flex items-center gap-3 cursor-pointer" onclick="toonScherm('dashboard')">
-      <span class="text-2xl">⚽</span>
-      <h1 class="text-xl font-extrabold tracking-wide text-emerald-400">PronoPro</h1>
+  <nav class="bg-gray-800 border-b border-gray-700 px-6 py-1 flex justify-between items-center shadow-lg">
+    <div class="flex items-center cursor-pointer" onclick="toonScherm('dashboard')">
+      <!-- AFBEELDING AFGEDRUKT IN PLAATS VAN HET VOETBALLETJE -->
+      <img src="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png" alt="PronoPro Logo" class="h-20 w-auto object-contain" />
     </div>
     <div id="user-nav" class="hidden flex items-center gap-3">
       <button onclick="toonScherm('settings')" id="nav-username" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
@@ -34,9 +51,7 @@
 
   <div class="max-w-4xl mx-auto w-full px-4 py-6 flex-1">
 
-    <!-- ========================================== -->
-    <!-- SCHERM 1: INLOGGEN / REGISTREREN / RESET   -->
-    <!-- ========================================== -->
+    <!-- SCHERM 1: INLOGGEN / REGISTREREN / RESET -->
     <section id="screen-login" class="flex items-center justify-center py-6">
       <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl w-full max-w-md">
         
@@ -68,8 +83,11 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Wachtwoord</label>
-            <input type="password" id="login-password" placeholder="••••••••" required
-                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+            <div class="relative">
+              <input type="password" id="login-password" placeholder="••••••••" required
+                     class="w-full bg-gray-900 border border-gray-700 rounded-lg pl-4 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="togglePasswordVisibility('login-password', 'toggle-login-pass')" id="toggle-login-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-sm">👁️</button>
+            </div>
           </div>
           <button type="submit" id="btn-submit-login" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
             Inloggen
@@ -90,8 +108,11 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Wachtwoord</label>
-            <input type="password" id="reg-password" placeholder="••••••••" minlength="6" required
-                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+            <div class="relative">
+              <input type="password" id="reg-password" placeholder="••••••••" minlength="6" required
+                     class="w-full bg-gray-900 border border-gray-700 rounded-lg pl-4 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="togglePasswordVisibility('reg-password', 'toggle-reg-pass')" id="toggle-reg-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-sm">👁️</button>
+            </div>
           </div>
           <button type="submit" id="btn-submit-reg" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
             Account Aanmaken
@@ -116,8 +137,11 @@
           <p class="text-xs text-emerald-400 font-semibold">Stel hieronder je nieuwe wachtwoord in:</p>
           <div>
             <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Nieuw Wachtwoord</label>
-            <input type="password" id="new-password" placeholder="••••••••" minlength="6" required
-                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+            <div class="relative">
+              <input type="password" id="new-password" placeholder="••••••••" minlength="6" required
+                     class="w-full bg-gray-900 border border-gray-700 rounded-lg pl-4 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="togglePasswordVisibility('new-password', 'toggle-newpass')" id="toggle-newpass" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-sm">👁️</button>
+            </div>
           </div>
           <button type="submit" id="btn-submit-newpass" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">
             Opslaan & Inloggen
@@ -127,9 +151,7 @@
       </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- SCHERM 2: DASHBOARD                        -->
-    <!-- ========================================== -->
+    <!-- SCHERM 2: DASHBOARD -->
     <section id="screen-dashboard" class="hidden space-y-8">
       
       <div class="bg-gradient-to-r from-emerald-900/60 to-gray-800 p-6 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative">
@@ -170,7 +192,7 @@
 
           <div class="bg-gray-800 p-4 rounded-xl border border-emerald-500/40 text-center bg-emerald-950/20">
             <span class="text-2xl mb-1 block">📅</span>
-            <span class="text-xs text-emerald-400 uppercase font-bold block">Maand (Aug)</span>
+            <span class="text-xs text-emerald-400 uppercase font-bold block">Maand</span>
             <span id="pos-monthly" class="text-2xl font-extrabold text-emerald-300">#-</span>
           </div>
         </div>
@@ -217,9 +239,7 @@
 
     </section>
 
-    <!-- ========================================== -->
-    <!-- SCHERM 3: SPEELDAG & RANGSCHIKKINGEN       -->
-    <!-- ========================================== -->
+    <!-- SCHERM 3: SPEELDAG & RANGSCHIKKINGEN -->
     <section id="screen-matches" class="hidden space-y-6">
       
       <div class="flex justify-between items-center">
@@ -249,6 +269,17 @@
 
       <!-- TAB 1: VOORSPELSCHERM -->
       <div id="tab-predict" class="tab-content space-y-4">
+        
+        <!-- SPEELDAG SELECTIE HEADER -->
+        <div class="flex justify-between items-center bg-gray-800 p-3.5 rounded-xl border border-gray-700">
+          <span class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span>📅</span> Actieve Speeldag:
+          </span>
+          <span id="active-speeldag-badge" class="bg-emerald-500/10 text-emerald-400 font-extrabold text-xs px-3 py-1 rounded-full border border-emerald-500/20">
+            Speeldag 1 Geopend
+          </span>
+        </div>
+
         <form id="predictions-form" onsubmit="event.preventDefault();">
           <div id="matches-container" class="space-y-3">
             <p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>
@@ -327,9 +358,7 @@
 
     </section>
 
-    <!-- ========================================== -->
-    <!-- SCHERM 4: ACCOUNT / INSTELLINGEN           -->
-    <!-- ========================================== -->
+    <!-- SCHERM 4: ACCOUNT / INSTELLINGEN -->
     <section id="screen-settings" class="hidden space-y-6">
       <div class="flex justify-between items-center">
         <button onclick="toonScherm('dashboard')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition">
@@ -420,7 +449,9 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Bepaal URL parameters voor Groep & Referrer (Uitnodiger)
+    // SPEELDAG INSTELLING: Bepaal welke Speeldag momenteel actief is!
+    const ACTIEVE_SPEELDAG = 1; 
+
     const urlParams = new URLSearchParams(window.location.search);
     const inviteGroup = urlParams.get('group');
     const inviteRef = urlParams.get('ref');
@@ -459,16 +490,51 @@
     };
 
     const DEFAULT_TIMES = {
-      "Club Brugge - KV Kortrijk": "Vrij 25/07 - 20:45",
-      "Sporting Charleroi - OH Leuven": "Sat 26/07 - 16:00",
-      "Standard Luik - Cercle Brugge": "Sat 26/07 - 18:15",
-      "KVC Westerlo - Royale Union SG": "Sat 26/07 - 20:45",
-      "STVV - Lommel SK": "Zon 27/07 - 13:30",
-      "KAA Gent - KV Mechelen": "Zon 27/07 - 16:00",
-      "SV Zulte Waregem - KRC Genk": "Zon 27/07 - 18:30",
-      "RSC Anderlecht - RAAL La Louvière": "Zon 27/07 - 21:00",
-      "Royal Antwerp FC - SK Beveren": "Zon 27/07 - 21:00"
+      "Club Brugge - KV Kortrijk": "20:45",
+      "Sporting Charleroi - OH Leuven": "16:00",
+      "Standard Luik - Cercle Brugge": "18:15",
+      "KVC Westerlo - Royale Union SG": "20:45",
+      "STVV - Lommel SK": "13:30",
+      "KAA Gent - KV Mechelen": "16:00",
+      "SV Zulte Waregem - KRC Genk": "18:30",
+      "RSC Anderlecht - RAAL La Louvière": "21:00",
+      "Royal Antwerp FC - SK Beveren": "21:00",
+      "SK Beveren - Standard Luik": "20:00",
+      "STVV - KVC Westerlo": "18:15"
     };
+
+    function handleScoreFocus(input) {
+      if (input.value === '') {
+        input.value = 0;
+        input.classList.add('has-value');
+      }
+    }
+
+    function checkScoreInput(input) {
+      if (input.value < 0 && input.value !== '') {
+        input.value = 0;
+      }
+
+      input.classList.remove('is-saved');
+
+      if (input.value !== '' && input.value !== null) {
+        input.classList.add('has-value');
+      } else {
+        input.classList.remove('has-value');
+      }
+    }
+
+    function togglePasswordVisibility(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.innerText = "🙈";
+      } else {
+        input.type = "password";
+        btn.innerText = "👁️";
+      }
+    }
 
     function switchAuthTab(tab) {
       document.getElementById('form-login').classList.add('hidden');
@@ -539,13 +605,12 @@
         return;
       }
 
-      // Sla op wie deze gebruiker heeft uitgenodigd (referred_by)
       await _supabase.from('profiles').upsert({ 
         username: username, 
         email: email, 
         group_code: currentGroup,
         referred_by: currentRef 
-      }, { onConflict: 'username' });
+      }, { onConflict: 'email' });
 
       toonMelding('✅ Account aangemaakt! Je bent ingelogd.');
       await initialiseerUserSessie(data.user || (await _supabase.auth.getUser()).data.user, username);
@@ -595,21 +660,17 @@
     async function initialiseerUserSessie(userObj, optioneleNaam = null) {
       if (!userObj) return;
 
-      let determinedUsername = optioneleNaam;
-      if (!determinedUsername) {
-        if (userObj.user_metadata && userObj.user_metadata.username) {
-          determinedUsername = userObj.user_metadata.username;
-        } else {
-          determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
-        }
-      }
+      const { data: profile } = await _supabase.from('profiles').select('*').eq('email', userObj.email).maybeSingle();
 
-      const { data: profile } = await _supabase.from('profiles').select('*').eq('email', userObj.email).single();
-
-      if (profile) {
+      if (profile && profile.username) {
         currentUser = profile.username;
         currentUserProfile = profile;
       } else {
+        let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
+        if (!determinedUsername) {
+          determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
+        }
+
         currentUser = determinedUsername;
         const newProf = { 
           username: currentUser, 
@@ -617,7 +678,7 @@
           group_code: currentGroup,
           referred_by: currentRef 
         };
-        await _supabase.from('profiles').upsert(newProf, { onConflict: 'username' });
+        await _supabase.from('profiles').upsert(newProf, { onConflict: 'email' });
         currentUserProfile = newProf;
       }
 
@@ -634,23 +695,12 @@
         return;
       }
 
-      if (currentUserProfile && currentUserProfile.last_name_change) {
-        const lastChange = new Date(currentUserProfile.last_name_change);
-        const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
-        if (diffDays < 30) {
-          toonMelding(`❌ Je hebt je naam recent gewijzigd! Je moet nog ${Math.ceil(30 - diffDays)} dagen wachten.`, true);
-          return;
-        }
-      }
-
       saveBtn.innerText = '⌛ Bezig met opslaan...';
       saveBtn.disabled = true;
 
-      const nowISO = new Date().toISOString();
-
       const { error } = await _supabase
         .from('profiles')
-        .update({ username: newName, last_name_change: nowISO })
+        .update({ username: newName, last_name_change: new Date().toISOString() })
         .eq('username', currentUser);
 
       saveBtn.innerText = '💾 Opslaan & Naam Wijzigen';
@@ -659,16 +709,20 @@
       if (error) {
         toonMelding('❌ Opslaan mislukt: ' + error.message, true);
       } else {
-        await _supabase.from('predictions').update({ username: newName }).eq('username', currentUser);
+        await _supabase
+          .from('predictions')
+          .update({ username: newName })
+          .eq('username', currentUser);
 
         currentUser = newName;
-        if(currentUserProfile) {
+        if (currentUserProfile) {
           currentUserProfile.username = newName;
-          currentUserProfile.last_name_change = nowISO;
+          currentUserProfile.last_name_change = new Date().toISOString();
         }
 
         localStorage.setItem('prono_username', currentUser);
         toonMelding('✅ Gebruikersnaam succesvol gewijzigd!');
+        
         laadSettingsScherm();
         toonScherm('dashboard');
       }
@@ -859,52 +913,217 @@
       setTimeout(() => banner.classList.add('hidden'), 5000);
     }
 
+    // FORMATTERING FUNCTIES VOOR DATUM EN TIJD
+    function formatteerDatum(datumString) {
+      if (!datumString) return 'TBD';
+      const d = new Date(datumString);
+      if (isNaN(d.getTime())) return datumString;
+      
+      const dag = String(d.getDate()).padStart(2, '0');
+      const maand = String(d.getMonth() + 1).padStart(2, '0');
+      const jaar = d.getFullYear();
+      return `${dag}/${maand}/${jaar}`;
+    }
+
+    function formatteerTijd(datumString, matchTimeVal, matchKey) {
+      // 1. Controleer of er expliciet een tijd is meegegeven via match_time
+      if (matchTimeVal && matchTimeVal.includes(':')) {
+        const m = matchTimeVal.match(/\d{1,2}:\d{2}/);
+        if (m) return m[0].padStart(5, '0');
+      }
+
+      // 2. Controleer op opgeslagen ISO datum (match_date)
+      if (datumString) {
+        const d = new Date(datumString);
+        if (!isNaN(d.getTime())) {
+          const uur = String(d.getHours()).padStart(2, '0');
+          const min = String(d.getMinutes()).padStart(2, '0');
+          if (`${uur}:${min}` !== '00:00' && `${uur}:${min}` !== '02:00') {
+            return `${uur}:${min}`;
+          }
+        }
+      }
+
+      // 3. Fallback naar DEFAULT_TIMES op basis van de match sleutel
+      if (matchKey && DEFAULT_TIMES[matchKey]) {
+        return DEFAULT_TIMES[matchKey];
+      }
+
+      // 4. Standaard tijd
+      return "20:00";
+    }
+
+    function isMatchOpenVoorVoorspelling(match) {
+      const matchSpeeldag = match.speeldag || 1;
+      const nu = new Date();
+
+      if (matchSpeeldag > ACTIEVE_SPEELDAG) {
+        return { 
+          open: false, 
+          reden: 'SPEELDAG_GESLOTEN', 
+          bericht: `🔒 Speeldag ${matchSpeeldag} is nog gesloten` 
+        };
+      }
+
+      if (match.match_date) {
+        const matchDatum = new Date(match.match_date);
+        const isVandaag = matchDatum.toDateString() === nu.toDateString();
+        
+        if (matchDatum < nu && !isVandaag) {
+          return { open: false, reden: 'AFGESLOTEN', bericht: '🔒 Wedstrijd al gestart' };
+        }
+      }
+
+      return { open: true, reden: 'OPEN', bericht: '🟢 Geopend voor pronos' };
+    }
+
+    // LAAD WEDSTRIJDEN FUNCTIE (VEILIG TEGEN ONTBREKENDE 'SPEELDAG' KOLOM)
     async function laadWedstrijden() {
       const container = document.getElementById('matches-container');
+      if (!container) return;
 
-      const { data: matches } = await _supabase.from('matches').select('*').order('id', { ascending: true });
-      const { data: teams } = await _supabase.from('teams').select('*');
-      const { data: myPredictions } = await _supabase.from('predictions').select('*').eq('username', currentUser);
+      container.innerHTML = '<p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>';
 
-      const teamMap = {};
-      (teams || []).forEach(t => teamMap[t.id] = t);
+      try {
+        // SORTEER OP ID OM FOUTMELDINGEN BIJ ONTBREKENDE SPEELDAG-KOLOM TE VOORKOMEN
+        const { data: matches, error: matchesErr } = await _supabase.from('matches').select('*').order('id', { ascending: true });
+        const { data: teams } = await _supabase.from('teams').select('*');
+        const { data: myPredictions } = await _supabase.from('predictions').select('*').eq('username', currentUser);
 
-      const predMap = {};
-      (myPredictions || []).forEach(p => predMap[p.match_id] = p);
+        if (matchesErr) {
+          console.error("Supabase Error:", matchesErr);
+          container.innerHTML = `<p class="text-red-400 text-center py-8">Fout bij laden: ${matchesErr.message}</p>`;
+          return;
+        }
 
-      container.innerHTML = '';
-      (matches || []).forEach(m => {
-        const home = teamMap[m.home_team_id] || { name: 'Thuis' };
-        const away = teamMap[m.away_team_id] || { name: 'Uit' };
-        const homeLogo = vindLogoUrl(home.name);
-        const awayLogo = vindLogoUrl(away.name);
-        
-        const myPred = predMap[m.id] || {};
-        const matchKey = `${home.name} - ${away.name}`;
-        const matchTime = m.match_time || DEFAULT_TIMES[matchKey] || 'TBD';
+        const badge = document.getElementById('active-speeldag-badge');
+        if (badge) badge.innerText = `Speeldag ${ACTIEVE_SPEELDAG} Geopend`;
 
-        const card = `
-          <div class="p-4 bg-gray-800 rounded-xl border border-gray-700 flex flex-col items-center gap-2 shadow-md">
-            <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">${matchTime}</span>
-            <div class="flex items-center justify-between gap-2 w-full">
-              <div class="flex items-center justify-end gap-3 flex-1 text-right">
-                <span class="font-bold text-sm text-gray-100">${home.name}</span>
-                ${homeLogo ? `<img src="${homeLogo}" alt="${home.name}" class="w-8 h-8 object-contain">` : ''}
+        const teamMap = {};
+        (teams || []).forEach(t => teamMap[t.id] = t);
+
+        const predMap = {};
+        (myPredictions || []).forEach(p => {
+          predMap[String(p.match_id)] = p;
+        });
+
+        if (!matches || matches.length === 0) {
+          container.innerHTML = '<p class="text-gray-400 text-center py-8">Geen wedstrijden gevonden in de database.</p>';
+          return;
+        }
+
+        let huidigeSpeeldag = null;
+        let htmlBuilder = '';
+
+        matches.forEach(m => {
+          const speeldagVanMatch = m.speeldag || 1;
+
+          // VISUELE SCHEIDINGSBALK WANNEER DE SPEELDAG VERANDERT
+          if (huidigeSpeeldag !== null && huidigeSpeeldag !== speeldagVanMatch) {
+            htmlBuilder += `
+              <div class="my-6 flex items-center gap-4">
+                <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+                <span class="bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                  🏆 Speeldag ${speeldagVanMatch}
+                </span>
+                <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
               </div>
-              <div class="flex items-center gap-1.5 bg-gray-900 p-2 rounded-xl border border-gray-700">
-                <input type="number" min="0" max="99" id="home-${m.id}" value="${myPred.home_prediction ?? ''}" placeholder="-" class="w-10 h-9 text-center font-bold bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:border-emerald-500">
-                <span class="font-bold text-gray-500">:</span>
-                <input type="number" min="0" max="99" id="away-${m.id}" value="${myPred.away_prediction ?? ''}" placeholder="-" class="w-10 h-9 text-center font-bold bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:border-emerald-500">
+            `;
+          }
+          huidigeSpeeldag = speeldagVanMatch;
+
+          const home = teamMap[m.home_team_id] || { name: m.home_team_name || 'Thuis' };
+          const away = teamMap[m.away_team_id] || { name: m.away_team_name || 'Uit' };
+          const homeLogo = vindLogoUrl(home.name);
+          const awayLogo = vindLogoUrl(away.name);
+          
+          const myPred = predMap[String(m.id)] || {};
+          const homeVal = (myPred.home_prediction !== undefined && myPred.home_prediction !== null) ? myPred.home_prediction : '';
+          const awayVal = (myPred.away_prediction !== undefined && myPred.away_prediction !== null) ? myPred.away_prediction : '';
+          
+          const isSaved = homeVal !== '' && awayVal !== '';
+          const matchKey = `${home.name} - ${away.name}`;
+          
+          const datumBron = m.match_date || m.created_at;
+          const geformatteerdeDatum = formatteerDatum(datumBron);
+          const geformatteerdeTijd = formatteerTijd(datumBron, m.match_time, matchKey);
+
+          const status = isMatchOpenVoorVoorspelling(m);
+          const isEditable = status.open;
+
+          htmlBuilder += `
+            <div class="p-4 bg-gray-800 rounded-xl border ${!isEditable ? 'border-gray-800 opacity-60 bg-gray-900/40' : (isSaved ? 'border-emerald-500/50 bg-emerald-950/10' : 'border-gray-700')} flex flex-col items-center gap-2 shadow-md transition relative overflow-hidden">
+              
+              <!-- Speeldag & Datum Info -->
+              <div class="flex flex-col items-center text-xs font-semibold ${isEditable ? 'text-emerald-400' : 'text-gray-400'}">
+                <div class="flex items-center gap-1.5">
+                  <span class="bg-gray-700/60 text-gray-300 text-[10px] font-bold px-1.5 py-0.5 rounded">SD ${speeldagVanMatch}</span>
+                  <span>📅 ${geformatteerdeDatum}</span>
+                </div>
+                <div class="flex items-center gap-1 text-gray-300 text-[11px] font-normal mt-0.5">
+                  <span>⏰</span>
+                  <span>${geformatteerdeTijd} uur</span>
+                </div>
+
+                <!-- Status Badge -->
+                ${isSaved 
+                  ? `<span id="saved-badge-${m.id}" class="mt-1 text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">✓ Opgeslagen</span>`
+                  : `<span class="mt-1 text-[10px] ${isEditable ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-gray-700 text-gray-400 border-gray-600'} font-medium px-2 py-0.5 rounded-full border">
+                      ${status.bericht}
+                     </span>`
+                }
               </div>
-              <div class="flex items-center justify-start gap-3 flex-1 text-left">
-                ${awayLogo ? `<img src="${awayLogo}" alt="${away.name}" class="w-8 h-8 object-contain">` : ''}
-                <span class="font-bold text-sm text-gray-100">${away.name}</span>
+
+              <!-- Wedstrijd Teams & Inputs -->
+              <div class="flex items-center justify-between gap-2 w-full mt-1">
+                <div class="flex items-center justify-end gap-3 flex-1 text-right">
+                  <span class="font-bold text-sm text-gray-100">${home.name}</span>
+                  ${homeLogo ? `<img src="${homeLogo}" alt="${home.name}" class="w-8 h-8 object-contain">` : ''}
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-gray-900 p-2 rounded-xl border ${isSaved ? 'border-emerald-500/60' : 'border-gray-700'}">
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="99" 
+                    id="home-${m.id}" 
+                    value="${homeVal}" 
+                    placeholder="-" 
+                    ${!isEditable ? 'disabled' : ''}
+                    class="score-input input-home w-10 h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${homeVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
+                    onfocus="handleScoreFocus(this)"
+                    oninput="checkScoreInput(this)"
+                  />
+                  <span class="font-bold text-gray-500">:</span>
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="99" 
+                    id="away-${m.id}" 
+                    value="${awayVal}" 
+                    placeholder="-" 
+                    ${!isEditable ? 'disabled' : ''}
+                    class="score-input input-away w-10 h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${homeVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
+                    onfocus="handleScoreFocus(this)"
+                    oninput="checkScoreInput(this)"
+                  />
+                </div>
+
+                <div class="flex items-center justify-start gap-3 flex-1 text-left">
+                  ${awayLogo ? `<img src="${awayLogo}" alt="${away.name}" class="w-8 h-8 object-contain">` : ''}
+                  <span class="font-bold text-sm text-gray-100">${away.name}</span>
+                </div>
               </div>
             </div>
-          </div>
-        `;
-        container.innerHTML += card;
-      });
+          `;
+        });
+
+        container.innerHTML = htmlBuilder;
+
+      } catch (err) {
+        console.error("Fout bij ophalen:", err);
+        container.innerHTML = `<p class="text-red-400 text-center py-8">Er is een fout opgetreden: ${err.message}</p>`;
+      }
     }
 
     async function savePredictions() {
@@ -913,26 +1132,35 @@
       saveBtn.disabled = true;
 
       try {
-        const { data: matches } = await _supabase.from('matches').select('id');
-        let savedCount = 0;
+        const { data: matches } = await _supabase.from('matches').select('*');
 
         if (matches) {
           for (const match of matches) {
-            const homeVal = document.getElementById(`home-${match.id}`)?.value;
-            const awayVal = document.getElementById(`away-${match.id}`)?.value;
+            const status = isMatchOpenVoorVoorspelling(match);
+            if (!status.open) continue;
 
-            if (homeVal !== "" && awayVal !== "") {
+            const homeInput = document.getElementById(`home-${match.id}`);
+            const awayInput = document.getElementById(`away-${match.id}`);
+            const savedBadge = document.getElementById(`saved-badge-${match.id}`);
+
+            const homeVal = homeInput?.value;
+            const awayVal = awayInput?.value;
+
+            if (homeVal !== "" && awayVal !== "" && homeVal !== undefined && awayVal !== undefined) {
               await _supabase.from('predictions').upsert({
                 username: currentUser,
                 match_id: match.id,
                 home_prediction: parseInt(homeVal),
                 away_prediction: parseInt(awayVal)
               }, { onConflict: 'username,match_id' });
-              savedCount++;
+
+              if (homeInput) homeInput.classList.add('is-saved');
+              if (awayInput) awayInput.classList.add('is-saved');
+              if (savedBadge) savedBadge.classList.remove('hidden');
             }
           }
         }
-        toonMelding('✅ Je voorspellingen zijn opgeslagen!');
+        toonMelding('✅ Je voorspellingen zijn succesvol opgeslagen!');
         laadKlassementen();
       } catch (err) {
         toonMelding('❌ Opslaan mislukt: ' + err.message, true);
@@ -965,12 +1193,13 @@
       const scoresMonthly = {};
 
       (profiles || []).forEach(p => {
-        scoresGlobal[p.username] = 0;
-        scoresMonthly[p.username] = 0;
+        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        scoresGlobal[nameToUse] = 0;
+        scoresMonthly[nameToUse] = 0;
       });
 
       (predictions || []).forEach(pred => {
-        const match = (matches || []).find(m => m.id === pred.match_id);
+        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
         if (match && match.home_score !== null && match.away_score !== null) {
           let pts = 0;
           if (pred.home_prediction === match.home_score && pred.away_prediction === match.away_score) {
@@ -998,7 +1227,10 @@
 
       vulTabel('table-global-body', sortedGlobal);
 
-      const privateUsers = (profiles || []).filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup).map(p => p.username);
+      const privateUsers = (profiles || [])
+        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
       const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
       vulTabel('table-private-body', sortedPrivate);
 
@@ -1062,10 +1294,14 @@
 
       const scoresGlobal = {};
       const scoresMonthly = {};
-      (profiles || []).forEach(p => { scoresGlobal[p.username] = 0; scoresMonthly[p.username] = 0; });
+      (profiles || []).forEach(p => { 
+        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        scoresGlobal[nameToUse] = 0; 
+        scoresMonthly[nameToUse] = 0; 
+      });
 
       (predictions || []).forEach(pred => {
-        const match = (matches || []).find(m => m.id === pred.match_id);
+        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
         if (match && match.home_score !== null && match.away_score !== null) {
           let pts = 0;
           if (pred.home_prediction === match.home_score && pred.away_prediction === match.away_score) pts = 3;
@@ -1091,7 +1327,10 @@
       const myGlobalPos = sortedGlobal.indexOf(currentUser) + 1;
       document.getElementById('pos-global').innerText = myGlobalPos > 0 ? `#${myGlobalPos}` : '#-';
 
-      const privateUsers = (profiles || []).filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup).map(p => p.username);
+      const privateUsers = (profiles || [])
+        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
       const sortedPrivate = sortedGlobal.filter(u => privateUsers.includes(u));
       const myPrivatePos = sortedPrivate.indexOf(currentUser) + 1;
       document.getElementById('pos-private').innerText = myPrivatePos > 0 ? `#${myPrivatePos}` : '#-';
