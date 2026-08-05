@@ -745,40 +745,55 @@
     }
   }
 
-  async function initialiseerUserSessie(userObj, optioneleNaam = null) {
-    if (!userObj) return;
+ async function initialiseerUserSessie(userObj, optioneleNaam = null) {
+  if (!userObj) return;
 
-    // Zoek profiel ALTIJD eerst op Uniek ID of Email
-    const { data: profile } = await _supabase.from('profiles').select('*').eq('email', userObj.email).maybeSingle();
+  // 1. Zoek het profiel EERST op het unieke ID van Supabase (userObj.id)
+  let { data: profile } = await _supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userObj.id)
+    .maybeSingle();
 
-    if (profile && profile.username) {
-      currentUser = profile.username;
-      currentUserProfile = profile;
-      if (profile.group_code) {
-        currentGroup = profile.group_code;
-        localStorage.setItem('prono_group', currentGroup);
-      }
-    } else {
-      let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
-      if (!determinedUsername) {
-        determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
-      }
+  // 2. Als het niet op ID is gevonden, zoek op e-mail als fallback
+  if (!profile && userObj.email) {
+    const { data: profByEmail } = await _supabase
+      .from('profiles')
+      .select('*')
+      .eq('email', userObj.email)
+      .maybeSingle();
+    profile = profByEmail;
+  }
 
-      currentUser = determinedUsername;
-      const newProf = { 
-        id: userObj.id,
-        username: currentUser, 
-        email: userObj.email, 
-        group_code: currentGroup,
-        referred_by: currentRef 
-      };
-      await _supabase.from('profiles').upsert(newProf, { onConflict: 'email' });
-      currentUserProfile = newProf;
+  // 3. Wijs de gevonden username toe (of de opgegeven naam / metadata)
+  if (profile && profile.username) {
+    currentUser = profile.username;
+    currentUserProfile = profile;
+    if (profile.group_code) {
+      currentGroup = profile.group_code;
+      localStorage.setItem('prono_group', currentGroup);
+    }
+  } else {
+    let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
+    if (!determinedUsername) {
+      determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
     }
 
-    localStorage.setItem('prono_username', currentUser);
-    toonScherm('dashboard');
+    currentUser = determinedUsername;
+    const newProf = { 
+      id: userObj.id,
+      username: currentUser, 
+      email: userObj.email, 
+      group_code: currentGroup,
+      referred_by: currentRef 
+    };
+    await _supabase.from('profiles').upsert(newProf, { onConflict: 'id' });
+    currentUserProfile = newProf;
   }
+
+  localStorage.setItem('prono_username', currentUser);
+  toonScherm('dashboard');
+}
 
   async function updateGebruikersnaam() {
     const newName = document.getElementById('setting-new-name').value.trim();
@@ -809,8 +824,8 @@
     if (error) {
       toonMelding('❌ Opslaan mislukt: ' + error.message, true);
     } else {
-      // Werk ook ouden referenties bij in voorspellingen en uitnodigingen
-      await _supabase.from('predictions').update({ username: newName }).eq('username', oldName);
+      // Werk ook oude referenties bij in voorspellingen en uitnodigingen
+      await _supabase.from('predictions').update({ username: newName }).eq('user_id', user.id);
       await _supabase.from('profiles').update({ referred_by: newName }).eq('referred_by', oldName);
 
       currentUser = newName;
@@ -1226,25 +1241,30 @@
     }
   }
 
-  // GEBETERDE REFERRAL PUNTENBEREKENING
   function berekenReferralBonus(profiles, predictions) {
     const referralBonussen = {};
 
-    // Zoek welke gebruikers ten minste 1 voorspelling hebben ingevuld
-    const spelersMetVoorspelling = new Set();
+    const actieveSpelers = new Set();
     (predictions || []).forEach(p => {
-      if (p.user_id) spelersMetVoorspelling.add(p.user_id);
-      if (p.username) spelersMetVoorspelling.add(p.username);
+      if (p.user_id) actieveSpelers.add(String(p.user_id));
+      if (p.username) actieveSpelers.add(String(p.username));
+    });
+
+    const profileLookup = {};
+    (profiles || []).forEach(p => {
+      if (p.id) profileLookup[p.id] = p.username;
+      if (p.username) profileLookup[p.username] = p.username;
     });
 
     (profiles || []).forEach(profile => {
-      // Als dit profiel door iemand is uitgenodigd EN ten minste 1 voorspelling heeft gemaakt
-      const isActief = (profile.id && spelersMetVoorspelling.has(profile.id)) || 
-                      (profile.username && spelersMetVoorspelling.has(profile.username));
+      const isActief = (profile.id && actieveSpelers.has(String(profile.id))) || 
+                      (profile.username && actieveSpelers.has(String(profile.username)));
 
       if (profile.referred_by && isActief) {
-        const inviter = profile.referred_by;
-        referralBonussen[inviter] = (referralBonussen[inviter] || 0) + 2;
+        const inviterRaw = profile.referred_by;
+        const inviterUsername = profileLookup[inviterRaw] || inviterRaw;
+        
+        referralBonussen[inviterUsername] = (referralBonussen[inviterUsername] || 0) + 2;
       }
     });
 
@@ -1280,13 +1300,14 @@
       }
     });
 
-    // Bereken en voeg referral bonussen toe
     const refBonussen = berekenReferralBonus(profiles, predictions);
+
     Object.keys(refBonussen).forEach(inviter => {
-      if (scoresGlobal[inviter] !== undefined) {
-        scoresGlobal[inviter] += refBonussen[inviter];
-        scoresMonthly[inviter] += refBonussen[inviter];
-      }
+      if (scoresGlobal[inviter] === undefined) scoresGlobal[inviter] = 0;
+      if (scoresMonthly[inviter] === undefined) scoresMonthly[inviter] = 0;
+
+      scoresGlobal[inviter] += refBonussen[inviter];
+      scoresMonthly[inviter] += refBonussen[inviter];
     });
 
     const sortedGlobal = Object.keys(scoresGlobal)
