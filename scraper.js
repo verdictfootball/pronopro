@@ -1,4 +1,3 @@
-name=scraper.js
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { createClient } = require('@supabase/supabase-js');
@@ -33,8 +32,7 @@ async function scrapeAndSync() {
 
     let huidigeSpeeldag = 1;
     
-    // PUNT 1: Bepaal het huidige seizoen-startjaar dynamisch
-    // Als we nu in jan-juni zitten, is het seizoen vorig jaar gestart. Anders dit jaar.
+    // Bepaal het huidige seizoen-startjaar dynamisch
     const nu = new Date();
     const huidigMaand = nu.getMonth() + 1; // 1 - 12
     const seizoenStartJaar = huidigMaand < 7 ? nu.getFullYear() - 1 : nu.getFullYear();
@@ -72,14 +70,13 @@ async function scrapeAndSync() {
                 const [dag, maand] = parts[0].split('/'); // "15", "08"
                 const maandInt = parseInt(maand, 10);
 
-                // PUNT 1: Als maand 1 t/m 6 is, valt de wedstrijd in het tweede jaar van het seizoen
                 const matchJaar = maandInt < 7 ? seizoenStartJaar + 1 : seizoenStartJaar;
 
                 let uur = "00";
                 let minuut = "00";
 
                 if (parts.length >= 2) {
-                  const schoonUur = parts[1].replace('?', '').trim(); // verwijder '?'
+                  const schoonUur = parts[1].replace('?', '').trim();
                   if (schoonUur.includes(':')) {
                     [uur, minuut] = schoonUur.split(':');
                   }
