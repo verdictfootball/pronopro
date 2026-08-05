@@ -61,6 +61,11 @@
       <img src="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png" alt="PronoPro Logo" class="h-20 w-auto object-contain" />
     </div>
     <div id="user-nav" class="hidden flex items-center gap-3">
+      <!-- KNOP VOOR SPELREGELS MODAL -->
+      <button onclick="openRulesModal()" class="text-xs font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/80 px-3 py-2 rounded-xl border border-emerald-500/40 transition flex items-center gap-1.5 shadow-sm">
+        <span>📜</span> Spelregels
+      </button>
+
       <button onclick="toonScherm('settings')" id="nav-username" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
         👤 Gast
       </button>
@@ -361,6 +366,76 @@
 
   </div>
 
+  <!-- SPELREGELS MODAL -->
+  <div id="rules-modal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-md w-full relative shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeRulesModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      
+      <div class="flex items-center gap-3 border-b border-gray-700 pb-3">
+        <span class="text-3xl">📜</span>
+        <div>
+          <h3 class="text-xl font-extrabold text-white">Spelregels PronoPro</h3>
+          <p class="text-xs text-emerald-400 font-medium">Hoe worden de punten berekend?</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm text-gray-300">
+        <!-- PUNTENVERDELING AANGEPAST -->
+        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span>⚽</span> Punten per Wedstrijd
+          </h4>
+          <ul class="text-xs space-y-1.5 list-disc list-inside text-gray-300">
+            <li><strong class="text-emerald-400">10 Punten:</strong> Exact de juiste score voorspeld (bijv. Uitslag 2-1, Voorspelling 2-1).</li>
+            <li><strong class="text-emerald-400">7 Punten:</strong> Juiste winnaar én het juiste aantal doelpunten verschil voorspeld (bijv. Uitslag 3-1, Voorspelling 2-0).</li>
+            <li><strong class="text-emerald-400">5 Punten:</strong> Juiste winnaar of gelijkspel voorspeld, maar ander doelsaldo (bijv. Uitslag 3-0, Voorspelling 1-0).</li>
+            <li><strong class="text-gray-300">1 Punt:</strong> Voorspelling ingevuld, maar de uitslag/winnaar is fout.</li>
+            <li><strong class="text-gray-500">0 Punten:</strong> Geen voorspelling ingevuld.</li>
+          </ul>
+        </div>
+
+        <!-- MAANDBONUS -->
+        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span>📅</span> Maandbonus (10 Ptn Pot)
+          </h4>
+          <p class="text-xs text-gray-300">Elke maand strijden spelers in hun privé-liga voor de maandbonus:</p>
+          <ul class="text-xs space-y-1 list-disc list-inside text-gray-300">
+            <li><strong>1 Winnaar:</strong> Krijgt <strong class="text-emerald-400">+10 bonuspunten</strong>.</li>
+            <li><strong>2 Gedeelde winnaars:</strong> Krijgen elk <strong class="text-emerald-400">+5 bonuspunten</strong>.</li>
+            <li><strong>3 Gedeelde winnaars:</strong> Krijgen elk <strong class="text-emerald-400">+3 bonuspunten</strong>.</li>
+            <li><strong>4 of meer winnaars:</strong> Krijgen elk <strong class="text-emerald-400">+1 bonuspunt</strong>.</li>
+          </ul>
+        </div>
+
+        <!-- REFERRAL BONUS -->
+        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span>🎁</span> Uitnodigingsbonus
+          </h4>
+          <p class="text-xs text-gray-300">
+            Nodig vrienden uit via jouw unieke uitnodigingslink. Zodra zij zich registreren én hun eerste voorspelling invullen, ontvang jij <strong class="text-emerald-400">+2 bonuspunten</strong>!
+          </p>
+        </div>
+
+        <!-- DEADLINES -->
+        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
+          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
+            <span>🔒</span> Deadlines & Beperkingen
+          </h4>
+          <ul class="text-xs space-y-1 list-disc list-inside text-gray-300">
+            <li>Voorspellingen sluiten zodra het aftrapsignaal van de wedstrijd klinkt.</li>
+            <li>Je kunt maximaal <strong>2 speeldagen vooruit</strong> invullen.</li>
+          </ul>
+        </div>
+      </div>
+
+      <button onclick="closeRulesModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg transition text-sm">
+        Begrepen!
+      </button>
+    </div>
+  </div>
+
   <div id="share-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-sm w-full text-center relative shadow-2xl space-y-4">
       <button onclick="closeShareModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
@@ -451,6 +526,45 @@
       "STVV - KVC Westerlo": "18:15"
     };
 
+    // FUNCTIE VOOR HET BEREKENEN VAN DE WEDSTRIJDPUNTEN
+    function berekenMatchPunten(predHome, predAway, matchHome, matchAway) {
+      if (predHome === undefined || predHome === null || predAway === undefined || predAway === null) return 0;
+      if (matchHome === null || matchAway === null) return 0;
+
+      // Exact de juiste score -> 10 Punten
+      if (predHome === matchHome && predAway === matchAway) {
+        return 10;
+      }
+
+      const predDiff = predHome - predAway;
+      const matchDiff = matchHome - matchAway;
+
+      const predSign = Math.sign(predDiff);
+      const matchSign = Math.sign(matchDiff);
+
+      // Juiste winnaar/gelijkspel voorspeld
+      if (predSign === matchSign) {
+        // Juiste doelsaldo/doelpuntenverschil -> 7 Punten
+        if (predDiff === matchDiff) {
+          return 7;
+        }
+        // Wel juiste winnaar/gelijkspel, ander doelsaldo -> 5 Punten
+        return 5;
+      }
+
+      // Volledig fout voorspeld (maar wel ingevuld) -> 1 Punt
+      return 1;
+    }
+
+    /* SPELREGELS MODAL FUNCTIES */
+    function openRulesModal() {
+      document.getElementById('rules-modal').classList.remove('hidden');
+    }
+
+    function closeRulesModal() {
+      document.getElementById('rules-modal').classList.add('hidden');
+    }
+
     function handleScoreFocus(input) {
       if (input.value === '') {
         input.value = 0;
@@ -470,14 +584,13 @@
       }
     }
 
-    // Direct opslaan via de knop bij een wedstrijd met inbegrip van user_id
+    // Direct opslaan via de knop bij een wedstrijd
     async function opslaanMatchVoorspelling(matchId) {
       if (!currentUser) {
         toonMelding("❌ Je moet ingelogd zijn om te voorspellen.", true);
         return;
       }
 
-      // Haal de actieve Supabase-gebruiker op voor user_id
       const { data: { user } } = await _supabase.auth.getUser();
       if (!user) {
         toonMelding("❌ Sessie niet gevonden. Log opnieuw in.", true);
@@ -496,7 +609,6 @@
         return;
       }
 
-      // Correcte kolomnamen 'predicted_home_score' en 'predicted_away_score'
       const { error } = await _supabase.from('predictions').upsert({
         user_id: user.id,
         username: currentUser,
@@ -956,7 +1068,6 @@
       const nu = new Date();
       const matchSpeeldag = match.round || match.speeldag || 1;
 
-      // 1. Controleer of de wedstrijd al gestart is
       if (match.match_date) {
         const matchDatum = new Date(match.match_date);
         if (matchDatum < nu) {
@@ -964,7 +1075,6 @@
         }
       }
 
-      // 2. Maximaal 2 speeldagen vooruit invullen (huidige actieve speeldag + 1)
       if (actieveSpeeldag !== null && matchSpeeldag > (actieveSpeeldag + 1)) {
         return { open: false, bericht: '🔒 Nog niet open' };
       }
@@ -1038,7 +1148,6 @@
           
           const myPred = predMap[String(m.id)] || {};
           
-          // Leest de bijgewerkte databasekolommen uit
           const homePredVal = myPred.predicted_home_score !== undefined ? myPred.predicted_home_score : myPred.home_prediction;
           const awayPredVal = myPred.predicted_away_score !== undefined ? myPred.predicted_away_score : myPred.away_prediction;
 
@@ -1169,15 +1278,11 @@
       (predictions || []).forEach(pred => {
         const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
         if (match && match.home_score !== null && match.away_score !== null) {
-          let pts = 0;
           const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
           const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
 
-          if (predHome === match.home_score && predAway === match.away_score) {
-            pts = 3;
-          } else if (Math.sign(predHome - predAway) === Math.sign(match.home_score - match.away_score)) {
-            pts = 1;
-          }
+          // Gebruikt de vernieuwde berekening
+          const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
 
           scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
           scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
@@ -1274,12 +1379,11 @@
       (predictions || []).forEach(pred => {
         const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
         if (match && match.home_score !== null && match.away_score !== null) {
-          let pts = 0;
           const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
           const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
 
-          if (predHome === match.home_score && predAway === match.away_score) pts = 3;
-          else if (Math.sign(predHome - predAway) === Math.sign(match.home_score - match.away_score)) pts = 1;
+          // Gebruikt de vernieuwde berekening
+          const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
 
           scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
           scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
