@@ -16,11 +16,10 @@ jobs:
       - name: Node.js instellen
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Afhankelijkheden installeren
         run: npm install axios cheerio @supabase/supabase-js
 
       - name: Scraper uitvoeren
         run: node scraper.js
-
