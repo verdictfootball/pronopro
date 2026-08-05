@@ -473,969 +473,962 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://pitvmvbtourmonkwzwoq.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_URL = 'https://pitvmvbtourmonkwzwoq.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
+  const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const inviteGroup = urlParams.get('group');
-    const inviteRef = urlParams.get('ref');
+  const urlParams = new URLSearchParams(window.location.search);
+  const inviteGroup = urlParams.get('group');
+  const inviteRef = urlParams.get('ref');
 
-    if (inviteGroup) localStorage.setItem('prono_group', inviteGroup.toUpperCase());
-    if (inviteRef) localStorage.setItem('prono_ref', inviteRef);
+  if (inviteGroup) localStorage.setItem('prono_group', inviteGroup.toUpperCase());
+  if (inviteRef) localStorage.setItem('prono_ref', inviteRef);
 
-    let currentUser = null;
-    let currentUserProfile = null;
-    let currentGroup = localStorage.getItem('prono_group') || 'DEFAULT_GROUP';
-    let currentRef = localStorage.getItem('prono_ref') || null;
-    
-    let hideIndicatorTimer = null;
+  let currentUser = null;
+  let currentUserProfile = null;
+  let currentGroup = localStorage.getItem('prono_group') || 'DEFAULT_GROUP';
+  let currentRef = localStorage.getItem('prono_ref') || null;
+  
+  let hideIndicatorTimer = null;
 
-    const CLUB_LOGOS = {
-      "Club Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/club-brugge.png",
-      "Royal Antwerp FC": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/antwerp.png",
-      "Lommel SK": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lommel.png",
-      "SK Beveren": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/beveren.png",
-      "Sporting Charleroi": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/charleroi.png",
-      "KRC Genk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/genk.png",
-      "KV Kortrijk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/kvkortrijk.png",
-      "RAAL La Louvière": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lalouviere.png",
-      "STVV": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/sint-truiden.png",
-      "Standard Luik": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/standaard-liege.png",
-      "Royale Union SG": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/union.png",
-      "KVC Westerlo": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/westerlo.png",
-      "SV Zulte Waregem": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/zulte-waregem.png",
-      "RSC Anderlecht": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/anderlecht.png",
-      "KV Mechelen": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/mechelen.png",
-      "KAA Gent": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/gent.png",
-      "Cercle Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/cercle-brugge.png",
-      "OH Leuven": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/leuven.png"
-    };
+  const CLUB_LOGOS = {
+    "Club Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/club-brugge.png",
+    "Royal Antwerp FC": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/antwerp.png",
+    "Lommel SK": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lommel.png",
+    "SK Beveren": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/beveren.png",
+    "Sporting Charleroi": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/charleroi.png",
+    "KRC Genk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/genk.png",
+    "KV Kortrijk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/kvkortrijk.png",
+    "RAAL La Louvière": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lalouviere.png",
+    "STVV": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/sint-truiden.png",
+    "Standard Luik": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/standaard-liege.png",
+    "Royale Union SG": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/union.png",
+    "KVC Westerlo": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/westerlo.png",
+    "SV Zulte Waregem": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/zulte-waregem.png",
+    "RSC Anderlecht": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/anderlecht.png",
+    "KV Mechelen": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/mechelen.png",
+    "KAA Gent": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/gent.png",
+    "Cercle Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/cercle-brugge.png",
+    "OH Leuven": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/leuven.png"
+  };
 
-    const DEFAULT_TIMES = {
-      "Club Brugge - KV Kortrijk": "20:45",
-      "Sporting Charleroi - OH Leuven": "16:00",
-      "Standard Luik - Cercle Brugge": "18:15",
-      "KVC Westerlo - Royale Union SG": "20:45",
-      "STVV - Lommel SK": "13:30",
-      "KAA Gent - KV Mechelen": "16:00",
-      "SV Zulte Waregem - KRC Genk": "18:30",
-      "RSC Anderlecht - RAAL La Louvière": "21:00",
-      "Royal Antwerp FC - SK Beveren": "21:00",
-      "SK Beveren - Standard Luik": "20:00",
-      "STVV - KVC Westerlo": "18:15"
-    };
+  const DEFAULT_TIMES = {
+    "Club Brugge - KV Kortrijk": "20:45",
+    "Sporting Charleroi - OH Leuven": "16:00",
+    "Standard Luik - Cercle Brugge": "18:15",
+    "KVC Westerlo - Royale Union SG": "20:45",
+    "STVV - Lommel SK": "13:30",
+    "KAA Gent - KV Mechelen": "16:00",
+    "SV Zulte Waregem - KRC Genk": "18:30",
+    "RSC Anderlecht - RAAL La Louvière": "21:00",
+    "Royal Antwerp FC - SK Beveren": "21:00",
+    "SK Beveren - Standard Luik": "20:00",
+    "STVV - KVC Westerlo": "18:15"
+  };
 
-    // FUNCTIE VOOR HET BEREKENEN VAN DE WEDSTRIJDPUNTEN
-    function berekenMatchPunten(predHome, predAway, matchHome, matchAway) {
-      if (predHome === undefined || predHome === null || predAway === undefined || predAway === null) return 0;
-      if (matchHome === null || matchAway === null) return 0;
+  function berekenMatchPunten(predHome, predAway, matchHome, matchAway) {
+    if (predHome === undefined || predHome === null || predAway === undefined || predAway === null) return 0;
+    if (matchHome === null || matchAway === null) return 0;
 
-      // Exact de juiste score -> 10 Punten
-      if (predHome === matchHome && predAway === matchAway) {
-        return 10;
-      }
+    if (predHome === matchHome && predAway === matchAway) return 10;
 
-      const predDiff = predHome - predAway;
-      const matchDiff = matchHome - matchAway;
+    const predDiff = predHome - predAway;
+    const matchDiff = matchHome - matchAway;
 
-      const predSign = Math.sign(predDiff);
-      const matchSign = Math.sign(matchDiff);
+    const predSign = Math.sign(predDiff);
+    const matchSign = Math.sign(matchDiff);
 
-      // Juiste winnaar/gelijkspel voorspeld
-      if (predSign === matchSign) {
-        // Juiste doelsaldo/doelpuntenverschil -> 7 Punten
-        if (predDiff === matchDiff) {
-          return 7;
-        }
-        // Wel juiste winnaar/gelijkspel, ander doelsaldo -> 5 Punten
-        return 5;
-      }
-
-      // Volledig fout voorspeld (maar wel ingevuld) -> 1 Punt
-      return 1;
+    if (predSign === matchSign) {
+      if (predDiff === matchDiff) return 7;
+      return 5;
     }
 
-    /* SPELREGELS MODAL FUNCTIES */
-    function openRulesModal() {
-      document.getElementById('rules-modal').classList.remove('hidden');
+    return 1;
+  }
+
+  function openRulesModal() { document.getElementById('rules-modal').classList.remove('hidden'); }
+  function closeRulesModal() { document.getElementById('rules-modal').classList.add('hidden'); }
+
+  function handleScoreFocus(input) {
+    if (input.value === '') {
+      input.value = 0;
+      input.classList.add('has-value');
+    }
+  }
+
+  function checkScoreInput(input) {
+    if (input.value < 0 && input.value !== '') input.value = 0;
+    if (input.value !== '' && input.value !== null) input.classList.add('has-value');
+    else input.classList.remove('has-value');
+  }
+
+  async function opslaanMatchVoorspelling(matchId) {
+    if (!currentUser) {
+      toonMelding("❌ Je moet ingelogd zijn om te voorspellen.", true);
+      return;
     }
 
-    function closeRulesModal() {
-      document.getElementById('rules-modal').classList.add('hidden');
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) {
+      toonMelding("❌ Sessie niet gevonden. Log opnieuw in.", true);
+      return;
     }
 
-    function handleScoreFocus(input) {
-      if (input.value === '') {
-        input.value = 0;
-        input.classList.add('has-value');
-      }
+    const homeInput = document.getElementById(`home-${matchId}`);
+    const awayInput = document.getElementById(`away-${matchId}`);
+    const savedBadge = document.getElementById(`saved-badge-${matchId}`);
+
+    const homeVal = homeInput ? homeInput.value : '';
+    const awayVal = awayInput ? awayInput.value : '';
+
+    if (homeVal === '' || awayVal === '') {
+      toonMelding("⚠️ Vul voor beide teams een score in.", true);
+      return;
     }
 
-    function checkScoreInput(input) {
-      if (input.value < 0 && input.value !== '') {
-        input.value = 0;
-      }
+    const { error } = await _supabase.from('predictions').upsert({
+      user_id: user.id,
+      username: currentUser,
+      match_id: parseInt(matchId, 10),
+      predicted_home_score: parseInt(homeVal, 10),
+      predicted_away_score: parseInt(awayVal, 10)
+    }, { onConflict: 'user_id,match_id' }); // Opslaan op basis van unieke User ID
 
-      if (input.value !== '' && input.value !== null) {
-        input.classList.add('has-value');
-      } else {
-        input.classList.remove('has-value');
-      }
+    if (!error) {
+      if (homeInput) homeInput.classList.add('is-saved');
+      if (awayInput) awayInput.classList.add('is-saved');
+      if (savedBadge) savedBadge.classList.remove('hidden');
+      
+      const saveIndicator = document.getElementById('save-indicator');
+      saveIndicator.classList.add('show');
+      
+      if (hideIndicatorTimer) clearTimeout(hideIndicatorTimer);
+      hideIndicatorTimer = setTimeout(() => saveIndicator.classList.remove('show'), 3500);
+
+      toonMelding("✅ Voorspelling opgeslagen!");
+      laadKlassementen();
+    } else {
+      console.error("Fout bij opslaan van voorspelling:", matchId, error);
+      toonMelding(`❌ Opslaan mislukt: ${error.message}`, true);
+    }
+  }
+
+  function togglePasswordVisibility(inputId, btnId) {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    if (input.type === "password") {
+      input.type = "text";
+      btn.innerText = "🙈";
+    } else {
+      input.type = "password";
+      btn.innerText = "👁️";
+    }
+  }
+
+  function switchAuthTab(tab) {
+    document.getElementById('form-login').classList.add('hidden');
+    document.getElementById('form-register').classList.add('hidden');
+    document.getElementById('form-reset').classList.add('hidden');
+    document.getElementById('form-new-password').classList.add('hidden');
+
+    const buttons = ['tab-btn-login', 'tab-btn-register', 'tab-btn-reset'];
+    buttons.forEach(id => {
+      const b = document.getElementById(id);
+      b.classList.remove('bg-emerald-600', 'text-white');
+      b.classList.add('text-gray-400');
+    });
+
+    if (tab === 'login') {
+      document.getElementById('form-login').classList.remove('hidden');
+      document.getElementById('tab-btn-login').classList.add('bg-emerald-600', 'text-white');
+    } else if (tab === 'register') {
+      document.getElementById('form-register').classList.remove('hidden');
+      document.getElementById('tab-btn-register').classList.add('bg-emerald-600', 'text-white');
+    } else if (tab === 'reset') {
+      document.getElementById('form-reset').classList.remove('hidden');
+      document.getElementById('tab-btn-reset').classList.add('bg-emerald-600', 'text-white');
+    }
+  }
+
+  async function inloggen() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('btn-submit-login');
+
+    btn.innerText = '⌛ Inloggen...';
+    btn.disabled = true;
+
+    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+    btn.innerText = 'Inloggen';
+    btn.disabled = false;
+
+    if (error) {
+      toonMelding('❌ ' + error.message, true);
+      return;
     }
 
-    // Direct opslaan via de knop bij een wedstrijd
-    async function opslaanMatchVoorspelling(matchId) {
-      if (!currentUser) {
-        toonMelding("❌ Je moet ingelogd zijn om te voorspellen.", true);
-        return;
-      }
+    await initialiseerUserSessie(data.user);
+  }
 
-      const { data: { user } } = await _supabase.auth.getUser();
-      if (!user) {
-        toonMelding("❌ Sessie niet gevonden. Log opnieuw in.", true);
-        return;
-      }
+  async function registreren() {
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const btn = document.getElementById('btn-submit-reg');
 
-      const homeInput = document.getElementById(`home-${matchId}`);
-      const awayInput = document.getElementById(`away-${matchId}`);
-      const savedBadge = document.getElementById(`saved-badge-${matchId}`);
+    btn.innerText = '⌛ Account Aanmaken...';
+    btn.disabled = true;
 
-      const homeVal = homeInput ? homeInput.value : '';
-      const awayVal = awayInput ? awayInput.value : '';
+    const { data, error } = await _supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username: username } }
+    });
 
-      if (homeVal === '' || awayVal === '') {
-        toonMelding("⚠️ Vul voor beide teams een score in.", true);
-        return;
-      }
+    btn.innerText = 'Account Aanmaken';
+    btn.disabled = false;
 
-      const { error } = await _supabase.from('predictions').upsert({
-        user_id: user.id,
-        username: currentUser,
-        match_id: parseInt(matchId, 10),
-        predicted_home_score: parseInt(homeVal, 10),
-        predicted_away_score: parseInt(awayVal, 10)
-      }, { onConflict: 'username,match_id' });
-
-      if (!error) {
-        if (homeInput) homeInput.classList.add('is-saved');
-        if (awayInput) awayInput.classList.add('is-saved');
-        
-        if (savedBadge) {
-          savedBadge.classList.remove('hidden');
-        }
-        
-        const saveIndicator = document.getElementById('save-indicator');
-        saveIndicator.classList.add('show');
-        
-        if (hideIndicatorTimer) clearTimeout(hideIndicatorTimer);
-        hideIndicatorTimer = setTimeout(() => {
-          saveIndicator.classList.remove('show');
-        }, 3500);
-
-        toonMelding("✅ Voorspelling opgeslagen!");
-        laadKlassementen();
-      } else {
-        console.error("Fout bij opslaan van voorspelling:", matchId, error);
-        toonMelding(`❌ Opslaan mislukt: ${error.message}`, true);
-      }
+    if (error) {
+      toonMelding('❌ ' + error.message, true);
+      return;
     }
 
-    function togglePasswordVisibility(inputId, btnId) {
-      const input = document.getElementById(inputId);
-      const btn = document.getElementById(btnId);
-      if (input.type === "password") {
-        input.type = "text";
-        btn.innerText = "🙈";
-      } else {
-        input.type = "password";
-        btn.innerText = "👁️";
-      }
-    }
+    const userObj = data.user || (await _supabase.auth.getUser()).data.user;
 
-    function switchAuthTab(tab) {
-      document.getElementById('form-login').classList.add('hidden');
-      document.getElementById('form-register').classList.add('hidden');
-      document.getElementById('form-reset').classList.add('hidden');
-      document.getElementById('form-new-password').classList.add('hidden');
+    await _supabase.from('profiles').upsert({ 
+      id: userObj.id,
+      username: username, 
+      email: email, 
+      group_code: currentGroup,
+      referred_by: currentRef 
+    }, { onConflict: 'id' });
 
-      const buttons = ['tab-btn-login', 'tab-btn-register', 'tab-btn-reset'];
-      buttons.forEach(id => {
-        const b = document.getElementById(id);
-        b.classList.remove('bg-emerald-600', 'text-white');
-        b.classList.add('text-gray-400');
-      });
+    toonMelding('✅ Account aangemaakt! Je bent ingelogd.');
+    await initialiseerUserSessie(userObj, username);
+  }
 
-      if (tab === 'login') {
-        document.getElementById('form-login').classList.remove('hidden');
-        document.getElementById('tab-btn-login').classList.add('bg-emerald-600', 'text-white');
-      } else if (tab === 'register') {
-        document.getElementById('form-register').classList.remove('hidden');
-        document.getElementById('tab-btn-register').classList.add('bg-emerald-600', 'text-white');
-      } else if (tab === 'reset') {
-        document.getElementById('form-reset').classList.remove('hidden');
-        document.getElementById('tab-btn-reset').classList.add('bg-emerald-600', 'text-white');
-      }
-    }
+  async function resetWachtwoordAanvragen() {
+    const email = document.getElementById('reset-email').value.trim();
+    const btn = document.getElementById('btn-submit-reset');
 
-    async function inloggen() {
-      const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
-      const btn = document.getElementById('btn-submit-login');
+    btn.innerText = '⌛ Verzenden...';
+    btn.disabled = true;
 
-      btn.innerText = '⌛ Inloggen...';
-      btn.disabled = true;
+    const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
 
-      const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+    btn.innerText = 'Verstuur Reset Link';
+    btn.disabled = false;
 
-      btn.innerText = 'Inloggen';
-      btn.disabled = false;
+    if (error) toonMelding('❌ ' + error.message, true);
+    else toonMelding('📧 Reset-link is verzonden! Check je e-mail.');
+  }
 
-      if (error) {
-        toonMelding('❌ ' + error.message, true);
-        return;
-      }
+  async function opslaanNieuwWachtwoord() {
+    const newPassword = document.getElementById('new-password').value;
+    const btn = document.getElementById('btn-submit-newpass');
 
+    btn.innerText = '⌛ Opslaan...';
+    btn.disabled = true;
+
+    const { data, error } = await _supabase.auth.updateUser({ password: newPassword });
+
+    btn.innerText = 'Opslaan & Inloggen';
+    btn.disabled = false;
+
+    if (error) toonMelding('❌ ' + error.message, true);
+    else {
+      toonMelding('✅ Wachtwoord succesvol gewijzigd!');
       await initialiseerUserSessie(data.user);
     }
+  }
 
-    async function registreren() {
-      const username = document.getElementById('reg-username').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value;
-      const btn = document.getElementById('btn-submit-reg');
+  async function initialiseerUserSessie(userObj, optioneleNaam = null) {
+    if (!userObj) return;
 
-      btn.innerText = '⌛ Account Aanmaken...';
-      btn.disabled = true;
+    // Zoek profiel ALTIJD eerst op Uniek ID of Email
+    const { data: profile } = await _supabase.from('profiles').select('*').eq('email', userObj.email).maybeSingle();
 
-      const { data, error } = await _supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { username: username } }
-      });
-
-      btn.innerText = 'Account Aanmaken';
-      btn.disabled = false;
-
-      if (error) {
-        toonMelding('❌ ' + error.message, true);
-        return;
+    if (profile && profile.username) {
+      currentUser = profile.username;
+      currentUserProfile = profile;
+      if (profile.group_code) {
+        currentGroup = profile.group_code;
+        localStorage.setItem('prono_group', currentGroup);
+      }
+    } else {
+      let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
+      if (!determinedUsername) {
+        determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
       }
 
-      await _supabase.from('profiles').upsert({ 
-        username: username, 
-        email: email, 
+      currentUser = determinedUsername;
+      const newProf = { 
+        id: userObj.id,
+        username: currentUser, 
+        email: userObj.email, 
         group_code: currentGroup,
         referred_by: currentRef 
-      }, { onConflict: 'email' });
-
-      toonMelding('✅ Account aangemaakt! Je bent ingelogd.');
-      await initialiseerUserSessie(data.user || (await _supabase.auth.getUser()).data.user, username);
+      };
+      await _supabase.from('profiles').upsert(newProf, { onConflict: 'email' });
+      currentUserProfile = newProf;
     }
 
-    async function resetWachtwoordAanvragen() {
-      const email = document.getElementById('reset-email').value.trim();
-      const btn = document.getElementById('btn-submit-reset');
+    localStorage.setItem('prono_username', currentUser);
+    toonScherm('dashboard');
+  }
 
-      btn.innerText = '⌛ Verzenden...';
-      btn.disabled = true;
+  async function updateGebruikersnaam() {
+    const newName = document.getElementById('setting-new-name').value.trim();
+    const saveBtn = document.getElementById('btn-save-username');
 
-      const { data, error } = await _supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + window.location.pathname
-      });
-
-      btn.innerText = 'Verstuur Reset Link';
-      btn.disabled = false;
-
-      if (error) {
-        toonMelding('❌ ' + error.message, true);
-      } else {
-        toonMelding('📧 Reset-link is verzonden! Check je e-mail.');
-      }
+    if (!newName || newName === currentUser) {
+      toonMelding('⚠️ Voer een nieuwe geldige naam in.', true);
+      return;
     }
 
-    async function opslaanNieuwWachtwoord() {
-      const newPassword = document.getElementById('new-password').value;
-      const btn = document.getElementById('btn-submit-newpass');
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) return;
 
-      btn.innerText = '⌛ Opslaan...';
-      btn.disabled = true;
+    saveBtn.innerText = '⌛ Bezig met opslaan...';
+    saveBtn.disabled = true;
 
-      const { data, error } = await _supabase.auth.updateUser({ password: newPassword });
+    const oldName = currentUser;
 
-      btn.innerText = 'Opslaan & Inloggen';
-      btn.disabled = false;
+    // Update op basis van E-mail / User ID zodat Supabase het exact matcht
+    const { error } = await _supabase
+      .from('profiles')
+      .update({ username: newName, last_name_change: new Date().toISOString() })
+      .eq('email', user.email);
 
-      if (error) {
-        toonMelding('❌ ' + error.message, true);
-      } else {
-        toonMelding('✅ Wachtwoord succesvol gewijzigd!');
-        await initialiseerUserSessie(data.user);
-      }
-    }
+    saveBtn.innerText = '💾 Opslaan & Naam Wijzigen';
+    saveBtn.disabled = false;
 
-    async function initialiseerUserSessie(userObj, optioneleNaam = null) {
-      if (!userObj) return;
+    if (error) {
+      toonMelding('❌ Opslaan mislukt: ' + error.message, true);
+    } else {
+      // Werk ook ouden referenties bij in voorspellingen en uitnodigingen
+      await _supabase.from('predictions').update({ username: newName }).eq('username', oldName);
+      await _supabase.from('profiles').update({ referred_by: newName }).eq('referred_by', oldName);
 
-      const { data: profile } = await _supabase.from('profiles').select('*').eq('email', userObj.email).maybeSingle();
-
-      if (profile && profile.username) {
-        currentUser = profile.username;
-        currentUserProfile = profile;
-      } else {
-        let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
-        if (!determinedUsername) {
-          determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
-        }
-
-        currentUser = determinedUsername;
-        const newProf = { 
-          username: currentUser, 
-          email: userObj.email, 
-          group_code: currentGroup,
-          referred_by: currentRef 
-        };
-        await _supabase.from('profiles').upsert(newProf, { onConflict: 'email' });
-        currentUserProfile = newProf;
+      currentUser = newName;
+      if (currentUserProfile) {
+        currentUserProfile.username = newName;
+        currentUserProfile.last_name_change = new Date().toISOString();
       }
 
       localStorage.setItem('prono_username', currentUser);
+      toonMelding('✅ Gebruikersnaam succesvol gewijzigd!');
+      
+      laadSettingsScherm();
       toonScherm('dashboard');
     }
+  }
 
-    async function updateGebruikersnaam() {
-      const newName = document.getElementById('setting-new-name').value.trim();
-      const saveBtn = document.getElementById('btn-save-username');
+  function laadSettingsScherm() {
+    document.getElementById('setting-current-name').value = currentUser;
+    document.getElementById('setting-new-name').value = '';
 
-      if (!newName || newName === currentUser) {
-        toonMelding('⚠️ Voer een nieuwe geldige naam in.', true);
+    const cooldownMsg = document.getElementById('name-change-cooldown-msg');
+    const saveBtn = document.getElementById('btn-save-username');
+
+    if (currentUserProfile && currentUserProfile.last_name_change) {
+      const lastChange = new Date(currentUserProfile.last_name_change);
+      const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
+      
+      if (diffDays < 30) {
+        const overigeDagen = Math.ceil(30 - diffDays);
+        cooldownMsg.innerText = `⏳ Je kunt je naam pas weer wijzigen over ${overigeDagen} dag(en).`;
+        cooldownMsg.classList.remove('hidden');
+        saveBtn.disabled = true;
+        saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        return;
+      }
+    }
+
+    cooldownMsg.classList.add('hidden');
+    saveBtn.disabled = false;
+    saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+  }
+
+  async function uitloggen() {
+    await _supabase.auth.signOut();
+    currentUser = null;
+    currentUserProfile = null;
+    localStorage.removeItem('prono_username');
+    toonScherm('login');
+  }
+
+  function toonScherm(schermNaam) {
+    document.getElementById('screen-login').classList.add('hidden');
+    document.getElementById('screen-dashboard').classList.add('hidden');
+    document.getElementById('screen-matches').classList.add('hidden');
+    document.getElementById('screen-settings').classList.add('hidden');
+
+    if (schermNaam === 'login') {
+      document.getElementById('screen-login').classList.remove('hidden');
+      document.getElementById('user-nav').classList.add('hidden');
+      document.getElementById('mobile-nav').classList.add('hidden');
+    } else if (schermNaam === 'dashboard') {
+      document.getElementById('screen-dashboard').classList.remove('hidden');
+      document.getElementById('user-nav').classList.remove('hidden');
+      document.getElementById('mobile-nav').classList.remove('hidden');
+      document.getElementById('dash-username').innerText = currentUser;
+      document.getElementById('dash-groupcode').innerText = currentGroup;
+      document.getElementById('nav-username').innerText = '👤 ' + currentUser;
+      updateMobileNavActive('mnav-dashboard');
+      laadDashboardStats();
+    } else if (schermNaam === 'matches') {
+      document.getElementById('screen-matches').classList.remove('hidden');
+      document.getElementById('user-nav').classList.remove('hidden');
+      document.getElementById('mobile-nav').classList.remove('hidden');
+      laadWedstrijden();
+      laadKlassementen();
+    } else if (schermNaam === 'settings') {
+      document.getElementById('screen-settings').classList.remove('hidden');
+      document.getElementById('user-nav').classList.remove('hidden');
+      document.getElementById('mobile-nav').classList.remove('hidden');
+      updateMobileNavActive('mnav-settings');
+      laadSettingsScherm();
+    }
+  }
+
+  function openSpeeldagTab(tabTarget) {
+    toonScherm('matches');
+    switchTab(tabTarget);
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+
+    const tabs = ['btn-tab-predict', 'btn-tab-global', 'btn-tab-private', 'btn-tab-monthly'];
+    tabs.forEach(t => {
+      const btn = document.getElementById(t);
+      btn.classList.remove('bg-emerald-600', 'text-white');
+      btn.classList.add('text-gray-400');
+    });
+
+    const activeBtn = document.getElementById('btn-' + tabId);
+    if(activeBtn) {
+      activeBtn.classList.add('bg-emerald-600', 'text-white');
+      activeBtn.classList.remove('text-gray-400');
+    }
+
+    if(tabId === 'tab-predict') updateMobileNavActive('mnav-predict');
+    if(tabId === 'tab-global') updateMobileNavActive('mnav-global');
+    if(tabId === 'tab-private') updateMobileNavActive('mnav-private');
+  }
+
+  function mobileSwitch(target) {
+    if (target === 'dashboard') toonScherm('dashboard');
+    else if (target === 'predict') openSpeeldagTab('tab-predict');
+    else if (target === 'global') openSpeeldagTab('tab-global');
+    else if (target === 'settings') toonScherm('settings');
+  }
+
+  function updateMobileNavActive(activeId) {
+    const items = ['mnav-dashboard', 'mnav-predict', 'mnav-global', 'mnav-settings'];
+    items.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        if (id === activeId) {
+          el.classList.remove('text-gray-400');
+          el.classList.add('text-emerald-400');
+        } else {
+          el.classList.remove('text-emerald-400');
+          el.classList.add('text-gray-400');
+        }
+      }
+    });
+  }
+
+  function openShareModal() {
+    const modal = document.getElementById('share-modal');
+    const codeDisplay = document.getElementById('share-modal-code');
+    const qrContainer = document.getElementById('qrcode-container');
+
+    codeDisplay.innerText = currentGroup;
+    
+    const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
+
+    qrContainer.innerHTML = '';
+    new QRCode(qrContainer, {
+      text: shareUrl,
+      width: 160,
+      height: 160,
+      colorDark : "#064e3b",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+
+    modal.classList.remove('hidden');
+  }
+
+  function closeShareModal() {
+    document.getElementById('share-modal').classList.add('hidden');
+  }
+
+  function copyShareLink() {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      toonMelding('📋 Unieke uitnodigingslink gekopieerd!');
+      closeShareModal();
+    }).catch(err => {
+      prompt("Kopieer de onderstaande link:", shareUrl);
+    });
+  }
+
+  async function wijzigGroepscode() {
+    const nieuweCode = prompt("Voer de nieuwe privé-groepscode in:", currentGroup);
+    if (nieuweCode && nieuweCode.trim() !== "") {
+      currentGroup = nieuweCode.trim().toUpperCase();
+      localStorage.setItem('prono_group', currentGroup);
+      document.getElementById('dash-groupcode').innerText = currentGroup;
+      document.getElementById('current-group-display').innerText = currentGroup;
+      
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (user) {
+        await _supabase.from('profiles').update({ group_code: currentGroup }).eq('email', user.email);
+      }
+      laadKlassementen();
+      laadDashboardStats();
+    }
+  }
+
+  function vindLogoUrl(teamNaam) {
+    if (!teamNaam) return '';
+    if (CLUB_LOGOS[teamNaam]) return CLUB_LOGOS[teamNaam];
+    const schoneNaam = Object.keys(CLUB_LOGOS).find(key => 
+      teamNaam.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(teamNaam.toLowerCase())
+    );
+    return schoneNaam ? CLUB_LOGOS[schoneNaam] : '';
+  }
+
+  function toonMelding(bericht, isFout = false) {
+    const banner = document.getElementById('status-banner');
+    banner.classList.remove('hidden', 'bg-red-900/80', 'text-red-200', 'border-red-700', 'bg-emerald-900/80', 'text-emerald-200', 'border-emerald-700');
+    banner.classList.add('border', isFout ? 'bg-red-900/80' : 'bg-emerald-900/80', isFout ? 'text-red-200' : 'text-emerald-200', isFout ? 'border-red-700' : 'border-emerald-700');
+    banner.innerText = bericht;
+    setTimeout(() => banner.classList.add('hidden'), 5000);
+  }
+
+  function formatteerDatum(datumString) {
+    if (!datumString) return 'TBD';
+    const d = new Date(datumString);
+    if (isNaN(d.getTime())) return datumString;
+    
+    const dag = String(d.getDate()).padStart(2, '0');
+    const maand = String(d.getMonth() + 1).padStart(2, '0');
+    const jaar = d.getFullYear();
+    return `${dag}/${maand}/${jaar}`;
+  }
+
+  function formatteerTijd(datumString, matchTimeVal, matchKey) {
+    if (matchTimeVal && matchTimeVal.includes(':')) {
+      const m = matchTimeVal.match(/\d{1,2}:\d{2}/);
+      if (m) return m[0].padStart(5, '0');
+    }
+
+    if (datumString && typeof datumString === 'string' && datumString.includes('T')) {
+      const timePart = datumString.split('T')[1];
+      if (timePart) {
+        const schoonUur = timePart.substring(0, 5);
+        if (schoonUur !== '00:00') return schoonUur;
+      }
+    }
+
+    if (matchKey && DEFAULT_TIMES[matchKey]) return DEFAULT_TIMES[matchKey];
+    return "20:00";
+  }
+
+  function isMatchOpenVoorVoorspelling(match, actieveSpeeldag) {
+    const nu = new Date();
+    const matchSpeeldag = match.round || match.speeldag || 1;
+
+    if (match.match_date) {
+      const matchDatum = new Date(match.match_date);
+      if (matchDatum < nu) return { open: false, bericht: '🔒 Gestart' };
+    }
+
+    if (actieveSpeeldag !== null && matchSpeeldag > (actieveSpeeldag + 1)) {
+      return { open: false, bericht: '🔒 Nog niet open' };
+    }
+
+    return { open: true, bericht: '🟢 Open' };
+  }
+
+  async function laadWedstrijden() {
+    const container = document.getElementById('matches-container');
+    if (!container) return;
+
+    container.innerHTML = '<p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>';
+
+    try {
+      const { data: matches, error: matchesErr } = await _supabase.from('matches').select('*').order('id', { ascending: true });
+      const { data: teams } = await _supabase.from('teams').select('*');
+      
+      const { data: { user } } = await _supabase.auth.getUser();
+      const { data: myPredictions } = user ? await _supabase.from('predictions').select('*').eq('user_id', user.id) : { data: [] };
+
+      if (matchesErr) {
+        console.error("Supabase Error:", matchesErr);
+        container.innerHTML = `<p class="text-red-400 text-center py-8">Fout bij laden: ${matchesErr.message}</p>`;
         return;
       }
 
-      saveBtn.innerText = '⌛ Bezig met opslaan...';
-      saveBtn.disabled = true;
+      const teamMap = {};
+      (teams || []).forEach(t => teamMap[t.id] = t);
 
-      const { error } = await _supabase
-        .from('profiles')
-        .update({ username: newName, last_name_change: new Date().toISOString() })
-        .eq('username', currentUser);
-
-      saveBtn.innerText = '💾 Opslaan & Naam Wijzigen';
-      saveBtn.disabled = false;
-
-      if (error) {
-        toonMelding('❌ Opslaan mislukt: ' + error.message, true);
-      } else {
-        await _supabase
-          .from('predictions')
-          .update({ username: newName })
-          .eq('username', currentUser);
-
-        currentUser = newName;
-        if (currentUserProfile) {
-          currentUserProfile.username = newName;
-          currentUserProfile.last_name_change = new Date().toISOString();
-        }
-
-        localStorage.setItem('prono_username', currentUser);
-        toonMelding('✅ Gebruikersnaam succesvol gewijzigd!');
-        
-        laadSettingsScherm();
-        toonScherm('dashboard');
-      }
-    }
-
-    function laadSettingsScherm() {
-      document.getElementById('setting-current-name').value = currentUser;
-      document.getElementById('setting-new-name').value = '';
-
-      const cooldownMsg = document.getElementById('name-change-cooldown-msg');
-      const saveBtn = document.getElementById('btn-save-username');
-
-      if (currentUserProfile && currentUserProfile.last_name_change) {
-        const lastChange = new Date(currentUserProfile.last_name_change);
-        const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
-        
-        if (diffDays < 30) {
-          const overigeDagen = Math.ceil(30 - diffDays);
-          cooldownMsg.innerText = `⏳ Je kunt je naam pas weer wijzigen over ${overigeDagen} dag(en).`;
-          cooldownMsg.classList.remove('hidden');
-          saveBtn.disabled = true;
-          saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          return;
-        }
-      }
-
-      cooldownMsg.classList.add('hidden');
-      saveBtn.disabled = false;
-      saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-    }
-
-    async function uitloggen() {
-      await _supabase.auth.signOut();
-      currentUser = null;
-      currentUserProfile = null;
-      localStorage.removeItem('prono_username');
-      toonScherm('login');
-    }
-
-    function toonScherm(schermNaam) {
-      document.getElementById('screen-login').classList.add('hidden');
-      document.getElementById('screen-dashboard').classList.add('hidden');
-      document.getElementById('screen-matches').classList.add('hidden');
-      document.getElementById('screen-settings').classList.add('hidden');
-
-      if (schermNaam === 'login') {
-        document.getElementById('screen-login').classList.remove('hidden');
-        document.getElementById('user-nav').classList.add('hidden');
-        document.getElementById('mobile-nav').classList.add('hidden');
-      } else if (schermNaam === 'dashboard') {
-        document.getElementById('screen-dashboard').classList.remove('hidden');
-        document.getElementById('user-nav').classList.remove('hidden');
-        document.getElementById('mobile-nav').classList.remove('hidden');
-        document.getElementById('dash-username').innerText = currentUser;
-        document.getElementById('dash-groupcode').innerText = currentGroup;
-        document.getElementById('nav-username').innerText = '👤 ' + currentUser;
-        updateMobileNavActive('mnav-dashboard');
-        laadDashboardStats();
-      } else if (schermNaam === 'matches') {
-        document.getElementById('screen-matches').classList.remove('hidden');
-        document.getElementById('user-nav').classList.remove('hidden');
-        document.getElementById('mobile-nav').classList.remove('hidden');
-        laadWedstrijden();
-        laadKlassementen();
-      } else if (schermNaam === 'settings') {
-        document.getElementById('screen-settings').classList.remove('hidden');
-        document.getElementById('user-nav').classList.remove('hidden');
-        document.getElementById('mobile-nav').classList.remove('hidden');
-        updateMobileNavActive('mnav-settings');
-        laadSettingsScherm();
-      }
-    }
-
-    function openSpeeldagTab(tabTarget) {
-      toonScherm('matches');
-      switchTab(tabTarget);
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.getElementById(tabId).classList.remove('hidden');
-
-      const tabs = ['btn-tab-predict', 'btn-tab-global', 'btn-tab-private', 'btn-tab-monthly'];
-      tabs.forEach(t => {
-        const btn = document.getElementById(t);
-        btn.classList.remove('bg-emerald-600', 'text-white');
-        btn.classList.add('text-gray-400');
+      const predMap = {};
+      (myPredictions || []).forEach(p => {
+        predMap[String(p.match_id)] = p;
       });
 
-      const activeBtn = document.getElementById('btn-' + tabId);
-      if(activeBtn) {
-        activeBtn.classList.add('bg-emerald-600', 'text-white');
-        activeBtn.classList.remove('text-gray-400');
+      if (!matches || matches.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-8">Geen wedstrijden gevonden in de database.</p>';
+        return;
       }
 
-      if(tabId === 'tab-predict') updateMobileNavActive('mnav-predict');
-      if(tabId === 'tab-global') updateMobileNavActive('mnav-global');
-      if(tabId === 'tab-private') updateMobileNavActive('mnav-private');
-    }
-
-    function mobileSwitch(target) {
-      if (target === 'dashboard') toonScherm('dashboard');
-      else if (target === 'predict') openSpeeldagTab('tab-predict');
-      else if (target === 'global') openSpeeldagTab('tab-global');
-      else if (target === 'settings') toonScherm('settings');
-    }
-
-    function updateMobileNavActive(activeId) {
-      const items = ['mnav-dashboard', 'mnav-predict', 'mnav-global', 'mnav-settings'];
-      items.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          if (id === activeId) {
-            el.classList.remove('text-gray-400');
-            el.classList.add('text-emerald-400');
-          } else {
-            el.classList.remove('text-emerald-400');
-            el.classList.add('text-gray-400');
-          }
-        }
-      });
-    }
-
-    function openShareModal() {
-      const modal = document.getElementById('share-modal');
-      const codeDisplay = document.getElementById('share-modal-code');
-      const qrContainer = document.getElementById('qrcode-container');
-
-      codeDisplay.innerText = currentGroup;
-      
-      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
-
-      qrContainer.innerHTML = '';
-      new QRCode(qrContainer, {
-        text: shareUrl,
-        width: 160,
-        height: 160,
-        colorDark : "#064e3b",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
-      });
-
-      modal.classList.remove('hidden');
-    }
-
-    function closeShareModal() {
-      document.getElementById('share-modal').classList.add('hidden');
-    }
-
-    function copyShareLink() {
-      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        toonMelding('📋 Unieke uitnodigingslink gekopieerd!');
-        closeShareModal();
-      }).catch(err => {
-        prompt("Kopieer de onderstaande link:", shareUrl);
-      });
-    }
-
-    async function wijzigGroepscode() {
-      const nieuweCode = prompt("Voer de nieuwe privé-groepscode in:", currentGroup);
-      if (nieuweCode && nieuweCode.trim() !== "") {
-        currentGroup = nieuweCode.trim().toUpperCase();
-        localStorage.setItem('prono_group', currentGroup);
-        document.getElementById('dash-groupcode').innerText = currentGroup;
-        document.getElementById('current-group-display').innerText = currentGroup;
-        
-        await _supabase.from('profiles').update({ group_code: currentGroup }).eq('username', currentUser);
-        laadKlassementen();
-        laadDashboardStats();
-      }
-    }
-
-    function vindLogoUrl(teamNaam) {
-      if (!teamNaam) return '';
-      if (CLUB_LOGOS[teamNaam]) return CLUB_LOGOS[teamNaam];
-      const schoneNaam = Object.keys(CLUB_LOGOS).find(key => 
-        teamNaam.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(teamNaam.toLowerCase())
-      );
-      return schoneNaam ? CLUB_LOGOS[schoneNaam] : '';
-    }
-
-    function toonMelding(bericht, isFout = false) {
-      const banner = document.getElementById('status-banner');
-      banner.classList.remove('hidden', 'bg-red-900/80', 'text-red-200', 'border-red-700', 'bg-emerald-900/80', 'text-emerald-200', 'border-emerald-700');
-      banner.classList.add('border', isFout ? 'bg-red-900/80' : 'bg-emerald-900/80', isFout ? 'text-red-200' : 'text-emerald-200', isFout ? 'border-red-700' : 'border-emerald-700');
-      banner.innerText = bericht;
-      setTimeout(() => banner.classList.add('hidden'), 5000);
-    }
-
-    function formatteerDatum(datumString) {
-      if (!datumString) return 'TBD';
-      const d = new Date(datumString);
-      if (isNaN(d.getTime())) return datumString;
-      
-      const dag = String(d.getDate()).padStart(2, '0');
-      const maand = String(d.getMonth() + 1).padStart(2, '0');
-      const jaar = d.getFullYear();
-      return `${dag}/${maand}/${jaar}`;
-    }
-
-    function formatteerTijd(datumString, matchTimeVal, matchKey) {
-      if (matchTimeVal && matchTimeVal.includes(':')) {
-        const m = matchTimeVal.match(/\d{1,2}:\d{2}/);
-        if (m) return m[0].padStart(5, '0');
-      }
-
-      if (datumString && typeof datumString === 'string' && datumString.includes('T')) {
-        const timePart = datumString.split('T')[1];
-        if (timePart) {
-          const schoonUur = timePart.substring(0, 5);
-          if (schoonUur !== '00:00') {
-            return schoonUur;
-          }
-        }
-      }
-
-      if (matchKey && DEFAULT_TIMES[matchKey]) {
-        return DEFAULT_TIMES[matchKey];
-      }
-
-      return "20:00";
-    }
-
-    function isMatchOpenVoorVoorspelling(match, actieveSpeeldag) {
       const nu = new Date();
-      const matchSpeeldag = match.round || match.speeldag || 1;
-
-      if (match.match_date) {
-        const matchDatum = new Date(match.match_date);
-        if (matchDatum < nu) {
-          return { open: false, bericht: '🔒 Gestart' };
-        }
+      let actieveSpeeldag = 1;
+      const eerstkomendeMatch = matches.find(m => m.match_date && new Date(m.match_date) >= nu);
+      if (eerstkomendeMatch) {
+        actieveSpeeldag = eerstkomendeMatch.round || eerstkomendeMatch.speeldag || 1;
+      } else if (matches.length > 0) {
+        actieveSpeeldag = Math.max(...matches.map(m => m.round || m.speeldag || 1));
       }
 
-      if (actieveSpeeldag !== null && matchSpeeldag > (actieveSpeeldag + 1)) {
-        return { open: false, bericht: '🔒 Nog niet open' };
-      }
+      let huidigeSpeeldag = null;
+      let htmlBuilder = '';
 
-      return { open: true, bericht: '🟢 Open' };
-    }
+      matches.forEach(m => {
+        const speeldagVanMatch = m.round || m.speeldag || 1;
 
-    async function laadWedstrijden() {
-      const container = document.getElementById('matches-container');
-      if (!container) return;
-
-      container.innerHTML = '<p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>';
-
-      try {
-        const { data: matches, error: matchesErr } = await _supabase.from('matches').select('*').order('id', { ascending: true });
-        const { data: teams } = await _supabase.from('teams').select('*');
-        
-        const { data: myPredictions } = await _supabase.from('predictions').select('*').eq('username', currentUser);
-
-        if (matchesErr) {
-          console.error("Supabase Error:", matchesErr);
-          container.innerHTML = `<p class="text-red-400 text-center py-8">Fout bij laden: ${matchesErr.message}</p>`;
-          return;
-        }
-
-        const teamMap = {};
-        (teams || []).forEach(t => teamMap[t.id] = t);
-
-        const predMap = {};
-        (myPredictions || []).forEach(p => {
-          predMap[String(p.match_id)] = p;
-        });
-
-        if (!matches || matches.length === 0) {
-          container.innerHTML = '<p class="text-gray-400 text-center py-8">Geen wedstrijden gevonden in de database.</p>';
-          return;
-        }
-
-        const nu = new Date();
-        let actieveSpeeldag = 1;
-        const eerstkomendeMatch = matches.find(m => m.match_date && new Date(m.match_date) >= nu);
-        if (eerstkomendeMatch) {
-          actieveSpeeldag = eerstkomendeMatch.round || eerstkomendeMatch.speeldag || 1;
-        } else if (matches.length > 0) {
-          actieveSpeeldag = Math.max(...matches.map(m => m.round || m.speeldag || 1));
-        }
-
-        let huidigeSpeeldag = null;
-        let htmlBuilder = '';
-
-        matches.forEach(m => {
-          const speeldagVanMatch = m.round || m.speeldag || 1;
-
-          if (huidigeSpeeldag !== null && huidigeSpeeldag !== speeldagVanMatch) {
-            htmlBuilder += `
-              <div class="my-6 flex items-center gap-4">
-                <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
-                <span class="bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
-                  🏆 Speeldag ${speeldagVanMatch}
-                </span>
-                <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
-              </div>
-            `;
-          }
-          huidigeSpeeldag = speeldagVanMatch;
-
-          const home = teamMap[m.home_team_id] || { name: m.home_team_name || 'Thuis' };
-          const away = teamMap[m.away_team_id] || { name: m.away_team_name || 'Uit' };
-          const homeLogo = vindLogoUrl(home.name);
-          const awayLogo = vindLogoUrl(away.name);
-          
-          const myPred = predMap[String(m.id)] || {};
-          
-          const homePredVal = myPred.predicted_home_score !== undefined ? myPred.predicted_home_score : myPred.home_prediction;
-          const awayPredVal = myPred.predicted_away_score !== undefined ? myPred.predicted_away_score : myPred.away_prediction;
-
-          const homeVal = (homePredVal !== undefined && homePredVal !== null) ? homePredVal : '';
-          const awayVal = (awayPredVal !== undefined && awayPredVal !== null) ? awayPredVal : '';
-          
-          const isSaved = (homeVal !== '' && awayVal !== '');
-          const matchKey = `${home.name} - ${away.name}`;
-          
-          const datumBron = m.match_date || m.created_at;
-          const geformatteerdeDatum = formatteerDatum(datumBron);
-          const geformatteerdeTijd = formatteerTijd(datumBron, m.match_time, matchKey);
-
-          const status = isMatchOpenVoorVoorspelling(m, actieveSpeeldag);
-          const isEditable = status.open;
-
+        if (huidigeSpeeldag !== null && huidigeSpeeldag !== speeldagVanMatch) {
           htmlBuilder += `
-            <div class="p-4 bg-gray-800 rounded-xl border ${!isEditable ? 'border-gray-800 opacity-60 bg-gray-900/40' : (isSaved ? 'border-emerald-500/50 bg-emerald-950/10' : 'border-gray-700')} shadow-md transition relative mb-3">
+            <div class="my-6 flex items-center gap-4">
+              <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+              <span class="bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                🏆 Speeldag ${speeldagVanMatch}
+              </span>
+              <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+            </div>
+          `;
+        }
+        huidigeSpeeldag = speeldagVanMatch;
+
+        const home = teamMap[m.home_team_id] || { name: m.home_team_name || 'Thuis' };
+        const away = teamMap[m.away_team_id] || { name: m.away_team_name || 'Uit' };
+        const homeLogo = vindLogoUrl(home.name);
+        const awayLogo = vindLogoUrl(away.name);
+        
+        const myPred = predMap[String(m.id)] || {};
+        
+        const homePredVal = myPred.predicted_home_score !== undefined ? myPred.predicted_home_score : myPred.home_prediction;
+        const awayPredVal = myPred.predicted_away_score !== undefined ? myPred.predicted_away_score : myPred.away_prediction;
+
+        const homeVal = (homePredVal !== undefined && homePredVal !== null) ? homePredVal : '';
+        const awayVal = (awayPredVal !== undefined && awayPredVal !== null) ? awayPredVal : '';
+        
+        const isSaved = (homeVal !== '' && awayVal !== '');
+        const matchKey = `${home.name} - ${away.name}`;
+        
+        const datumBron = m.match_date || m.created_at;
+        const geformatteerdeDatum = formatteerDatum(datumBron);
+        const geformatteerdeTijd = formatteerTijd(datumBron, m.match_time, matchKey);
+
+        const status = isMatchOpenVoorVoorspelling(m, actieveSpeeldag);
+        const isEditable = status.open;
+
+        htmlBuilder += `
+          <div class="p-4 bg-gray-800 rounded-xl border ${!isEditable ? 'border-gray-800 opacity-60 bg-gray-900/40' : (isSaved ? 'border-emerald-500/50 bg-emerald-950/10' : 'border-gray-700')} shadow-md transition relative mb-3">
+            
+            <div class="flex justify-between items-center text-xs mb-3">
+              <div class="flex items-center gap-2 font-semibold ${isEditable ? 'text-emerald-400' : 'text-gray-400'}">
+                <span class="bg-gray-700/60 text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded">SD ${speeldagVanMatch}</span>
+                <span>📅 ${geformatteerdeDatum}</span>
+                <span class="text-gray-400 text-[11px] font-normal">⏰ ${geformatteerdeTijd} uur</span>
+              </div>
+              <div class="text-[11px] font-bold ${isEditable ? 'text-emerald-400' : 'text-amber-400'}">
+                ${status.bericht}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 md:gap-4 w-full flex-wrap sm:flex-nowrap">
               
-              <div class="flex justify-between items-center text-xs mb-3">
-                <div class="flex items-center gap-2 font-semibold ${isEditable ? 'text-emerald-400' : 'text-gray-400'}">
-                  <span class="bg-gray-700/60 text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded">SD ${speeldagVanMatch}</span>
-                  <span>📅 ${geformatteerdeDatum}</span>
-                  <span class="text-gray-400 text-[11px] font-normal">⏰ ${geformatteerdeTijd} uur</span>
-                </div>
-                <div class="text-[11px] font-bold ${isEditable ? 'text-emerald-400' : 'text-amber-400'}">
-                  ${status.bericht}
-                </div>
+              <div class="flex items-center justify-end gap-2.5 flex-1 text-right">
+                <span class="font-bold text-xs md:text-sm text-gray-100">${home.name}</span>
+                ${homeLogo ? `<img src="${homeLogo}" alt="${home.name}" class="w-7 h-7 md:w-8 md:h-8 object-contain">` : ''}
               </div>
 
-              <div class="flex items-center justify-between gap-2 md:gap-4 w-full flex-wrap sm:flex-nowrap">
-                
-                <div class="flex items-center justify-end gap-2.5 flex-1 text-right">
-                  <span class="font-bold text-xs md:text-sm text-gray-100">${home.name}</span>
-                  ${homeLogo ? `<img src="${homeLogo}" alt="${home.name}" class="w-7 h-7 md:w-8 md:h-8 object-contain">` : ''}
+              <div class="flex items-center gap-1.5 bg-gray-900 p-1.5 rounded-xl border ${isSaved ? 'border-emerald-500/60' : 'border-gray-700'} flex-shrink-0">
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="99" 
+                  id="home-${m.id}" 
+                  value="${homeVal}" 
+                  placeholder="-" 
+                  ${!isEditable ? 'disabled' : ''}
+                  class="score-input input-home w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${homeVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
+                  onfocus="handleScoreFocus(this)"
+                  oninput="checkScoreInput(this)"
+                />
+                <span class="font-bold text-gray-500">:</span>
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="99" 
+                  id="away-${m.id}" 
+                  value="${awayVal}" 
+                  placeholder="-" 
+                  ${!isEditable ? 'disabled' : ''}
+                  class="score-input input-away w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${awayVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
+                  onfocus="handleScoreFocus(this)"
+                  oninput="checkScoreInput(this)"
+                />
+              </div>
+
+              <div class="flex items-center justify-start gap-2.5 flex-1 text-left">
+                ${awayLogo ? `<img src="${awayLogo}" alt="${away.name}" class="w-7 h-7 md:w-8 md:h-8 object-contain">` : ''}
+                <span class="font-bold text-xs md:text-sm text-gray-100">${away.name}</span>
+              </div>
+
+              <div class="flex items-center gap-2 justify-end flex-shrink-0">
+                ${isEditable ? `
+                  <button 
+                    type="button" 
+                    onclick="opslaanMatchVoorspelling(${m.id})" 
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow transition flex items-center gap-1">
+                    <span>💾</span> Opslaan
+                  </button>
+                ` : ''}
+
+                <div id="saved-badge-${m.id}" class="${isSaved ? '' : 'hidden '}transition-all duration-300 text-[10px] md:text-xs bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1 shadow-sm">
+                  <span>✓</span>
                 </div>
-
-                <div class="flex items-center gap-1.5 bg-gray-900 p-1.5 rounded-xl border ${isSaved ? 'border-emerald-500/60' : 'border-gray-700'} flex-shrink-0">
-                  <input 
-                    type="number" 
-                    min="0" 
-                    max="99" 
-                    id="home-${m.id}" 
-                    value="${homeVal}" 
-                    placeholder="-" 
-                    ${!isEditable ? 'disabled' : ''}
-                    class="score-input input-home w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${homeVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
-                    onfocus="handleScoreFocus(this)"
-                    oninput="checkScoreInput(this)"
-                  />
-                  <span class="font-bold text-gray-500">:</span>
-                  <input 
-                    type="number" 
-                    min="0" 
-                    max="99" 
-                    id="away-${m.id}" 
-                    value="${awayVal}" 
-                    placeholder="-" 
-                    ${!isEditable ? 'disabled' : ''}
-                    class="score-input input-away w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${awayVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
-                    onfocus="handleScoreFocus(this)"
-                    oninput="checkScoreInput(this)"
-                  />
-                </div>
-
-                <div class="flex items-center justify-start gap-2.5 flex-1 text-left">
-                  ${awayLogo ? `<img src="${awayLogo}" alt="${away.name}" class="w-7 h-7 md:w-8 md:h-8 object-contain">` : ''}
-                  <span class="font-bold text-xs md:text-sm text-gray-100">${away.name}</span>
-                </div>
-
-                <div class="flex items-center gap-2 justify-end flex-shrink-0">
-                  ${isEditable ? `
-                    <button 
-                      type="button" 
-                      onclick="opslaanMatchVoorspelling(${m.id})" 
-                      class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow transition flex items-center gap-1">
-                      <span>💾</span> Opslaan
-                    </button>
-                  ` : ''}
-
-                  <div id="saved-badge-${m.id}" class="${isSaved ? '' : 'hidden '}transition-all duration-300 text-[10px] md:text-xs bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1 shadow-sm">
-                    <span>✓</span>
-                  </div>
-                </div>
-
               </div>
 
             </div>
-          `;
-        });
 
-        container.innerHTML = htmlBuilder;
-
-      } catch (err) {
-        console.error("Fout bij ophalen:", err);
-        container.innerHTML = `<p class="text-red-400 text-center py-8">Er is een fout opgetreden: ${err.message}</p>`;
-      }
-    }
-
-    function berekenReferralBonus(profiles, predictions) {
-      const referralBonussen = {};
-      const spelersMetVoorspelling = new Set((predictions || []).map(p => p.username));
-
-      (profiles || []).forEach(profile => {
-        if (profile.referred_by && spelersMetVoorspelling.has(profile.username)) {
-          const inviter = profile.referred_by;
-          referralBonussen[inviter] = (referralBonussen[inviter] || 0) + 2;
-        }
-      });
-
-      return referralBonussen;
-    }
-
-    async function laadKlassementen() {
-      const { data: profiles } = await _supabase.from('profiles').select('*');
-      const { data: matches } = await _supabase.from('matches').select('*');
-      const { data: predictions } = await _supabase.from('predictions').select('*');
-
-      const scoresGlobal = {};
-      const scoresMonthly = {};
-
-      (profiles || []).forEach(p => {
-        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
-        scoresGlobal[nameToUse] = 0;
-        scoresMonthly[nameToUse] = 0;
-      });
-
-      (predictions || []).forEach(pred => {
-        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
-        if (match && match.home_score !== null && match.away_score !== null) {
-          const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
-          const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
-
-          // Gebruikt de vernieuwde berekening
-          const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
-
-          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
-          scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
-        }
-      });
-
-      const refBonussen = berekenReferralBonus(profiles, predictions);
-      Object.keys(refBonussen).forEach(inviter => {
-        if (scoresGlobal[inviter] !== undefined) {
-          scoresGlobal[inviter] += refBonussen[inviter];
-          scoresMonthly[inviter] += refBonussen[inviter];
-        }
-      });
-
-      const sortedGlobal = Object.keys(scoresGlobal)
-        .map(user => ({ user, score: scoresGlobal[user] }))
-        .sort((a, b) => b.score - a.score);
-
-      vulTabel('table-global-body', sortedGlobal);
-
-      const privateUsers = (profiles || [])
-        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
-        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
-
-      const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
-      vulTabel('table-private-body', sortedPrivate);
-
-      const monthlyPrivate = Object.keys(scoresMonthly)
-        .filter(user => privateUsers.includes(user))
-        .map(user => ({ user, score: scoresMonthly[user] }))
-        .sort((a, b) => b.score - a.score);
-
-      let maxScore = monthlyPrivate.length > 0 ? monthlyPrivate[0].score : -1;
-      let winnaarsCount = monthlyPrivate.filter(u => u.score === maxScore && maxScore > 0).length;
-      
-      let bonusPunten = 0;
-      if (winnaarsCount === 1) bonusPunten = 10;
-      else if (winnaarsCount === 2) bonusPunten = 5;
-      else if (winnaarsCount === 3) bonusPunten = 3;
-      else if (winnaarsCount >= 4) bonusPunten = 1;
-
-      vulMaandTabel('table-monthly-body', monthlyPrivate, maxScore, bonusPunten);
-    }
-
-    function vulTabel(tabelId, data) {
-      const tbody = document.getElementById(tabelId);
-      tbody.innerHTML = '';
-      data.forEach((item, index) => {
-        const isMe = item.user === currentUser;
-        tbody.innerHTML += `
-          <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
-            <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
-            <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
-            <td class="p-3 text-right font-extrabold text-emerald-400">${item.score} Ptn</td>
-          </tr>
+          </div>
         `;
       });
+
+      container.innerHTML = htmlBuilder;
+
+    } catch (err) {
+      console.error("Fout bij ophalen:", err);
+      container.innerHTML = `<p class="text-red-400 text-center py-8">Er is een fout opgetreden: ${err.message}</p>`;
     }
+  }
 
-    function vulMaandTabel(tabelId, data, maxScore, bonusPunten) {
-      const tbody = document.getElementById(tabelId);
-      tbody.innerHTML = '';
-      data.forEach((item, index) => {
-        const isWinnaar = item.score === maxScore && maxScore > 0;
-        const bonus = isWinnaar ? bonusPunten : 0;
-        const isMe = item.user === currentUser;
+  // GEBETERDE REFERRAL PUNTENBEREKENING
+  function berekenReferralBonus(profiles, predictions) {
+    const referralBonussen = {};
 
-        tbody.innerHTML += `
-          <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
-            <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
-            <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
-            <td class="p-3 text-center font-bold">${item.score}</td>
-            <td class="p-3 text-right ${bonus > 0 ? 'text-emerald-400 font-black' : 'text-gray-500'}">
-              ${bonus > 0 ? `+${bonus} Ptn 🎁` : '-'}
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    async function laadDashboardStats() {
-      const { data: profiles } = await _supabase.from('profiles').select('*');
-      const { data: matches } = await _supabase.from('matches').select('*');
-      const { data: predictions } = await _supabase.from('predictions').select('*');
-
-      const scoresGlobal = {};
-      const scoresMonthly = {};
-      (profiles || []).forEach(p => { 
-        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
-        scoresGlobal[nameToUse] = 0; 
-        scoresMonthly[nameToUse] = 0; 
-      });
-
-      (predictions || []).forEach(pred => {
-        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
-        if (match && match.home_score !== null && match.away_score !== null) {
-          const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
-          const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
-
-          // Gebruikt de vernieuwde berekening
-          const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
-
-          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
-          scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
-        }
-      });
-
-      const refBonussen = berekenReferralBonus(profiles, predictions);
-      Object.keys(refBonussen).forEach(inviter => {
-        if (scoresGlobal[inviter] !== undefined) {
-          scoresGlobal[inviter] += refBonussen[inviter];
-          scoresMonthly[inviter] += refBonussen[inviter];
-        }
-      });
-
-      const myScore = scoresGlobal[currentUser] || 0;
-      document.getElementById('user-score').innerText = `${myScore} Ptn`;
-
-      const sortedGlobal = Object.keys(scoresGlobal).sort((a,b) => scoresGlobal[b] - scoresGlobal[a]);
-      const myGlobalPos = sortedGlobal.indexOf(currentUser) + 1;
-      document.getElementById('pos-global').innerText = myGlobalPos > 0 ? `#${myGlobalPos}` : '#-';
-
-      const privateUsers = (profiles || [])
-        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
-        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
-
-      const sortedPrivate = sortedGlobal.filter(u => privateUsers.includes(u));
-      const myPrivatePos = sortedPrivate.indexOf(currentUser) + 1;
-      document.getElementById('pos-private').innerText = myPrivatePos > 0 ? `#${myPrivatePos}` : '#-';
-
-      const sortedMonthlyPrivate = Object.keys(scoresMonthly).filter(u => privateUsers.includes(u)).sort((a,b) => scoresMonthly[b] - scoresMonthly[a]);
-      const myMonthlyPos = sortedMonthlyPrivate.indexOf(currentUser) + 1;
-      document.getElementById('pos-monthly').innerText = myMonthlyPos > 0 ? `#${myMonthlyPos}` : '#-';
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      _supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          toonScherm('login');
-          document.getElementById('form-login').classList.add('hidden');
-          document.getElementById('form-register').classList.add('hidden');
-          document.getElementById('form-reset').classList.add('hidden');
-          document.getElementById('form-new-password').classList.remove('hidden');
-          return;
-        }
-
-        if (session && session.user) {
-          await initialiseerUserSessie(session.user);
-        } else {
-          toonScherm('login');
-        }
-      });
+    // Zoek welke gebruikers ten minste 1 voorspelling hebben ingevuld
+    const spelersMetVoorspelling = new Set();
+    (predictions || []).forEach(p => {
+      if (p.user_id) spelersMetVoorspelling.add(p.user_id);
+      if (p.username) spelersMetVoorspelling.add(p.username);
     });
-  </script>
+
+    (profiles || []).forEach(profile => {
+      // Als dit profiel door iemand is uitgenodigd EN ten minste 1 voorspelling heeft gemaakt
+      const isActief = (profile.id && spelersMetVoorspelling.has(profile.id)) || 
+                      (profile.username && spelersMetVoorspelling.has(profile.username));
+
+      if (profile.referred_by && isActief) {
+        const inviter = profile.referred_by;
+        referralBonussen[inviter] = (referralBonussen[inviter] || 0) + 2;
+      }
+    });
+
+    return referralBonussen;
+  }
+
+  async function laadKlassementen() {
+    const { data: profiles } = await _supabase.from('profiles').select('*');
+    const { data: matches } = await _supabase.from('matches').select('*');
+    const { data: predictions } = await _supabase.from('predictions').select('*');
+
+    const scoresGlobal = {};
+    const scoresMonthly = {};
+
+    (profiles || []).forEach(p => {
+      const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+      scoresGlobal[nameToUse] = 0;
+      scoresMonthly[nameToUse] = 0;
+    });
+
+    (predictions || []).forEach(pred => {
+      const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
+      if (match && match.home_score !== null && match.away_score !== null) {
+        const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
+        const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
+
+        const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
+
+        if (pred.username) {
+          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
+          scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+        }
+      }
+    });
+
+    // Bereken en voeg referral bonussen toe
+    const refBonussen = berekenReferralBonus(profiles, predictions);
+    Object.keys(refBonussen).forEach(inviter => {
+      if (scoresGlobal[inviter] !== undefined) {
+        scoresGlobal[inviter] += refBonussen[inviter];
+        scoresMonthly[inviter] += refBonussen[inviter];
+      }
+    });
+
+    const sortedGlobal = Object.keys(scoresGlobal)
+      .map(user => ({ user, score: scoresGlobal[user] }))
+      .sort((a, b) => b.score - a.score);
+
+    vulTabel('table-global-body', sortedGlobal);
+
+    const privateUsers = (profiles || [])
+      .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+      .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
+    const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
+    vulTabel('table-private-body', sortedPrivate);
+
+    const monthlyPrivate = Object.keys(scoresMonthly)
+      .filter(user => privateUsers.includes(user))
+      .map(user => ({ user, score: scoresMonthly[user] }))
+      .sort((a, b) => b.score - a.score);
+
+    let maxScore = monthlyPrivate.length > 0 ? monthlyPrivate[0].score : -1;
+    let winnaarsCount = monthlyPrivate.filter(u => u.score === maxScore && maxScore > 0).length;
+    
+    let bonusPunten = 0;
+    if (winnaarsCount === 1) bonusPunten = 10;
+    else if (winnaarsCount === 2) bonusPunten = 5;
+    else if (winnaarsCount === 3) bonusPunten = 3;
+    else if (winnaarsCount >= 4) bonusPunten = 1;
+
+    vulMaandTabel('table-monthly-body', monthlyPrivate, maxScore, bonusPunten);
+  }
+
+  function vulTabel(tabelId, data) {
+    const tbody = document.getElementById(tabelId);
+    tbody.innerHTML = '';
+    data.forEach((item, index) => {
+      const isMe = item.user === currentUser;
+      tbody.innerHTML += `
+        <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
+          <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
+          <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
+          <td class="p-3 text-right font-extrabold text-emerald-400">${item.score} Ptn</td>
+        </tr>
+      `;
+    });
+  }
+
+  function vulMaandTabel(tabelId, data, maxScore, bonusPunten) {
+    const tbody = document.getElementById(tabelId);
+    tbody.innerHTML = '';
+    data.forEach((item, index) => {
+      const isWinnaar = item.score === maxScore && maxScore > 0;
+      const bonus = isWinnaar ? bonusPunten : 0;
+      const isMe = item.user === currentUser;
+
+      tbody.innerHTML += `
+        <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
+          <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
+          <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
+          <td class="p-3 text-center font-bold">${item.score}</td>
+          <td class="p-3 text-right ${bonus > 0 ? 'text-emerald-400 font-black' : 'text-gray-500'}">
+            ${bonus > 0 ? `+${bonus} Ptn 🎁` : '-'}
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  async function laadDashboardStats() {
+    const { data: profiles } = await _supabase.from('profiles').select('*');
+    const { data: matches } = await _supabase.from('matches').select('*');
+    const { data: predictions } = await _supabase.from('predictions').select('*');
+
+    const scoresGlobal = {};
+    const scoresMonthly = {};
+    (profiles || []).forEach(p => { 
+      const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+      scoresGlobal[nameToUse] = 0; 
+      scoresMonthly[nameToUse] = 0; 
+    });
+
+    (predictions || []).forEach(pred => {
+      const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
+      if (match && match.home_score !== null && match.away_score !== null) {
+        const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
+        const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
+
+        const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
+
+        if (pred.username) {
+          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
+          scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+        }
+      }
+    });
+
+    const refBonussen = berekenReferralBonus(profiles, predictions);
+    Object.keys(refBonussen).forEach(inviter => {
+      if (scoresGlobal[inviter] !== undefined) {
+        scoresGlobal[inviter] += refBonussen[inviter];
+        scoresMonthly[inviter] += refBonussen[inviter];
+      }
+    });
+
+    const myScore = scoresGlobal[currentUser] || 0;
+    document.getElementById('user-score').innerText = `${myScore} Ptn`;
+
+    const sortedGlobal = Object.keys(scoresGlobal).sort((a,b) => scoresGlobal[b] - scoresGlobal[a]);
+    const myGlobalPos = sortedGlobal.indexOf(currentUser) + 1;
+    document.getElementById('pos-global').innerText = myGlobalPos > 0 ? `#${myGlobalPos}` : '#-';
+
+    const privateUsers = (profiles || [])
+      .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+      .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
+    const sortedPrivate = sortedGlobal.filter(u => privateUsers.includes(u));
+    const myPrivatePos = sortedPrivate.indexOf(currentUser) + 1;
+    document.getElementById('pos-private').innerText = myPrivatePos > 0 ? `#${myPrivatePos}` : '#-';
+
+    const sortedMonthlyPrivate = Object.keys(scoresMonthly).filter(u => privateUsers.includes(u)).sort((a,b) => scoresMonthly[b] - scoresMonthly[a]);
+    const myMonthlyPos = sortedMonthlyPrivate.indexOf(currentUser) + 1;
+    document.getElementById('pos-monthly').innerText = myMonthlyPos > 0 ? `#${myMonthlyPos}` : '#-';
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    _supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        toonScherm('login');
+        document.getElementById('form-login').classList.add('hidden');
+        document.getElementById('form-register').classList.add('hidden');
+        document.getElementById('form-reset').classList.add('hidden');
+        document.getElementById('form-new-password').classList.remove('hidden');
+        return;
+      }
+
+      if (session && session.user) {
+        await initialiseerUserSessie(session.user);
+      } else {
+        toonScherm('login');
+      }
+    });
+  });
+</script>
 </body>
 </html>
