@@ -1,0 +1,26 @@
+name: JPL Scraper Sync
+
+on:
+  schedule:
+    # Draait automatisch elk uur
+    - cron: '0 * * * *'
+  workflow_dispatch: # Knop om handmatig te starten via Actions
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@v3
+
+      - name: Node.js instellen
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Afhankelijkheden installeren
+        run: npm install axios cheerio @supabase/supabase-js
+
+      - name: Scraper uitvoeren
+        run: node scraper.js
