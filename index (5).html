@@ -94,8 +94,8 @@
         <span>📜</span><span class="hidden sm:inline">Spelregels</span>
       </button>
       <div id="user-nav" class="hidden flex items-center gap-3">
-        <button onclick="toonScherm('settings')" id="nav-username" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
-          👤 Gast
+        <button onclick="toonScherm('settings')" id="nav-username" title="Instellingen" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
+          ⚙️ Gast
         </button>
         <button onclick="uitloggen()" class="text-xs bg-red-600/80 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded transition">
           Uitloggen
@@ -186,7 +186,7 @@
     <section id="screen-dashboard" class="hidden space-y-8">
       <div class="bg-gradient-to-r from-emerald-900/60 to-gray-800 p-6 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 class="text-2xl font-bold text-white">Welkom, <span id="dash-username" class="text-emerald-400">Speler</span>! 👋</h2>
+          <h2 class="text-2xl font-bold text-white"><span id="dash-avatar">⚽</span> Welkom, <span id="dash-username" class="text-emerald-400">Speler</span>! 👋</h2>
           <p class="text-gray-300 text-sm mt-1 flex items-center gap-2 flex-wrap">
             <span>👥 Je groep: <span id="dash-groupcode" class="font-bold text-emerald-300">PRIVATESQUAD</span></span>
             <button onclick="wijzigGroepscode()" class="text-[11px] bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-1 px-2.5 rounded-full border border-gray-600 transition">
@@ -404,6 +404,45 @@
           <button id="btn-save-username" onclick="updateGebruikersnaam()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm">
             💾 Opslaan & Naam Wijzigen
           </button>
+        </div>
+
+        <div class="bg-gray-900 p-5 rounded-xl border border-gray-700 space-y-4">
+          <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wide">Avatar Kiezen</h4>
+          <p class="text-xs text-gray-400">Verschijnt naast je naam in de klassementen en bij groepsvoorspellingen.</p>
+          <div class="grid grid-cols-6 sm:grid-cols-8 gap-2" id="avatar-picker-grid">
+            <button type="button" data-emoji="⚽" onclick="kiesAvatar('⚽')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">⚽</button>
+            <button type="button" data-emoji="🥅" onclick="kiesAvatar('🥅')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🥅</button>
+            <button type="button" data-emoji="🏆" onclick="kiesAvatar('🏆')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🏆</button>
+            <button type="button" data-emoji="🥇" onclick="kiesAvatar('🥇')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🥇</button>
+            <button type="button" data-emoji="🎯" onclick="kiesAvatar('🎯')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🎯</button>
+            <button type="button" data-emoji="👟" onclick="kiesAvatar('👟')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">👟</button>
+            <button type="button" data-emoji="🧤" onclick="kiesAvatar('🧤')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🧤</button>
+            <button type="button" data-emoji="🎽" onclick="kiesAvatar('🎽')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🎽</button>
+            <button type="button" data-emoji="🦁" onclick="kiesAvatar('🦁')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦁</button>
+            <button type="button" data-emoji="🐯" onclick="kiesAvatar('🐯')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐯</button>
+            <button type="button" data-emoji="🦅" onclick="kiesAvatar('🦅')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦅</button>
+            <button type="button" data-emoji="🐺" onclick="kiesAvatar('🐺')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐺</button>
+            <button type="button" data-emoji="🐐" onclick="kiesAvatar('🐐')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐐</button>
+            <button type="button" data-emoji="🦈" onclick="kiesAvatar('🦈')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦈</button>
+            <button type="button" data-emoji="🐻" onclick="kiesAvatar('🐻')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐻</button>
+            <button type="button" data-emoji="🦍" onclick="kiesAvatar('🦍')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦍</button>
+            <button type="button" data-emoji="🐗" onclick="kiesAvatar('🐗')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐗</button>
+            <button type="button" data-emoji="🦊" onclick="kiesAvatar('🦊')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦊</button>
+            <button type="button" data-emoji="🐴" onclick="kiesAvatar('🐴')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐴</button>
+            <button type="button" data-emoji="🐉" onclick="kiesAvatar('🐉')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐉</button>
+            <button type="button" data-emoji="🔥" onclick="kiesAvatar('🔥')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🔥</button>
+            <button type="button" data-emoji="⭐" onclick="kiesAvatar('⭐')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">⭐</button>
+            <button type="button" data-emoji="😎" onclick="kiesAvatar('😎')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">😎</button>
+            <button type="button" data-emoji="🤡" onclick="kiesAvatar('🤡')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🤡</button>
+            <button type="button" data-emoji="👽" onclick="kiesAvatar('👽')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">👽</button>
+            <button type="button" data-emoji="🤖" onclick="kiesAvatar('🤖')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🤖</button>
+            <button type="button" data-emoji="💀" onclick="kiesAvatar('💀')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">💀</button>
+            <button type="button" data-emoji="👻" onclick="kiesAvatar('👻')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">👻</button>
+            <button type="button" data-emoji="🥷" onclick="kiesAvatar('🥷')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🥷</button>
+            <button type="button" data-emoji="🧙" onclick="kiesAvatar('🧙')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🧙</button>
+            <button type="button" data-emoji="🍀" onclick="kiesAvatar('🍀')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🍀</button>
+            <button type="button" data-emoji="🎩" onclick="kiesAvatar('🎩')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🎩</button>
+          </div>
         </div>
 
         <div id="admin-panel-trigger" class="hidden bg-gray-900 p-5 rounded-xl border border-amber-600/40 space-y-3">
@@ -1043,9 +1082,41 @@
       }
     }
 
+    async function kiesAvatar(emoji) {
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await _supabase.from('profiles').update({ avatar: emoji }).eq('id', user.id);
+
+      if (error) {
+        toonMelding('❌ Fout bij opslaan avatar: ' + error.message, true);
+        return;
+      }
+
+      if (currentUserProfile) currentUserProfile.avatar = emoji;
+      toonMelding('✅ Avatar bijgewerkt!');
+      markeerActieveAvatar();
+
+      const dashAvatar = document.getElementById('dash-avatar');
+      if (dashAvatar) dashAvatar.innerText = emoji;
+    }
+
+    function markeerActieveAvatar() {
+      const huidige = (currentUserProfile && currentUserProfile.avatar) || '⚽';
+      document.querySelectorAll('.avatar-optie').forEach(btn => {
+        if (btn.dataset.emoji === huidige) {
+          btn.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-950/40', 'border-emerald-500');
+        } else {
+          btn.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-950/40', 'border-emerald-500');
+        }
+      });
+    }
+
     function laadSettingsScherm() {
       document.getElementById('setting-current-name').value = currentUser;
       document.getElementById('setting-new-name').value = '';
+
+      markeerActieveAvatar();
 
       const adminTrigger = document.getElementById('admin-panel-trigger');
       if (adminTrigger) {
@@ -1109,8 +1180,9 @@
         document.getElementById('user-nav').classList.remove('hidden');
         document.getElementById('mobile-nav').classList.remove('hidden');
         document.getElementById('dash-username').innerText = currentUser;
+        document.getElementById('dash-avatar').innerText = (currentUserProfile && currentUserProfile.avatar) || '⚽';
         document.getElementById('dash-groupcode').innerText = currentGroup;
-        document.getElementById('nav-username').innerText = '👤 ' + currentUser;
+        document.getElementById('nav-username').innerText = '⚙️ ' + currentUser;
         updateMobileNavActive('mnav-dashboard');
         laadDashboardStats();
       } else if (schermNaam === 'matches') {
@@ -1841,10 +1913,12 @@
       return bonusPerUser;
     }
 
-    // Toont, voor een reeds gestarte wedstrijd, de voorspellingen (en behaalde punten) van
-    // iedereen in je HUIDIGE groep. Wordt bewust pas aangeboden nadat een wedstrijd is gestart
-    // (zie status.gestart in renderWedstrijdenLijst), zodat niemand elkaars pronostiek kan
-    // afkijken vóór de aftrap.
+    // Vaste set reactie-emoji's op elkaars voorspellingen (👍 goedkeuring, 😂 humor,
+    // 🔥 gedurfd, 😱 shock, 💀 "dat wordt niks").
+    const REACTIE_EMOJIS = ['👍', '😂', '🔥', '😱', '💀'];
+
+    // Toont, voor een wedstrijd, de voorspellingen (en behaalde punten) van iedereen in je
+    // HUIDIGE groep, met avatar en de mogelijkheid om te reageren met een emoji.
     async function toonGroepsvoorspellingen(matchId) {
       const modal = document.getElementById('match-predictions-modal');
       const content = document.getElementById('match-predictions-content');
@@ -1867,9 +1941,17 @@
         const { data: profiles } = await _supabase.from('profiles').select('*').eq('group_code', currentGroup);
         const groepsleden = (profiles || []).map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler')).filter(Boolean);
 
+        const avatarPerUsername = {};
+        (profiles || []).forEach(p => {
+          const naam = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+          avatarPerUsername[naam] = p.avatar || '⚽';
+        });
+
         const { data: predictions } = await _supabase.from('predictions').select('*').eq('match_id', matchId);
         const predPerUser = {};
         (predictions || []).forEach(p => { predPerUser[p.username] = p; });
+
+        const { data: reactions } = await _supabase.from('prediction_reactions').select('*').eq('match_id', matchId);
 
         const heeftUitslag = match.home_score !== null && match.away_score !== null;
 
@@ -1891,14 +1973,26 @@
 
           const scoreLabel = heeftVoorspeld ? `${predHomeRaw} - ${predAwayRaw}` : '–';
           const isMe = naam === currentUser;
+          const avatar = avatarPerUsername[naam] || '⚽';
+
+          const reactiesVoorNaam = (reactions || []).filter(r => r.target_username === naam);
+          const reactieKnoppenHtml = REACTIE_EMOJIS.map(emoji => {
+            const dezeReacties = reactiesVoorNaam.filter(r => r.emoji === emoji);
+            const aantal = dezeReacties.length;
+            const ikHeb = dezeReacties.some(r => r.reactor_username === currentUser);
+            return `<button type="button" onclick="toggleReactie(${matchId}, '${naam.replace(/'/g, "\\'")}', '${emoji}')" class="text-xs px-1.5 py-0.5 rounded-full border transition ${ikHeb ? 'bg-emerald-600/30 border-emerald-500 text-emerald-300' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-500'}">${emoji}${aantal > 0 ? ' ' + aantal : ''}</button>`;
+          }).join('');
 
           return `
-            <div class="flex justify-between items-center p-2.5 rounded-lg ${isMe ? 'bg-emerald-950/40 border-emerald-500/40' : 'bg-gray-900 border-gray-700'} border">
-              <span class="text-sm font-semibold text-gray-100">${naam}${isMe ? ' (Jij)' : ''}</span>
-              <div class="flex items-center gap-3">
-                <span class="font-bold text-white text-sm">${scoreLabel}</span>
-                ${puntenHtml}
+            <div class="p-2.5 rounded-lg ${isMe ? 'bg-emerald-950/40 border-emerald-500/40' : 'bg-gray-900 border-gray-700'} border space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-semibold text-gray-100">${avatar} ${naam}${isMe ? ' (Jij)' : ''}</span>
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-white text-sm">${scoreLabel}</span>
+                  ${puntenHtml}
+                </div>
               </div>
+              <div class="flex items-center gap-1.5 flex-wrap">${reactieKnoppenHtml}</div>
             </div>
           `;
         }).join('') : '<p class="text-gray-400 text-center py-4 text-sm">Geen groepsgenoten gevonden.</p>';
@@ -1914,6 +2008,35 @@
       } catch (err) {
         content.innerHTML = `<p class="text-red-400 text-center py-6">Er is een fout opgetreden: ${err.message}</p>`;
       }
+    }
+
+    // Voegt je reactie toe, of haalt ze weg als je al met diezelfde emoji had gereageerd
+    // (tik-om-aan/uit-te-zetten, zoals bij Discord/WhatsApp).
+    async function toggleReactie(matchId, targetUsername, emoji) {
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: bestaande } = await _supabase.from('prediction_reactions')
+        .select('*')
+        .eq('match_id', matchId)
+        .eq('target_username', targetUsername)
+        .eq('reactor_user_id', user.id)
+        .eq('emoji', emoji)
+        .maybeSingle();
+
+      if (bestaande) {
+        await _supabase.from('prediction_reactions').delete().eq('id', bestaande.id);
+      } else {
+        await _supabase.from('prediction_reactions').insert({
+          match_id: matchId,
+          target_username: targetUsername,
+          reactor_user_id: user.id,
+          reactor_username: currentUser,
+          emoji: emoji
+        });
+      }
+
+      toonGroepsvoorspellingen(matchId);
     }
 
     function closeMatchPredictionsModal() {
@@ -1977,6 +2100,37 @@
         const maandBonussen = berekenAfgeslotenMaandBonussen(profiles, matches, allePredictions);
         const mijnMaandBonus = maandBonussen[currentUser] || 0;
 
+        // Voorspellingstreak: hoeveel AFGESLOTEN speeldagen op rij (vanaf de meest recente)
+        // je voor ELKE wedstrijd van die speeldag een voorspelling had ingevuld.
+        const matchesPerRonde = {};
+        (matches || []).forEach(m => {
+          const ronde = m.round || m.speeldag || 1;
+          if (!matchesPerRonde[ronde]) matchesPerRonde[ronde] = [];
+          matchesPerRonde[ronde].push(m);
+        });
+
+        const voorspeldeMatchIds = new Set(
+          (mijnVoorspellingen || [])
+            .filter(p => {
+              const h = p.predicted_home_score !== undefined && p.predicted_home_score !== null ? p.predicted_home_score : p.home_prediction;
+              const a = p.predicted_away_score !== undefined && p.predicted_away_score !== null ? p.predicted_away_score : p.away_prediction;
+              return h !== undefined && h !== null && a !== undefined && a !== null;
+            })
+            .map(p => String(p.match_id))
+        );
+
+        const afgeslotenRondes = Object.keys(matchesPerRonde)
+          .map(Number)
+          .filter(r => matchesPerRonde[r].every(m => m.home_score !== null && m.home_score !== undefined && m.away_score !== null && m.away_score !== undefined))
+          .sort((a, b) => b - a);
+
+        let streak = 0;
+        for (const ronde of afgeslotenRondes) {
+          const volledig = matchesPerRonde[ronde].every(m => voorspeldeMatchIds.has(String(m.id)));
+          if (volledig) streak++;
+          else break;
+        }
+
         content.innerHTML = `
           <div class="text-center mb-2">
             <div class="text-3xl mb-1">🏆</div>
@@ -2000,6 +2154,10 @@
               <span class="text-[10px] text-gray-400 uppercase font-bold block">Gem. Ptn/Match</span>
               <span class="text-xl font-black text-white">${gemiddelde}</span>
             </div>
+          </div>
+          <div class="bg-orange-950/30 p-4 rounded-xl border border-orange-500/30 space-y-1">
+            <h4 class="text-sm font-bold text-orange-400">🔥 Huidige Reeks</h4>
+            <p class="text-xs text-gray-300">${streak > 0 ? `<span class="text-white font-bold">${streak}</span> speeldag${streak === 1 ? '' : 'en'} op rij volledig voorspeld.` : 'Nog geen volledig voorspelde afgesloten speeldag.'}</p>
           </div>
           <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 space-y-1">
             <h4 class="text-sm font-bold text-emerald-400">📅 Beste Speeldag Ooit</h4>
@@ -2186,18 +2344,24 @@
         }
       });
 
+      const avatarPerUsername = {};
+      (profiles || []).forEach(p => {
+        const naam = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        avatarPerUsername[naam] = p.avatar || '⚽';
+      });
+
       const sortedGlobal = Object.keys(scoresGlobal)
         .map(user => ({ user, score: scoresGlobal[user] }))
         .sort((a, b) => b.score - a.score);
 
-      vulTabel('table-global-body', sortedGlobal);
+      vulTabel('table-global-body', sortedGlobal, avatarPerUsername);
 
       const privateUsers = (profiles || [])
         .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
         .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
 
       const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
-      vulTabel('table-private-body', sortedPrivate);
+      vulTabel('table-private-body', sortedPrivate, avatarPerUsername);
 
       const monthlyPrivate = Object.keys(scoresMonthly)
         .filter(user => privateUsers.includes(user))
@@ -2213,36 +2377,38 @@
       else if (winnaarsCount === 3) bonusPunten = 3;
       else if (winnaarsCount >= 4) bonusPunten = 1;
 
-      vulMaandTabel('table-monthly-body', monthlyPrivate, maxScore, bonusPunten);
+      vulMaandTabel('table-monthly-body', monthlyPrivate, maxScore, bonusPunten, avatarPerUsername);
     }
 
-    function vulTabel(tabelId, data) {
+    function vulTabel(tabelId, data, avatarPerUsername) {
       const tbody = document.getElementById(tabelId);
       tbody.innerHTML = '';
       data.forEach((item, index) => {
         const isMe = item.user === currentUser;
+        const avatar = (avatarPerUsername && avatarPerUsername[item.user]) || '⚽';
         tbody.innerHTML += `
           <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
             <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
-            <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
+            <td class="p-3">${avatar} ${item.user} ${isMe ? '(Jij)' : ''}</td>
             <td class="p-3 text-right font-extrabold text-emerald-400">${item.score} Ptn</td>
           </tr>
         `;
       });
     }
 
-    function vulMaandTabel(tabelId, data, maxScore, bonusPunten) {
+    function vulMaandTabel(tabelId, data, maxScore, bonusPunten, avatarPerUsername) {
       const tbody = document.getElementById(tabelId);
       tbody.innerHTML = '';
       data.forEach((item, index) => {
         const isWinnaar = item.score === maxScore && maxScore > 0;
         const bonus = isWinnaar ? bonusPunten : 0;
         const isMe = item.user === currentUser;
+        const avatar = (avatarPerUsername && avatarPerUsername[item.user]) || '⚽';
 
         tbody.innerHTML += `
           <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
             <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
-            <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
+            <td class="p-3">${avatar} ${item.user} ${isMe ? '(Jij)' : ''}</td>
             <td class="p-3 text-center font-bold">${item.score}</td>
             <td class="p-3 text-right ${bonus > 0 ? 'text-emerald-400 font-black' : 'text-gray-500'}">
               ${bonus > 0 ? `+${bonus} Ptn 🎁` : '-'}
