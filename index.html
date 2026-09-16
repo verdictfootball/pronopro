@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PBHHZNS6W9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-PBHHZNS6W9');
+  </script>
+
   <meta name="google-site-verification" content="ps1OYPX18QHaXeVX1E8pbkPp2PU5qC0syfViuhtm1jE" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,18 +70,18 @@
     <div class="flex items-center cursor-pointer" onclick="toonScherm('dashboard')">
       <img src="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png" alt="PronoPro Logo" class="h-20 w-auto object-contain" />
     </div>
-    <div id="user-nav" class="hidden flex items-center gap-3">
-      <!-- KNOP VOOR SPELREGELS MODAL -->
-      <button onclick="openRulesModal()" class="text-xs font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/80 px-3 py-2 rounded-xl border border-emerald-500/40 transition flex items-center gap-1.5 shadow-sm">
-        <span>📜</span> Spelregels
+    <div class="flex items-center gap-2 md:gap-3">
+      <button onclick="openRulesModal()" class="text-xs font-bold text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1.5">
+        <span>📜</span><span class="hidden sm:inline">Spelregels</span>
       </button>
-
-      <button onclick="toonScherm('settings')" id="nav-username" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
-        👤 Gast
-      </button>
-      <button onclick="uitloggen()" class="text-xs bg-red-600/80 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded transition">
-        Uitloggen
-      </button>
+      <div id="user-nav" class="hidden flex items-center gap-3">
+        <button onclick="toonScherm('settings')" id="nav-username" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
+          👤 Gast
+        </button>
+        <button onclick="uitloggen()" class="text-xs bg-red-600/80 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded transition">
+          Uitloggen
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -158,7 +168,12 @@
       <div class="bg-gradient-to-r from-emerald-900/60 to-gray-800 p-6 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold text-white">Welkom, <span id="dash-username" class="text-emerald-400">Speler</span>! 👋</h2>
-          <p class="text-gray-300 text-sm mt-1">Groepscode: <span id="dash-groupcode" class="font-bold text-emerald-300">PRIVATESQUAD</span></p>
+          <p class="text-gray-300 text-sm mt-1 flex items-center gap-2 flex-wrap">
+            <span>👥 Je groep: <span id="dash-groupcode" class="font-bold text-emerald-300">PRIVATESQUAD</span></span>
+            <button onclick="wijzigGroepscode()" class="text-[11px] bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-1 px-2.5 rounded-full border border-gray-600 transition">
+              ✏️ Groep beheren
+            </button>
+          </p>
         </div>
         
         <div class="flex items-center gap-3">
@@ -260,6 +275,11 @@
           </span>
         </div>
 
+        <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700 gap-1">
+          <button type="button" onclick="setMatchFilter('toekomstig')" id="mfilter-toekomstig" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition">⏳ Nog te Spelen</button>
+          <button type="button" onclick="setMatchFilter('gespeeld')" id="mfilter-gespeeld" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">✅ Gespeeld</button>
+        </div>
+
         <form id="predictions-form" onsubmit="event.preventDefault();">
           <div id="matches-container" class="space-y-3">
             <p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>
@@ -290,7 +310,7 @@
             <span id="current-group-display" class="font-extrabold text-emerald-400">PRIVATESQUAD</span>
           </div>
           <button onclick="wijzigGroepscode()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-3 rounded-lg border border-gray-600">
-            ✏️ Wijzig Groep
+            ✏️ Groep Beheren
           </button>
         </div>
 
@@ -366,73 +386,48 @@
 
   </div>
 
-  <!-- SPELREGELS MODAL -->
-  <div id="rules-modal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-md w-full relative shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-      <button onclick="closeRulesModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+  <!-- MODAL: GROEP MAKEN OF LID WORDEN -->
+  <div id="group-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-sm w-full relative shadow-2xl space-y-4">
+      <button onclick="closeGroupModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
       
-      <div class="flex items-center gap-3 border-b border-gray-700 pb-3">
-        <span class="text-3xl">📜</span>
+      <div class="text-center">
+        <div class="text-3xl mb-1">👥</div>
+        <h3 class="text-xl font-extrabold text-white">Privé Liga Beheren</h3>
+        <p class="text-xs text-gray-400">Maak een nieuwe groep aan of sluit je aan bij een bestaande groep via een code.</p>
+      </div>
+
+      <!-- TAB KEUZES -->
+      <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700 gap-1">
+        <button type="button" onclick="switchGroupModalTab('join')" id="gtab-join" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 text-white transition">Lid Worden</button>
+        <button type="button" onclick="switchGroupModalTab('create')" id="gtab-create" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">Nieuwe Groep</button>
+      </div>
+
+      <!-- FORM 1: LID WORDEN -->
+      <form id="form-join-group" onsubmit="event.preventDefault(); verwerkLidWorden();" class="space-y-3">
         <div>
-          <h3 class="text-xl font-extrabold text-white">Spelregels PronoPro</h3>
-          <p class="text-xs text-emerald-400 font-medium">Hoe worden de punten berekend?</p>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Groepscode</label>
+          <input type="text" id="input-join-code" placeholder="Bijv. SQUAD2026" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-emerald-500 text-sm">
         </div>
-      </div>
+        <button type="submit" id="btn-submit-join" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-lg shadow-lg transition text-sm">
+          Word Lid van Groep
+        </button>
+      </form>
 
-      <div class="space-y-4 text-sm text-gray-300">
-        <!-- PUNTENVERDELING AANGEPAST -->
-        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
-          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span>⚽</span> Punten per Wedstrijd
-          </h4>
-          <ul class="text-xs space-y-1.5 list-disc list-inside text-gray-300">
-            <li><strong class="text-emerald-400">10 Punten:</strong> Exact de juiste score voorspeld (bijv. Uitslag 2-1, Voorspelling 2-1).</li>
-            <li><strong class="text-emerald-400">7 Punten:</strong> Juiste winnaar én het juiste aantal doelpunten verschil voorspeld (bijv. Uitslag 3-1, Voorspelling 2-0).</li>
-            <li><strong class="text-emerald-400">5 Punten:</strong> Juiste winnaar of gelijkspel voorspeld, maar ander doelsaldo (bijv. Uitslag 3-0, Voorspelling 1-0).</li>
-            <li><strong class="text-gray-300">1 Punt:</strong> Voorspelling ingevuld, maar de uitslag/winnaar is fout.</li>
-            <li><strong class="text-gray-500">0 Punten:</strong> Geen voorspelling ingevuld.</li>
-          </ul>
+      <!-- FORM 2: NIEUWE GROEP MAKEN -->
+      <form id="form-create-group" onsubmit="event.preventDefault(); verwerkGroepAanmaken();" class="space-y-3 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Groepsnaam</label>
+          <input type="text" id="input-create-name" placeholder="Bijv. De Voetbalvrienden" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500 text-sm">
         </div>
-
-        <!-- MAANDBONUS -->
-        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
-          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span>📅</span> Maandbonus (10 Ptn Pot)
-          </h4>
-          <p class="text-xs text-gray-300">Elke maand strijden spelers in hun privé-liga voor de maandbonus:</p>
-          <ul class="text-xs space-y-1 list-disc list-inside text-gray-300">
-            <li><strong>1 Winnaar:</strong> Krijgt <strong class="text-emerald-400">+10 bonuspunten</strong>.</li>
-            <li><strong>2 Gedeelde winnaars:</strong> Krijgen elk <strong class="text-emerald-400">+5 bonuspunten</strong>.</li>
-            <li><strong>3 Gedeelde winnaars:</strong> Krijgen elk <strong class="text-emerald-400">+3 bonuspunten</strong>.</li>
-            <li><strong>4 of meer winnaars:</strong> Krijgen elk <strong class="text-emerald-400">+1 bonuspunt</strong>.</li>
-          </ul>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Unieke Groepscode</label>
+          <input type="text" id="input-create-code" placeholder="Bijv. VRIENDEN26" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-emerald-500 text-sm">
         </div>
-
-        <!-- REFERRAL BONUS -->
-        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
-          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span>🎁</span> Uitnodigingsbonus
-          </h4>
-          <p class="text-xs text-gray-300">
-            Nodig vrienden uit via jouw unieke uitnodigingslink. Zodra zij zich registreren én hun eerste voorspelling invullen, ontvang jij <strong class="text-emerald-400">+2 bonuspunten</strong>!
-          </p>
-        </div>
-
-        <!-- DEADLINES -->
-        <div class="bg-gray-900 p-3.5 rounded-xl border border-gray-700/80 space-y-2">
-          <h4 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
-            <span>🔒</span> Deadlines & Beperkingen
-          </h4>
-          <ul class="text-xs space-y-1 list-disc list-inside text-gray-300">
-            <li>Voorspellingen sluiten zodra het aftrapsignaal van de wedstrijd klinkt.</li>
-            <li>Je kunt maximaal <strong>2 speeldagen vooruit</strong> invullen.</li>
-          </ul>
-        </div>
-      </div>
-
-      <button onclick="closeRulesModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg transition text-sm">
-        Begrepen!
-      </button>
+        <button type="submit" id="btn-submit-create" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-lg shadow-lg transition text-sm">
+          Groep Aanmaken & Deelnemen
+        </button>
+      </form>
     </div>
   </div>
 
@@ -450,6 +445,82 @@
       <button onclick="copyShareLink()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
         <span>📋</span> Kopieer Unieke Uitnodigingslink
       </button>
+    </div>
+  </div>
+
+  <div id="rules-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-md w-full relative shadow-2xl space-y-5 max-h-[85vh] overflow-y-auto">
+      <button onclick="closeRulesModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+
+      <div class="text-center">
+        <div class="text-3xl mb-1">📜</div>
+        <h3 class="text-xl font-extrabold text-white">Spelregels PronoPro</h3>
+        <p class="text-xs text-gray-400 mt-1">Hoe worden de punten berekend?</p>
+      </div>
+
+      <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 space-y-2">
+        <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1.5">⚽ Punten per Wedstrijd</h4>
+        <ul class="text-xs text-gray-300 space-y-1.5 list-disc list-inside">
+          <li><strong class="text-white">10 Punten:</strong> Exact de juiste score voorspeld (bijv. Uitslag 2-1, Voorspelling 2-1).</li>
+          <li><strong class="text-white">7 Punten:</strong> Juiste winnaar én het juiste aantal doelpunten verschil voorspeld (bijv. Uitslag 3-1, Voorspelling 2-0).</li>
+          <li><strong class="text-white">5 Punten:</strong> Juiste winnaar of gelijkspel voorspeld, maar ander doelsaldo (bijv. Uitslag 3-0, Voorspelling 1-0).</li>
+          <li><strong class="text-white">1 Punt:</strong> Voorspelling ingevuld, maar de uitslag/winnaar is fout.</li>
+          <li><strong class="text-white">0 Punten:</strong> Geen voorspelling ingevuld.</li>
+        </ul>
+      </div>
+
+      <div class="bg-emerald-950/40 p-4 rounded-xl border border-emerald-500/30 space-y-2">
+        <h4 class="text-sm font-bold text-emerald-300 flex items-center gap-1.5">📅 Maandbonus (10 Ptn Pot)</h4>
+        <p class="text-xs text-gray-300">Elke maand strijden spelers in hun privé-liga voor de maandbonus:</p>
+        <ul class="text-xs text-gray-300 space-y-1 list-disc list-inside">
+          <li><strong class="text-white">1 Winnaar:</strong> Krijgt +10 bonuspunten.</li>
+          <li><strong class="text-white">2 Gedeelde winnaars:</strong> Krijgen elk +5 bonuspunten.</li>
+          <li><strong class="text-white">3 Gedeelde winnaars:</strong> Krijgen elk +3 bonuspunten.</li>
+          <li><strong class="text-white">4 of meer winnaars:</strong> Krijgen elk +1 bonuspunt.</li>
+        </ul>
+      </div>
+
+      <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 space-y-1.5">
+        <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-1.5">🎁 Uitnodigingsbonus</h4>
+        <p class="text-xs text-gray-300">Nodig vrienden uit via jouw unieke uitnodigingslink. Zodra zij zich registreren én hun eerste voorspelling invullen, ontvang jij <strong class="text-white">+2 bonuspunten</strong>!</p>
+      </div>
+
+      <div class="bg-yellow-950/40 border border-yellow-600/30 p-4 rounded-xl space-y-1.5">
+        <h4 class="text-sm font-bold text-yellow-300 flex items-center gap-1.5">🔒 Deadlines & Beperkingen</h4>
+        <ul class="text-xs text-yellow-200/90 space-y-1 list-disc list-inside">
+          <li>Voorspellingen sluiten zodra het aftrapsignaal van de wedstrijd klinkt.</li>
+          <li>Je kunt maximaal 2 speeldagen vooruit invullen.</li>
+        </ul>
+      </div>
+
+      <button onclick="closeRulesModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition text-sm">
+        Begrepen!
+      </button>
+    </div>
+  </div>
+
+  <div id="invite-group-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-sm w-full text-center relative shadow-2xl space-y-4">
+      <div class="text-3xl">🎁</div>
+      <h3 class="text-lg font-extrabold text-white">Uitnodiging voor een groep</h3>
+      <p class="text-sm text-gray-300">Je bent uitgenodigd voor groep <span id="invite-group-code" class="font-bold text-emerald-400"></span>. Wil je hiernaar overstappen?</p>
+      <div class="flex gap-3">
+        <button onclick="weigerGroepUitnodiging()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2.5 rounded-lg transition text-sm">
+          Nee, blijf in mijn groep
+        </button>
+        <button onclick="aanvaardGroepUitnodiging()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition text-sm">
+          Ja, wissel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="match-predictions-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-md w-full relative shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+      <button onclick="closeMatchPredictionsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      <div id="match-predictions-content">
+        <p class="text-gray-400 text-center py-6">Laden...</p>
+      </div>
     </div>
   </div>
 
@@ -473,653 +544,949 @@
   </div>
 
   <script>
-  const SUPABASE_URL = 'https://pitvmvbtourmonkwzwoq.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
-  const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_URL = 'https://pitvmvbtourmonkwzwoq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const inviteGroup = urlParams.get('group');
-  const inviteRef = urlParams.get('ref');
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteGroup = urlParams.get('group');
+    const inviteRef = urlParams.get('ref');
 
-  if (inviteGroup) localStorage.setItem('prono_group', inviteGroup.toUpperCase());
-  if (inviteRef) localStorage.setItem('prono_ref', inviteRef);
+    if (inviteGroup) localStorage.setItem('prono_group', inviteGroup.toUpperCase());
+    if (inviteRef) localStorage.setItem('prono_ref', inviteRef);
 
-  let currentUser = null;
-  let currentUserProfile = null;
-  let currentGroup = localStorage.getItem('prono_group') || 'DEFAULT_GROUP';
-  let currentRef = localStorage.getItem('prono_ref') || null;
-  
-  let hideIndicatorTimer = null;
+    let currentUser = null;
+    let currentUserProfile = null;
+    let currentGroup = localStorage.getItem('prono_group') || 'DEFAULT_GROUP';
+    let currentRef = localStorage.getItem('prono_ref') || null;
 
-  const CLUB_LOGOS = {
-    "Club Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/club-brugge.png",
-    "Royal Antwerp FC": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/antwerp.png",
-    "Lommel SK": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lommel.png",
-    "SK Beveren": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/beveren.png",
-    "Sporting Charleroi": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/charleroi.png",
-    "KRC Genk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/genk.png",
-    "KV Kortrijk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/kvkortrijk.png",
-    "RAAL La Louvière": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lalouviere.png",
-    "STVV": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/sint-truiden.png",
-    "Standard Luik": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/standaard-liege.png",
-    "Royale Union SG": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/union.png",
-    "KVC Westerlo": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/westerlo.png",
-    "SV Zulte Waregem": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/zulte-waregem.png",
-    "RSC Anderlecht": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/anderlecht.png",
-    "KV Mechelen": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/mechelen.png",
-    "KAA Gent": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/gent.png",
-    "Cercle Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/cercle-brugge.png",
-    "OH Leuven": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/leuven.png"
-  };
+    // Als iemand een uitnodigingslink opent terwijl die AL een account heeft (of al ingelogd
+    // is in deze browser), gebeurde er voorheen niets: de group/ref-parameters werden enkel
+    // toegepast bij het aanmaken van een GLOEDNIEUW profiel. We onthouden hier expliciet of
+    // déze pagina-load een groepslink was, zodat we na het inloggen kunnen vragen of iemand
+    // wil overstappen (zie toonGroepUitnodigingIndienNodig, aangeroepen vanuit initialiseerUserSessie).
+    let pendingGroupInvite = inviteGroup ? inviteGroup.toUpperCase() : null;
+    
+    let hideIndicatorTimer = null;
 
-  const DEFAULT_TIMES = {
-    "Club Brugge - KV Kortrijk": "20:45",
-    "Sporting Charleroi - OH Leuven": "16:00",
-    "Standard Luik - Cercle Brugge": "18:15",
-    "KVC Westerlo - Royale Union SG": "20:45",
-    "STVV - Lommel SK": "13:30",
-    "KAA Gent - KV Mechelen": "16:00",
-    "SV Zulte Waregem - KRC Genk": "18:30",
-    "RSC Anderlecht - RAAL La Louvière": "21:00",
-    "Royal Antwerp FC - SK Beveren": "21:00",
-    "SK Beveren - Standard Luik": "20:00",
-    "STVV - KVC Westerlo": "18:15"
-  };
-
-  function berekenMatchPunten(predHome, predAway, matchHome, matchAway) {
-    if (predHome === undefined || predHome === null || predAway === undefined || predAway === null) return 0;
-    if (matchHome === null || matchAway === null) return 0;
-
-    if (predHome === matchHome && predAway === matchAway) return 10;
-
-    const predDiff = predHome - predAway;
-    const matchDiff = matchHome - matchAway;
-
-    const predSign = Math.sign(predDiff);
-    const matchSign = Math.sign(matchDiff);
-
-    if (predSign === matchSign) {
-      if (predDiff === matchDiff) return 7;
-      return 5;
-    }
-
-    return 1;
-  }
-
-  function openRulesModal() { document.getElementById('rules-modal').classList.remove('hidden'); }
-  function closeRulesModal() { document.getElementById('rules-modal').classList.add('hidden'); }
-
-  function handleScoreFocus(input) {
-    if (input.value === '') {
-      input.value = 0;
-      input.classList.add('has-value');
-    }
-  }
-
-  function checkScoreInput(input) {
-    if (input.value < 0 && input.value !== '') input.value = 0;
-    if (input.value !== '' && input.value !== null) input.classList.add('has-value');
-    else input.classList.remove('has-value');
-  }
-
-  async function opslaanMatchVoorspelling(matchId) {
-    if (!currentUser) {
-      toonMelding("❌ Je moet ingelogd zijn om te voorspellen.", true);
-      return;
-    }
-
-    const { data: { user } } = await _supabase.auth.getUser();
-    if (!user) {
-      toonMelding("❌ Sessie niet gevonden. Log opnieuw in.", true);
-      return;
-    }
-
-    const homeInput = document.getElementById(`home-${matchId}`);
-    const awayInput = document.getElementById(`away-${matchId}`);
-    const savedBadge = document.getElementById(`saved-badge-${matchId}`);
-
-    const homeVal = homeInput ? homeInput.value : '';
-    const awayVal = awayInput ? awayInput.value : '';
-
-    if (homeVal === '' || awayVal === '') {
-      toonMelding("⚠️ Vul voor beide teams een score in.", true);
-      return;
-    }
-
-    const { error } = await _supabase.from('predictions').upsert({
-      user_id: user.id,
-      username: currentUser,
-      match_id: parseInt(matchId, 10),
-      predicted_home_score: parseInt(homeVal, 10),
-      predicted_away_score: parseInt(awayVal, 10)
-    }, { onConflict: 'user_id,match_id' }); // Opslaan op basis van unieke User ID
-
-    if (!error) {
-      if (homeInput) homeInput.classList.add('is-saved');
-      if (awayInput) awayInput.classList.add('is-saved');
-      if (savedBadge) savedBadge.classList.remove('hidden');
-      
-      const saveIndicator = document.getElementById('save-indicator');
-      saveIndicator.classList.add('show');
-      
-      if (hideIndicatorTimer) clearTimeout(hideIndicatorTimer);
-      hideIndicatorTimer = setTimeout(() => saveIndicator.classList.remove('show'), 3500);
-
-      toonMelding("✅ Voorspelling opgeslagen!");
-      laadKlassementen();
-    } else {
-      console.error("Fout bij opslaan van voorspelling:", matchId, error);
-      toonMelding(`❌ Opslaan mislukt: ${error.message}`, true);
-    }
-  }
-
-  function togglePasswordVisibility(inputId, btnId) {
-    const input = document.getElementById(inputId);
-    const btn = document.getElementById(btnId);
-    if (input.type === "password") {
-      input.type = "text";
-      btn.innerText = "🙈";
-    } else {
-      input.type = "password";
-      btn.innerText = "👁️";
-    }
-  }
-
-  function switchAuthTab(tab) {
-    document.getElementById('form-login').classList.add('hidden');
-    document.getElementById('form-register').classList.add('hidden');
-    document.getElementById('form-reset').classList.add('hidden');
-    document.getElementById('form-new-password').classList.add('hidden');
-
-    const buttons = ['tab-btn-login', 'tab-btn-register', 'tab-btn-reset'];
-    buttons.forEach(id => {
-      const b = document.getElementById(id);
-      b.classList.remove('bg-emerald-600', 'text-white');
-      b.classList.add('text-gray-400');
-    });
-
-    if (tab === 'login') {
-      document.getElementById('form-login').classList.remove('hidden');
-      document.getElementById('tab-btn-login').classList.add('bg-emerald-600', 'text-white');
-    } else if (tab === 'register') {
-      document.getElementById('form-register').classList.remove('hidden');
-      document.getElementById('tab-btn-register').classList.add('bg-emerald-600', 'text-white');
-    } else if (tab === 'reset') {
-      document.getElementById('form-reset').classList.remove('hidden');
-      document.getElementById('tab-btn-reset').classList.add('bg-emerald-600', 'text-white');
-    }
-  }
-
-  async function inloggen() {
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-    const btn = document.getElementById('btn-submit-login');
-
-    btn.innerText = '⌛ Inloggen...';
-    btn.disabled = true;
-
-    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-
-    btn.innerText = 'Inloggen';
-    btn.disabled = false;
-
-    if (error) {
-      toonMelding('❌ ' + error.message, true);
-      return;
-    }
-
-    await initialiseerUserSessie(data.user);
-  }
-
-  async function registreren() {
-    const username = document.getElementById('reg-username').value.trim();
-    const email = document.getElementById('reg-email').value.trim();
-    const password = document.getElementById('reg-password').value;
-    const btn = document.getElementById('btn-submit-reg');
-
-    btn.innerText = '⌛ Account Aanmaken...';
-    btn.disabled = true;
-
-    const { data, error } = await _supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { username: username } }
-    });
-
-    btn.innerText = 'Account Aanmaken';
-    btn.disabled = false;
-
-    if (error) {
-      toonMelding('❌ ' + error.message, true);
-      return;
-    }
-
-    const userObj = data.user || (await _supabase.auth.getUser()).data.user;
-
-    await _supabase.from('profiles').upsert({ 
-      id: userObj.id,
-      username: username, 
-      email: email, 
-      group_code: currentGroup,
-      referred_by: currentRef 
-    }, { onConflict: 'id' });
-
-    toonMelding('✅ Account aangemaakt! Je bent ingelogd.');
-    await initialiseerUserSessie(userObj, username);
-  }
-
-  async function resetWachtwoordAanvragen() {
-    const email = document.getElementById('reset-email').value.trim();
-    const btn = document.getElementById('btn-submit-reset');
-
-    btn.innerText = '⌛ Verzenden...';
-    btn.disabled = true;
-
-    const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + window.location.pathname
-    });
-
-    btn.innerText = 'Verstuur Reset Link';
-    btn.disabled = false;
-
-    if (error) toonMelding('❌ ' + error.message, true);
-    else toonMelding('📧 Reset-link is verzonden! Check je e-mail.');
-  }
-
-  async function opslaanNieuwWachtwoord() {
-    const newPassword = document.getElementById('new-password').value;
-    const btn = document.getElementById('btn-submit-newpass');
-
-    btn.innerText = '⌛ Opslaan...';
-    btn.disabled = true;
-
-    const { data, error } = await _supabase.auth.updateUser({ password: newPassword });
-
-    btn.innerText = 'Opslaan & Inloggen';
-    btn.disabled = false;
-
-    if (error) toonMelding('❌ ' + error.message, true);
-    else {
-      toonMelding('✅ Wachtwoord succesvol gewijzigd!');
-      await initialiseerUserSessie(data.user);
-    }
-  }
-
- async function initialiseerUserSessie(userObj, optioneleNaam = null) {
-  if (!userObj) return;
-
-  // 1. Zoek het profiel EERST op het unieke ID van Supabase (userObj.id)
-  let { data: profile } = await _supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userObj.id)
-    .maybeSingle();
-
-  // 2. Als het niet op ID is gevonden, zoek op e-mail als fallback
-  if (!profile && userObj.email) {
-    const { data: profByEmail } = await _supabase
-      .from('profiles')
-      .select('*')
-      .eq('email', userObj.email)
-      .maybeSingle();
-    profile = profByEmail;
-  }
-
-  // 3. Wijs de gevonden username toe (of de opgegeven naam / metadata)
-  if (profile && profile.username) {
-    currentUser = profile.username;
-    currentUserProfile = profile;
-    if (profile.group_code) {
-      currentGroup = profile.group_code;
-      localStorage.setItem('prono_group', currentGroup);
-    }
-  } else {
-    let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
-    if (!determinedUsername) {
-      determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
-    }
-
-    currentUser = determinedUsername;
-    const newProf = { 
-      id: userObj.id,
-      username: currentUser, 
-      email: userObj.email, 
-      group_code: currentGroup,
-      referred_by: currentRef 
+    const CLUB_LOGOS = {
+      "Club Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/club-brugge.png",
+      "Royal Antwerp FC": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/antwerp.png",
+      "Lommel SK": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lommel.png",
+      "SK Beveren": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/beveren.png",
+      "Sporting Charleroi": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/charleroi.png",
+      "KRC Genk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/genk.png",
+      "KV Kortrijk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/kvkortrijk.png",
+      "RAAL La Louvière": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lalouviere.png",
+      "STVV": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/sint-truiden.png",
+      "Standard Luik": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/standaard-liege.png",
+      "Royale Union SG": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/union.png",
+      "KVC Westerlo": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/westerlo.png",
+      "SV Zulte Waregem": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/zulte-waregem.png",
+      "RSC Anderlecht": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/anderlecht.png",
+      "KV Mechelen": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/mechelen.png",
+      "KAA Gent": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/gent.png",
+      "Cercle Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/cercle-brugge.png",
+      "OH Leuven": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/leuven.png"
     };
-    await _supabase.from('profiles').upsert(newProf, { onConflict: 'id' });
-    currentUserProfile = newProf;
-  }
 
-  localStorage.setItem('prono_username', currentUser);
-  toonScherm('dashboard');
-}
+    const DEFAULT_TIMES = {
+      "Club Brugge - KV Kortrijk": "20:45",
+      "Sporting Charleroi - OH Leuven": "16:00",
+      "Standard Luik - Cercle Brugge": "18:15",
+      "KVC Westerlo - Royale Union SG": "20:45",
+      "STVV - Lommel SK": "13:30",
+      "KAA Gent - KV Mechelen": "16:00",
+      "SV Zulte Waregem - KRC Genk": "18:30",
+      "RSC Anderlecht - RAAL La Louvière": "21:00",
+      "Royal Antwerp FC - SK Beveren": "21:00",
+      "SK Beveren - Standard Luik": "20:00",
+      "STVV - KVC Westerlo": "18:15"
+    };
 
-  async function updateGebruikersnaam() {
-    const newName = document.getElementById('setting-new-name').value.trim();
-    const saveBtn = document.getElementById('btn-save-username');
-
-    if (!newName || newName === currentUser) {
-      toonMelding('⚠️ Voer een nieuwe geldige naam in.', true);
-      return;
-    }
-
-    const { data: { user } } = await _supabase.auth.getUser();
-    if (!user) return;
-
-    saveBtn.innerText = '⌛ Bezig met opslaan...';
-    saveBtn.disabled = true;
-
-    const oldName = currentUser;
-
-    // Update op basis van E-mail / User ID zodat Supabase het exact matcht
-    const { error } = await _supabase
-      .from('profiles')
-      .update({ username: newName, last_name_change: new Date().toISOString() })
-      .eq('email', user.email);
-
-    saveBtn.innerText = '💾 Opslaan & Naam Wijzigen';
-    saveBtn.disabled = false;
-
-    if (error) {
-      toonMelding('❌ Opslaan mislukt: ' + error.message, true);
-    } else {
-      // Werk ook oude referenties bij in voorspellingen en uitnodigingen
-      await _supabase.from('predictions').update({ username: newName }).eq('user_id', user.id);
-      await _supabase.from('profiles').update({ referred_by: newName }).eq('referred_by', oldName);
-
-      currentUser = newName;
-      if (currentUserProfile) {
-        currentUserProfile.username = newName;
-        currentUserProfile.last_name_change = new Date().toISOString();
+    function checkScoreInput(input) {
+      if (input.value !== '') {
+        let val = parseInt(input.value, 10);
+        if (isNaN(val) || val < 0) val = 0;
+        if (val > 99) val = 99;
+        input.value = val;
       }
 
-      localStorage.setItem('prono_username', currentUser);
-      toonMelding('✅ Gebruikersnaam succesvol gewijzigd!');
-      
-      laadSettingsScherm();
-      toonScherm('dashboard');
+      if (input.value !== '' && input.value !== null) {
+        input.classList.add('has-value');
+      } else {
+        input.classList.remove('has-value');
+      }
     }
-  }
 
-  function laadSettingsScherm() {
-    document.getElementById('setting-current-name').value = currentUser;
-    document.getElementById('setting-new-name').value = '';
-
-    const cooldownMsg = document.getElementById('name-change-cooldown-msg');
-    const saveBtn = document.getElementById('btn-save-username');
-
-    if (currentUserProfile && currentUserProfile.last_name_change) {
-      const lastChange = new Date(currentUserProfile.last_name_change);
-      const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
-      
-      if (diffDays < 30) {
-        const overigeDagen = Math.ceil(30 - diffDays);
-        cooldownMsg.innerText = `⏳ Je kunt je naam pas weer wijzigen over ${overigeDagen} dag(en).`;
-        cooldownMsg.classList.remove('hidden');
-        saveBtn.disabled = true;
-        saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    async function opslaanMatchVoorspelling(matchId) {
+      if (!currentUser) {
+        toonMelding("❌ Je moet ingelogd zijn om te voorspellen.", true);
         return;
       }
-    }
 
-    cooldownMsg.classList.add('hidden');
-    saveBtn.disabled = false;
-    saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-  }
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) {
+        toonMelding("❌ Sessie niet gevonden. Log opnieuw in.", true);
+        return;
+      }
 
-  async function uitloggen() {
-    await _supabase.auth.signOut();
-    currentUser = null;
-    currentUserProfile = null;
-    localStorage.removeItem('prono_username');
-    toonScherm('login');
-  }
+      const homeInput = document.getElementById(`home-${matchId}`);
+      const awayInput = document.getElementById(`away-${matchId}`);
+      const savedBadge = document.getElementById(`saved-badge-${matchId}`);
 
-  function toonScherm(schermNaam) {
-    document.getElementById('screen-login').classList.add('hidden');
-    document.getElementById('screen-dashboard').classList.add('hidden');
-    document.getElementById('screen-matches').classList.add('hidden');
-    document.getElementById('screen-settings').classList.add('hidden');
+      const homeVal = homeInput ? homeInput.value : '';
+      const awayVal = awayInput ? awayInput.value : '';
 
-    if (schermNaam === 'login') {
-      document.getElementById('screen-login').classList.remove('hidden');
-      document.getElementById('user-nav').classList.add('hidden');
-      document.getElementById('mobile-nav').classList.add('hidden');
-    } else if (schermNaam === 'dashboard') {
-      document.getElementById('screen-dashboard').classList.remove('hidden');
-      document.getElementById('user-nav').classList.remove('hidden');
-      document.getElementById('mobile-nav').classList.remove('hidden');
-      document.getElementById('dash-username').innerText = currentUser;
-      document.getElementById('dash-groupcode').innerText = currentGroup;
-      document.getElementById('nav-username').innerText = '👤 ' + currentUser;
-      updateMobileNavActive('mnav-dashboard');
-      laadDashboardStats();
-    } else if (schermNaam === 'matches') {
-      document.getElementById('screen-matches').classList.remove('hidden');
-      document.getElementById('user-nav').classList.remove('hidden');
-      document.getElementById('mobile-nav').classList.remove('hidden');
-      laadWedstrijden();
-      laadKlassementen();
-    } else if (schermNaam === 'settings') {
-      document.getElementById('screen-settings').classList.remove('hidden');
-      document.getElementById('user-nav').classList.remove('hidden');
-      document.getElementById('mobile-nav').classList.remove('hidden');
-      updateMobileNavActive('mnav-settings');
-      laadSettingsScherm();
-    }
-  }
+      if (homeVal === '' || awayVal === '') {
+        toonMelding("⚠️ Vul voor beide teams een score in.", true);
+        return;
+      }
 
-  function openSpeeldagTab(tabTarget) {
-    toonScherm('matches');
-    switchTab(tabTarget);
-  }
+      // De "Opslaan"-knop is geen submit-knop, dus de HTML5 min/max-validatie op de
+      // inputs wordt nooit afgedwongen. Klem de waarden hier expliciet vast op 0-99.
+      let homeScore = parseInt(homeVal, 10);
+      let awayScore = parseInt(awayVal, 10);
 
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
+      if (isNaN(homeScore) || isNaN(awayScore)) {
+        toonMelding("⚠️ Vul voor beide teams een geldige score in.", true);
+        return;
+      }
 
-    const tabs = ['btn-tab-predict', 'btn-tab-global', 'btn-tab-private', 'btn-tab-monthly'];
-    tabs.forEach(t => {
-      const btn = document.getElementById(t);
-      btn.classList.remove('bg-emerald-600', 'text-white');
-      btn.classList.add('text-gray-400');
-    });
+      homeScore = Math.min(99, Math.max(0, homeScore));
+      awayScore = Math.min(99, Math.max(0, awayScore));
 
-    const activeBtn = document.getElementById('btn-' + tabId);
-    if(activeBtn) {
-      activeBtn.classList.add('bg-emerald-600', 'text-white');
-      activeBtn.classList.remove('text-gray-400');
-    }
+      // We slaan ook de groep op waarin je zat op het moment van voorspellen. Dit is nodig
+      // om maandbonussen achteraf correct aan de juiste groep toe te kennen, ook als je later
+      // van groep wisselt. Vereist de kolom 'group_code' op de 'predictions'-tabel in Supabase
+      // (zie instructies) — als die nog niet bestaat, valt dit automatisch terug op de oude
+      // manier van opslaan zodat voorspellingen blijven werken.
+      let { error } = await _supabase.from('predictions').upsert({
+        user_id: user.id,
+        username: currentUser,
+        match_id: parseInt(matchId, 10),
+        predicted_home_score: homeScore,
+        predicted_away_score: awayScore,
+        group_code: currentGroup
+      }, { onConflict: 'user_id,match_id' });
 
-    if(tabId === 'tab-predict') updateMobileNavActive('mnav-predict');
-    if(tabId === 'tab-global') updateMobileNavActive('mnav-global');
-    if(tabId === 'tab-private') updateMobileNavActive('mnav-private');
-  }
+      if (error && /group_code/i.test(error.message || '')) {
+        ({ error } = await _supabase.from('predictions').upsert({
+          user_id: user.id,
+          username: currentUser,
+          match_id: parseInt(matchId, 10),
+          predicted_home_score: homeScore,
+          predicted_away_score: awayScore
+        }, { onConflict: 'user_id,match_id' }));
+      }
 
-  function mobileSwitch(target) {
-    if (target === 'dashboard') toonScherm('dashboard');
-    else if (target === 'predict') openSpeeldagTab('tab-predict');
-    else if (target === 'global') openSpeeldagTab('tab-global');
-    else if (target === 'settings') toonScherm('settings');
-  }
-
-  function updateMobileNavActive(activeId) {
-    const items = ['mnav-dashboard', 'mnav-predict', 'mnav-global', 'mnav-settings'];
-    items.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        if (id === activeId) {
-          el.classList.remove('text-gray-400');
-          el.classList.add('text-emerald-400');
-        } else {
-          el.classList.remove('text-emerald-400');
-          el.classList.add('text-gray-400');
+      if (!error) {
+        if (homeInput) homeInput.classList.add('is-saved');
+        if (awayInput) awayInput.classList.add('is-saved');
+        
+        if (savedBadge) {
+          savedBadge.classList.remove('hidden');
         }
-      }
-    });
-  }
+        
+        const saveIndicator = document.getElementById('save-indicator');
+        saveIndicator.classList.add('show');
+        
+        if (hideIndicatorTimer) clearTimeout(hideIndicatorTimer);
+        hideIndicatorTimer = setTimeout(() => {
+          saveIndicator.classList.remove('show');
+        }, 3500);
 
-  function openShareModal() {
-    const modal = document.getElementById('share-modal');
-    const codeDisplay = document.getElementById('share-modal-code');
-    const qrContainer = document.getElementById('qrcode-container');
-
-    codeDisplay.innerText = currentGroup;
-    
-    const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
-
-    qrContainer.innerHTML = '';
-    new QRCode(qrContainer, {
-      text: shareUrl,
-      width: 160,
-      height: 160,
-      colorDark : "#064e3b",
-      colorLight : "#ffffff",
-      correctLevel : QRCode.CorrectLevel.H
-    });
-
-    modal.classList.remove('hidden');
-  }
-
-  function closeShareModal() {
-    document.getElementById('share-modal').classList.add('hidden');
-  }
-
-  function copyShareLink() {
-    const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(currentUser)}`;
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      toonMelding('📋 Unieke uitnodigingslink gekopieerd!');
-      closeShareModal();
-    }).catch(err => {
-      prompt("Kopieer de onderstaande link:", shareUrl);
-    });
-  }
-
-  async function wijzigGroepscode() {
-    const nieuweCode = prompt("Voer de nieuwe privé-groepscode in:", currentGroup);
-    if (nieuweCode && nieuweCode.trim() !== "") {
-      currentGroup = nieuweCode.trim().toUpperCase();
-      localStorage.setItem('prono_group', currentGroup);
-      document.getElementById('dash-groupcode').innerText = currentGroup;
-      document.getElementById('current-group-display').innerText = currentGroup;
-      
-      const { data: { user } } = await _supabase.auth.getUser();
-      if (user) {
-        await _supabase.from('profiles').update({ group_code: currentGroup }).eq('email', user.email);
-      }
-      laadKlassementen();
-      laadDashboardStats();
-    }
-  }
-
-  function vindLogoUrl(teamNaam) {
-    if (!teamNaam) return '';
-    if (CLUB_LOGOS[teamNaam]) return CLUB_LOGOS[teamNaam];
-    const schoneNaam = Object.keys(CLUB_LOGOS).find(key => 
-      teamNaam.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(teamNaam.toLowerCase())
-    );
-    return schoneNaam ? CLUB_LOGOS[schoneNaam] : '';
-  }
-
-  function toonMelding(bericht, isFout = false) {
-    const banner = document.getElementById('status-banner');
-    banner.classList.remove('hidden', 'bg-red-900/80', 'text-red-200', 'border-red-700', 'bg-emerald-900/80', 'text-emerald-200', 'border-emerald-700');
-    banner.classList.add('border', isFout ? 'bg-red-900/80' : 'bg-emerald-900/80', isFout ? 'text-red-200' : 'text-emerald-200', isFout ? 'border-red-700' : 'border-emerald-700');
-    banner.innerText = bericht;
-    setTimeout(() => banner.classList.add('hidden'), 5000);
-  }
-
-  function formatteerDatum(datumString) {
-    if (!datumString) return 'TBD';
-    const d = new Date(datumString);
-    if (isNaN(d.getTime())) return datumString;
-    
-    const dag = String(d.getDate()).padStart(2, '0');
-    const maand = String(d.getMonth() + 1).padStart(2, '0');
-    const jaar = d.getFullYear();
-    return `${dag}/${maand}/${jaar}`;
-  }
-
-  function formatteerTijd(datumString, matchTimeVal, matchKey) {
-    if (matchTimeVal && matchTimeVal.includes(':')) {
-      const m = matchTimeVal.match(/\d{1,2}:\d{2}/);
-      if (m) return m[0].padStart(5, '0');
-    }
-
-    if (datumString && typeof datumString === 'string' && datumString.includes('T')) {
-      const timePart = datumString.split('T')[1];
-      if (timePart) {
-        const schoonUur = timePart.substring(0, 5);
-        if (schoonUur !== '00:00') return schoonUur;
+        toonMelding("✅ Voorspelling opgeslagen!");
+        laadKlassementen();
+      } else {
+        console.error("Fout bij opslaan van voorspelling:", matchId, error);
+        toonMelding(`❌ Opslaan mislukt: ${error.message}`, true);
       }
     }
 
-    if (matchKey && DEFAULT_TIMES[matchKey]) return DEFAULT_TIMES[matchKey];
-    return "20:00";
-  }
-
-  function isMatchOpenVoorVoorspelling(match, actieveSpeeldag) {
-    const nu = new Date();
-    const matchSpeeldag = match.round || match.speeldag || 1;
-
-    if (match.match_date) {
-      const matchDatum = new Date(match.match_date);
-      if (matchDatum < nu) return { open: false, bericht: '🔒 Gestart' };
-    }
-
-    if (actieveSpeeldag !== null && matchSpeeldag > (actieveSpeeldag + 1)) {
-      return { open: false, bericht: '🔒 Nog niet open' };
-    }
-
-    return { open: true, bericht: '🟢 Open' };
-  }
-
-  async function laadWedstrijden() {
-    const container = document.getElementById('matches-container');
-    if (!container) return;
-
-    container.innerHTML = '<p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>';
-
-    try {
-      const { data: matches, error: matchesErr } = await _supabase.from('matches').select('*').order('id', { ascending: true });
-      const { data: teams } = await _supabase.from('teams').select('*');
-      
-      const { data: { user } } = await _supabase.auth.getUser();
-      const { data: myPredictions } = user ? await _supabase.from('predictions').select('*').eq('user_id', user.id) : { data: [] };
-
-      if (matchesErr) {
-        console.error("Supabase Error:", matchesErr);
-        container.innerHTML = `<p class="text-red-400 text-center py-8">Fout bij laden: ${matchesErr.message}</p>`;
-        return;
+    function togglePasswordVisibility(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.innerText = "🙈";
+      } else {
+        input.type = "password";
+        btn.innerText = "👁️";
       }
+    }
 
-      const teamMap = {};
-      (teams || []).forEach(t => teamMap[t.id] = t);
+    function switchAuthTab(tab) {
+      document.getElementById('form-login').classList.add('hidden');
+      document.getElementById('form-register').classList.add('hidden');
+      document.getElementById('form-reset').classList.add('hidden');
+      document.getElementById('form-new-password').classList.add('hidden');
 
-      const predMap = {};
-      (myPredictions || []).forEach(p => {
-        predMap[String(p.match_id)] = p;
+      const buttons = ['tab-btn-login', 'tab-btn-register', 'tab-btn-reset'];
+      buttons.forEach(id => {
+        const b = document.getElementById(id);
+        b.classList.remove('bg-emerald-600', 'text-white');
+        b.classList.add('text-gray-400');
       });
 
-      if (!matches || matches.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-center py-8">Geen wedstrijden gevonden in de database.</p>';
+      if (tab === 'login') {
+        document.getElementById('form-login').classList.remove('hidden');
+        document.getElementById('tab-btn-login').classList.add('bg-emerald-600', 'text-white');
+      } else if (tab === 'register') {
+        document.getElementById('form-register').classList.remove('hidden');
+        document.getElementById('tab-btn-register').classList.add('bg-emerald-600', 'text-white');
+      } else if (tab === 'reset') {
+        document.getElementById('form-reset').classList.remove('hidden');
+        document.getElementById('tab-btn-reset').classList.add('bg-emerald-600', 'text-white');
+      }
+    }
+
+    async function inloggen() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-submit-login');
+
+      btn.innerText = '⌛ Inloggen...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+      btn.innerText = 'Inloggen';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
         return;
       }
 
+      await initialiseerUserSessie(data.user);
+    }
+
+    async function registreren() {
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-submit-reg');
+
+      btn.innerText = '⌛ Account Aanmaken...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { username: username } }
+      });
+
+      btn.innerText = 'Account Aanmaken';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+        return;
+      }
+
+      // Als "Confirm email" aanstaat in Supabase Auth, geeft signUp() wel een user
+      // terug maar GEEN actieve sessie. Een profiel aanmaken zou dan mislukken
+      // (RLS vereist een ingelogde gebruiker) en initialiseerUserSessie() zou
+      // dezelfde reden falen. In dat geval tonen we een duidelijke melding i.p.v.
+      // een voorspelbaar mislukte upsert/inlog te proberen. Het profiel wordt
+      // automatisch aangemaakt bij de eerste echte login (zie initialiseerUserSessie).
+      if (data.user && data.session) {
+        await _supabase.from('profiles').upsert({ 
+          id: data.user.id,
+          username: username, 
+          group_code: currentGroup,
+          referred_by: currentRef,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+
+        toonMelding('✅ Account aangemaakt! Je bent ingelogd.');
+        await initialiseerUserSessie(data.user, username);
+      } else if (data.user && !data.session) {
+        toonMelding('📧 Account aangemaakt! Bevestig eerst je e-mailadres via de link die we je stuurden, en log daarna in.');
+        switchAuthTab('login');
+      }
+    }
+
+    async function resetWachtwoordAanvragen() {
+      const email = document.getElementById('reset-email').value.trim();
+      const btn = document.getElementById('btn-submit-reset');
+
+      btn.innerText = '⌛ Verzenden...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+
+      btn.innerText = 'Verstuur Reset Link';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+      } else {
+        toonMelding('📧 Reset-link is verzonden! Check je e-mail.');
+      }
+    }
+
+    async function opslaanNieuwWachtwoord() {
+      const newPassword = document.getElementById('new-password').value;
+      const btn = document.getElementById('btn-submit-newpass');
+
+      btn.innerText = '⌛ Opslaan...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.updateUser({ password: newPassword });
+
+      btn.innerText = 'Opslaan & Inloggen';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+      } else {
+        toonMelding('✅ Wachtwoord succesvol gewijzigd!');
+        await initialiseerUserSessie(data.user);
+      }
+    }
+
+    async function initialiseerUserSessie(userObj, optioneleNaam = null) {
+      if (!userObj) return;
+
+      const { data: profile } = await _supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userObj.id)
+        .maybeSingle();
+
+      if (profile && profile.username) {
+        currentUser = profile.username;
+        currentUserProfile = profile;
+        if (profile.group_code) currentGroup = profile.group_code;
+      } else {
+        let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
+        if (!determinedUsername) {
+          determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
+        }
+
+        currentUser = determinedUsername;
+        const newProf = { 
+          id: userObj.id,
+          username: currentUser, 
+          group_code: currentGroup,
+          referred_by: currentRef,
+          updated_at: new Date().toISOString()
+        };
+        
+        await _supabase.from('profiles').upsert(newProf, { onConflict: 'id' });
+        currentUserProfile = newProf;
+      }
+
+      await _supabase
+        .from('profiles')
+        .update({ last_seen: new Date().toISOString() })
+        .eq('id', userObj.id);
+
+      localStorage.setItem('prono_username', currentUser);
+      localStorage.setItem('prono_group', currentGroup);
+      toonScherm('dashboard');
+      toonGroepUitnodigingIndienNodig();
+    }
+
+    // Vraagt (indien relevant) of iemand die via een groepslink binnenkwam, maar al een
+    // account/sessie had met een ANDERE groep, wil overstappen. Dit dekt het geval waarbij
+    // de link niet bij een gloednieuwe registratie werd gebruikt.
+    function toonGroepUitnodigingIndienNodig() {
+      if (!pendingGroupInvite) return;
+      if (pendingGroupInvite === currentGroup) {
+        pendingGroupInvite = null;
+        return;
+      }
+      document.getElementById('invite-group-code').innerText = pendingGroupInvite;
+      document.getElementById('invite-group-modal').classList.remove('hidden');
+    }
+
+    async function aanvaardGroepUitnodiging() {
+      const code = pendingGroupInvite;
+      pendingGroupInvite = null;
+      document.getElementById('invite-group-modal').classList.add('hidden');
+      if (!code) return;
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      await koppelGebruikerAanGroep(user.id, code);
+    }
+
+    function weigerGroepUitnodiging() {
+      pendingGroupInvite = null;
+      document.getElementById('invite-group-modal').classList.add('hidden');
+    }
+
+    async function updateGebruikersnaam() {
+      const newName = document.getElementById('setting-new-name').value.trim();
+      const saveBtn = document.getElementById('btn-save-username');
+
+      if (!newName || newName === currentUser) {
+        toonMelding('⚠️ Voer een nieuwe geldige naam in.', true);
+        return;
+      }
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      saveBtn.innerText = '⌛ Bezig met opslaan...';
+      saveBtn.disabled = true;
+
+      const { error } = await _supabase
+        .from('profiles')
+        .update({ 
+          username: newName, 
+          updated_at: new Date().toISOString() 
+        })
+        .eq('id', user.id);
+
+      saveBtn.innerText = '💾 Opslaan & Naam Wijzigen';
+      saveBtn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ Opslaan mislukt: ' + error.message, true);
+      } else {
+        await _supabase
+          .from('predictions')
+          .update({ username: newName })
+          .eq('user_id', user.id);
+
+        currentUser = newName;
+        if (currentUserProfile) {
+          currentUserProfile.username = newName;
+          currentUserProfile.updated_at = new Date().toISOString();
+        }
+
+        localStorage.setItem('prono_username', currentUser);
+        toonMelding('✅ Gebruikersnaam succesvol gewijzigd!');
+        
+        laadSettingsScherm();
+        toonScherm('dashboard');
+      }
+    }
+
+    function laadSettingsScherm() {
+      document.getElementById('setting-current-name').value = currentUser;
+      document.getElementById('setting-new-name').value = '';
+
+      const cooldownMsg = document.getElementById('name-change-cooldown-msg');
+      const saveBtn = document.getElementById('btn-save-username');
+
+      if (currentUserProfile && currentUserProfile.updated_at) {
+        const lastChange = new Date(currentUserProfile.updated_at);
+        const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
+        
+        if (diffDays < 30) {
+          const overigeDagen = Math.ceil(30 - diffDays);
+          cooldownMsg.innerText = `⏳ Je kunt je naam pas weer wijzigen over ${overigeDagen} dag(en).`;
+          cooldownMsg.classList.remove('hidden');
+          saveBtn.disabled = true;
+          saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          return;
+        }
+      }
+
+      cooldownMsg.classList.add('hidden');
+      saveBtn.disabled = false;
+      saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    async function uitloggen() {
+      await _supabase.auth.signOut();
+      currentUser = null;
+      currentUserProfile = null;
+      localStorage.removeItem('prono_username');
+
+      // Voorkom dat een oude uitnodigingslink/groepscode van dit toestel blijft
+      // "kleven" aan een volgend account dat hier (zonder nieuwe link) aanmeldt.
+      localStorage.removeItem('prono_ref');
+      localStorage.removeItem('prono_group');
+      currentRef = null;
+      currentGroup = 'DEFAULT_GROUP';
+
+      toonScherm('login');
+    }
+
+    function toonScherm(schermNaam) {
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-dashboard').classList.add('hidden');
+      document.getElementById('screen-matches').classList.add('hidden');
+      document.getElementById('screen-settings').classList.add('hidden');
+
+      if (schermNaam === 'login') {
+        document.getElementById('screen-login').classList.remove('hidden');
+        document.getElementById('user-nav').classList.add('hidden');
+        document.getElementById('mobile-nav').classList.add('hidden');
+      } else if (schermNaam === 'dashboard') {
+        document.getElementById('screen-dashboard').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+        document.getElementById('dash-username').innerText = currentUser;
+        document.getElementById('dash-groupcode').innerText = currentGroup;
+        document.getElementById('nav-username').innerText = '👤 ' + currentUser;
+        updateMobileNavActive('mnav-dashboard');
+        laadDashboardStats();
+      } else if (schermNaam === 'matches') {
+        document.getElementById('screen-matches').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+        laadWedstrijden();
+        laadKlassementen();
+      } else if (schermNaam === 'settings') {
+        document.getElementById('screen-settings').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+        updateMobileNavActive('mnav-settings');
+        laadSettingsScherm();
+      }
+    }
+
+    function openSpeeldagTab(tabTarget) {
+      toonScherm('matches');
+      switchTab(tabTarget);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+
+      const tabs = ['btn-tab-predict', 'btn-tab-global', 'btn-tab-private', 'btn-tab-monthly'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(t);
+        btn.classList.remove('bg-emerald-600', 'text-white');
+        btn.classList.add('text-gray-400');
+      });
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if(activeBtn) {
+        activeBtn.classList.add('bg-emerald-600', 'text-white');
+        activeBtn.classList.remove('text-gray-400');
+      }
+
+      if(tabId === 'tab-predict') updateMobileNavActive('mnav-predict');
+      if(tabId === 'tab-global') updateMobileNavActive('mnav-global');
+      // Geen eigen icoon voor Privé Liga / Maand in de onderste balk (slechts 4 slots):
+      // deze tabs worden bereikt via het wedstrijdenscherm, dus 'Pronos' blijft actief.
+      if(tabId === 'tab-private') updateMobileNavActive('mnav-predict');
+      if(tabId === 'tab-monthly') updateMobileNavActive('mnav-predict');
+    }
+
+    function mobileSwitch(target) {
+      if (target === 'dashboard') toonScherm('dashboard');
+      else if (target === 'predict') openSpeeldagTab('tab-predict');
+      else if (target === 'global') openSpeeldagTab('tab-global');
+      else if (target === 'settings') toonScherm('settings');
+    }
+
+    function updateMobileNavActive(activeId) {
+      const items = ['mnav-dashboard', 'mnav-predict', 'mnav-global', 'mnav-settings'];
+      items.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (id === activeId) {
+            el.classList.remove('text-gray-400');
+            el.classList.add('text-emerald-400');
+          } else {
+            el.classList.remove('text-emerald-400');
+            el.classList.add('text-gray-400');
+          }
+        }
+      });
+    }
+
+    function openShareModal() {
+      const modal = document.getElementById('share-modal');
+      const codeDisplay = document.getElementById('share-modal-code');
+      const qrContainer = document.getElementById('qrcode-container');
+
+      codeDisplay.innerText = currentGroup;
+
+      // We gebruiken het (onveranderlijke) user-id als ref-waarde, niet de gebruikersnaam:
+      // die kan later gewijzigd worden via Instellingen, wat anders de referral-bonus zou breken.
+      const refId = (currentUserProfile && currentUserProfile.id) ? currentUserProfile.id : currentUser;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(refId)}`;
+
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: shareUrl,
+        width: 160,
+        height: 160,
+        colorDark : "#064e3b",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.add('hidden');
+    }
+
+    function openRulesModal() {
+      document.getElementById('rules-modal').classList.remove('hidden');
+    }
+
+    function closeRulesModal() {
+      document.getElementById('rules-modal').classList.add('hidden');
+    }
+
+    // Berekent de punten voor 1 voorspelling volgens het 10/7/5/1/0-systeem.
+    // 10 = exacte score, 7 = juiste winnaar + juist doelsaldo, 5 = juiste winnaar/gelijkspel maar ander doelsaldo,
+    // 1 = ingevuld maar fout, 0 = geen (geldige) voorspelling.
+    function berekenPuntenVoorVoorspelling(predHome, predAway, matchHome, matchAway) {
+      if (isNaN(predHome) || isNaN(predAway) || isNaN(matchHome) || isNaN(matchAway)) return 0;
+
+      if (predHome === matchHome && predAway === matchAway) return 10;
+
+      const predDiff = predHome - predAway;
+      const matchDiff = matchHome - matchAway;
+
+      if (Math.sign(predDiff) === Math.sign(matchDiff)) {
+        return Math.abs(predDiff) === Math.abs(matchDiff) ? 7 : 5;
+      }
+
+      return 1;
+    }
+
+    function copyShareLink() {
+      const refId = (currentUserProfile && currentUserProfile.id) ? currentUserProfile.id : currentUser;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(refId)}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        toonMelding('📋 Unieke uitnodigingslink gekopieerd!');
+        closeShareModal();
+      }).catch(err => {
+        prompt("Kopieer de onderstaande link:", shareUrl);
+      });
+    }
+
+    // --- GROEPEN FUNCTIES ---
+    function wijzigGroepscode() {
+      document.getElementById('group-modal').classList.remove('hidden');
+    }
+
+    function closeGroupModal() {
+      document.getElementById('group-modal').classList.add('hidden');
+    }
+
+    function switchGroupModalTab(tab) {
+      const formJoin = document.getElementById('form-join-group');
+      const formCreate = document.getElementById('form-create-group');
+      const btnJoin = document.getElementById('gtab-join');
+      const btnCreate = document.getElementById('gtab-create');
+
+      if (tab === 'join') {
+        formJoin.classList.remove('hidden');
+        formCreate.classList.add('hidden');
+        btnJoin.classList.add('bg-emerald-600', 'text-white');
+        btnJoin.classList.remove('text-gray-400');
+        btnCreate.classList.remove('bg-emerald-600', 'text-white');
+        btnCreate.classList.add('text-gray-400');
+      } else {
+        formCreate.classList.remove('hidden');
+        formJoin.classList.add('hidden');
+        btnCreate.classList.add('bg-emerald-600', 'text-white');
+        btnCreate.classList.remove('text-gray-400');
+        btnJoin.classList.remove('bg-emerald-600', 'text-white');
+        btnJoin.classList.add('text-gray-400');
+      }
+    }
+
+    async function verwerkGroepAanmaken() {
+      const name = document.getElementById('input-create-name').value.trim();
+      const code = document.getElementById('input-create-code').value.trim().toUpperCase();
+      const btn = document.getElementById('btn-submit-create');
+
+      if (!name || !code) return;
+
+      btn.innerText = '⌛ Bezig met aanmaken...';
+      btn.disabled = true;
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) {
+        btn.innerText = 'Groep Aanmaken & Deelnemen';
+        btn.disabled = false;
+        toonMelding('❌ Je moet ingelogd zijn om een groep aan te maken.', true);
+        return;
+      }
+
+      const { error: groupErr } = await _supabase
+        .from('groups')
+        .insert([{ name: name, code: code, created_by: user.id }]);
+
+      if (groupErr) {
+        btn.innerText = 'Groep Aanmaken & Deelnemen';
+        btn.disabled = false;
+        if (groupErr.code === '23505') {
+          toonMelding('❌ Deze groepscode bestaat al. Kies een andere code.', true);
+        } else {
+          console.error('Fout bij aanmaken groep:', groupErr);
+          toonMelding('❌ Fout bij aanmaken groep: ' + groupErr.message, true);
+        }
+        return;
+      }
+
+      await koppelGebruikerAanGroep(user.id, code);
+
+      btn.innerText = 'Groep Aanmaken & Deelnemen';
+      btn.disabled = false;
+      closeGroupModal();
+    }
+
+    async function verwerkLidWorden() {
+      const code = document.getElementById('input-join-code').value.trim().toUpperCase();
+      const btn = document.getElementById('btn-submit-join');
+
+      if (!code) return;
+
+      btn.innerText = '⌛ Zoeken...';
+      btn.disabled = true;
+
+      const { data: group, error } = await _supabase
+        .from('groups')
+        .select('*')
+        .eq('code', code)
+        .maybeSingle();
+
+      btn.innerText = 'Word Lid van Groep';
+      btn.disabled = false;
+
+      // Toon de échte foutmelding als de bevraging zelf faalt (bv. RLS blokkeert dit, of er
+      // bestaan per ongeluk meerdere groepen met dezelfde code omdat 'code' geen unieke
+      // constraint heeft) — anders leek dit ten onrechte op "code bestaat niet".
+      if (error) {
+        console.error('Fout bij opzoeken groep:', error);
+        toonMelding('❌ Fout bij opzoeken groep: ' + error.message, true);
+        return;
+      }
+
+      if (!group && code !== 'DEFAULT_GROUP') {
+        toonMelding('❌ Groepscode niet gevonden.', true);
+        return;
+      }
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) {
+        toonMelding('❌ Je moet ingelogd zijn om lid te worden van een groep.', true);
+        return;
+      }
+
+      await koppelGebruikerAanGroep(user.id, code);
+      closeGroupModal();
+    }
+
+    async function koppelGebruikerAanGroep(userId, code) {
+      const { error } = await _supabase
+        .from('profiles')
+        .update({ group_code: code })
+        .eq('id', userId);
+
+      if (error) {
+        toonMelding('❌ Fout bij koppelen aan groep: ' + error.message, true);
+      } else {
+        currentGroup = code;
+        localStorage.setItem('prono_group', currentGroup);
+
+        document.getElementById('dash-groupcode').innerText = currentGroup;
+        document.getElementById('current-group-display').innerText = currentGroup;
+
+        toonMelding(`✅ Succesvol overgestapt naar groep: ${currentGroup}`);
+        laadKlassementen();
+        laadDashboardStats();
+      }
+    }
+
+    function vindLogoUrl(teamNaam) {
+      if (!teamNaam) return '';
+      const naam = teamNaam.trim();
+      if (CLUB_LOGOS[naam]) return CLUB_LOGOS[naam];
+      const schoneNaam = Object.keys(CLUB_LOGOS).find(key => 
+        naam.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(naam.toLowerCase())
+      );
+      return schoneNaam ? CLUB_LOGOS[schoneNaam] : '';
+    }
+
+    function toonMelding(bericht, isFout = false) {
+      const banner = document.getElementById('status-banner');
+      banner.classList.remove('hidden', 'bg-red-900/80', 'text-red-200', 'border-red-700', 'bg-emerald-900/80', 'text-emerald-200', 'border-emerald-700');
+      banner.classList.add('border', isFout ? 'bg-red-900/80' : 'bg-emerald-900/80', isFout ? 'text-red-200' : 'text-emerald-200', isFout ? 'border-red-700' : 'border-emerald-700');
+      banner.innerText = bericht;
+      setTimeout(() => banner.classList.add('hidden'), 5000);
+    }
+
+    function formatteerDatum(datumString) {
+      if (!datumString) return 'TBD';
+      const d = new Date(datumString);
+      if (isNaN(d.getTime())) return datumString;
+      
+      const dag = String(d.getDate()).padStart(2, '0');
+      const maand = String(d.getMonth() + 1).padStart(2, '0');
+      const jaar = d.getFullYear();
+      return `${dag}/${maand}/${jaar}`;
+    }
+
+    function formatteerTijd(datumString, matchTimeVal, matchKey) {
+      if (matchTimeVal && matchTimeVal.includes(':')) {
+        const m = matchTimeVal.match(/\d{1,2}:\d{2}/);
+        if (m) return m[0].padStart(5, '0');
+      }
+
+      if (datumString && typeof datumString === 'string' && datumString.includes('T')) {
+        const timePart = datumString.split('T')[1];
+        if (timePart) {
+          const schoonUur = timePart.substring(0, 5);
+          if (schoonUur !== '00:00') {
+            return schoonUur;
+          }
+        }
+      }
+
+      if (matchKey && DEFAULT_TIMES[matchKey]) {
+        return DEFAULT_TIMES[matchKey];
+      }
+
+      return "20:00";
+    }
+
+    function isMatchOpenVoorVoorspelling(match, actieveSpeeldag) {
+      // LET OP: new Date(match.match_date) parseert verschillend naargelang match_date wel/niet
+      // een tijdzone-suffix bevat (bv. 'Z' of '+01:00'). Zonder suffix interpreteren browsers dit
+      // soms als lokale tijd, soms als UTC. Controleer dat de scraper altijd een ondubbelzinnig
+      // formaat wegschrijft (ISO 8601 met tijdzone), anders kan "🔒 Gestart" op het verkeerde
+      // moment afgaan. Test dit rond het aftrapmoment van een echte wedstrijd.
       const nu = new Date();
-      let actieveSpeeldag = 1;
-      const eerstkomendeMatch = matches.find(m => m.match_date && new Date(m.match_date) >= nu);
-      if (eerstkomendeMatch) {
-        actieveSpeeldag = eerstkomendeMatch.round || eerstkomendeMatch.speeldag || 1;
-      } else if (matches.length > 0) {
-        actieveSpeeldag = Math.max(...matches.map(m => m.round || m.speeldag || 1));
+      const matchSpeeldag = match.round || match.speeldag || 1;
+
+      if (match.match_date) {
+        const matchDatum = new Date(match.match_date);
+        if (matchDatum < nu) {
+          return { open: false, gestart: true, bericht: '🔒 Gestart' };
+        }
+      }
+
+      if (actieveSpeeldag !== null && matchSpeeldag > (actieveSpeeldag + 1)) {
+        return { open: false, gestart: false, bericht: '🔒 Nog niet open' };
+      }
+
+      return { open: true, gestart: false, bericht: '🟢 Open' };
+    }
+
+    // Cache van de laatst opgehaalde wedstrijddata, zodat het wisselen tussen de
+    // "Nog te Spelen"/"Gespeeld"-tabs niet telkens een nieuwe Supabase-bevraging vergt.
+    let wedstrijdenCache = null; // { matches, teamMap, predMap, actieveSpeeldag }
+    let matchFilterMode = 'toekomstig'; // 'toekomstig' | 'gespeeld'
+
+    function setMatchFilter(mode) {
+      matchFilterMode = mode;
+
+      const btnToekomstig = document.getElementById('mfilter-toekomstig');
+      const btnGespeeld = document.getElementById('mfilter-gespeeld');
+      [btnToekomstig, btnGespeeld].forEach(b => {
+        b.classList.remove('bg-emerald-600', 'text-white');
+        b.classList.add('text-gray-400');
+      });
+      const actief = mode === 'toekomstig' ? btnToekomstig : btnGespeeld;
+      actief.classList.add('bg-emerald-600', 'text-white');
+      actief.classList.remove('text-gray-400');
+
+      renderWedstrijdenLijst();
+    }
+
+    async function laadWedstrijden() {
+      const container = document.getElementById('matches-container');
+      if (!container) return;
+
+      container.innerHTML = '<p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>';
+
+      try {
+        const { data: matches, error: matchesErr } = await _supabase.from('matches').select('*').order('id', { ascending: true });
+        const { data: teams } = await _supabase.from('teams').select('*');
+
+        const { data: myPredictions } = await _supabase.from('predictions').select('*').eq('username', currentUser);
+
+        if (matchesErr) {
+          console.error("Supabase Error:", matchesErr);
+          container.innerHTML = `<p class="text-red-400 text-center py-8">Fout bij laden: ${matchesErr.message}</p>`;
+          return;
+        }
+
+        const teamMap = {};
+        (teams || []).forEach(t => teamMap[t.id] = t);
+
+        const predMap = {};
+        (myPredictions || []).forEach(p => {
+          predMap[String(p.match_id)] = p;
+        });
+
+        if (!matches || matches.length === 0) {
+          wedstrijdenCache = null;
+          container.innerHTML = '<p class="text-gray-400 text-center py-8">Geen wedstrijden gevonden in de database.</p>';
+          return;
+        }
+
+        // Sorteer op speeldag, en binnen elke speeldag chronologisch op match_date.
+        // Belangrijk: de weergave groepeert wedstrijden per speeldag door opeenvolgende
+        // rijen te vergelijken, en de "actieve speeldag" wordt hieronder bepaald op basis
+        // van deze volgorde. Sorteren op 'id' (insertievolgorde van de scraper) is niet
+        // betrouwbaar als wedstrijden niet strikt in datumvolgorde worden toegevoegd
+        // (bijv. bij herplande wedstrijden of correcties).
+        matches.sort((a, b) => {
+          const roundA = a.round || a.speeldag || 1;
+          const roundB = b.round || b.speeldag || 1;
+          if (roundA !== roundB) return roundA - roundB;
+          const dateA = a.match_date ? new Date(a.match_date).getTime() : Infinity;
+          const dateB = b.match_date ? new Date(b.match_date).getTime() : Infinity;
+          return dateA - dateB;
+        });
+
+        const nu = new Date();
+        let actieveSpeeldag = 1;
+        const eerstkomendeMatch = matches.find(m => m.match_date && new Date(m.match_date) >= nu);
+        if (eerstkomendeMatch) {
+          actieveSpeeldag = eerstkomendeMatch.round || eerstkomendeMatch.speeldag || 1;
+        } else if (matches.length > 0) {
+          actieveSpeeldag = Math.max(...matches.map(m => m.round || m.speeldag || 1));
+        }
+
+        wedstrijdenCache = { matches, teamMap, predMap, actieveSpeeldag };
+        renderWedstrijdenLijst();
+
+      } catch (err) {
+        console.error("Fout bij ophalen:", err);
+        container.innerHTML = `<p class="text-red-400 text-center py-8">Er is een fout opgetreden: ${err.message}</p>`;
+      }
+    }
+
+    function renderWedstrijdenLijst() {
+      const container = document.getElementById('matches-container');
+      if (!container || !wedstrijdenCache) return;
+
+      const { matches, teamMap, predMap, actieveSpeeldag } = wedstrijdenCache;
+      const nu = new Date();
+
+      // "Gespeeld" = de wedstrijd is al afgetrapt (match_date in het verleden, of onbekende
+      // datum wordt als nog-te-spelen behandeld). "Nog te Spelen" is het omgekeerde.
+      const gefilterd = matches.filter(m => {
+        const isGestart = m.match_date ? (new Date(m.match_date) < nu) : false;
+        return matchFilterMode === 'gespeeld' ? isGestart : !isGestart;
+      });
+
+      if (gefilterd.length === 0) {
+        container.innerHTML = matchFilterMode === 'gespeeld'
+          ? '<p class="text-gray-400 text-center py-8">Nog geen gespeelde wedstrijden.</p>'
+          : '<p class="text-gray-400 text-center py-8">Geen aankomende wedstrijden gevonden (of alles is al gestart).</p>';
+        return;
       }
 
       let huidigeSpeeldag = null;
       let htmlBuilder = '';
 
-      matches.forEach(m => {
+      gefilterd.forEach(m => {
         const speeldagVanMatch = m.round || m.speeldag || 1;
 
         if (huidigeSpeeldag !== null && huidigeSpeeldag !== speeldagVanMatch) {
@@ -1139,18 +1506,18 @@
         const away = teamMap[m.away_team_id] || { name: m.away_team_name || 'Uit' };
         const homeLogo = vindLogoUrl(home.name);
         const awayLogo = vindLogoUrl(away.name);
-        
+
         const myPred = predMap[String(m.id)] || {};
-        
+
         const homePredVal = myPred.predicted_home_score !== undefined ? myPred.predicted_home_score : myPred.home_prediction;
         const awayPredVal = myPred.predicted_away_score !== undefined ? myPred.predicted_away_score : myPred.away_prediction;
 
         const homeVal = (homePredVal !== undefined && homePredVal !== null) ? homePredVal : '';
         const awayVal = (awayPredVal !== undefined && awayPredVal !== null) ? awayPredVal : '';
-        
+
         const isSaved = (homeVal !== '' && awayVal !== '');
         const matchKey = `${home.name} - ${away.name}`;
-        
+
         const datumBron = m.match_date || m.created_at;
         const geformatteerdeDatum = formatteerDatum(datumBron);
         const geformatteerdeTijd = formatteerTijd(datumBron, m.match_time, matchKey);
@@ -1189,7 +1556,6 @@
                   placeholder="-" 
                   ${!isEditable ? 'disabled' : ''}
                   class="score-input input-home w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${homeVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
-                  onfocus="handleScoreFocus(this)"
                   oninput="checkScoreInput(this)"
                 />
                 <span class="font-bold text-gray-500">:</span>
@@ -1202,7 +1568,6 @@
                   placeholder="-" 
                   ${!isEditable ? 'disabled' : ''}
                   class="score-input input-away w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${awayVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
-                  onfocus="handleScoreFocus(this)"
                   oninput="checkScoreInput(this)"
                 />
               </div>
@@ -1229,227 +1594,393 @@
 
             </div>
 
+            <div class="mt-3 pt-3 border-t border-gray-700/60 flex justify-end">
+              <button
+                type="button"
+                onclick="toonGroepsvoorspellingen(${m.id})"
+                class="text-[11px] md:text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-1.5 px-3 rounded-lg border border-gray-600 transition flex items-center gap-1.5">
+                <span>👥</span> Voorspellingen van je groep
+              </button>
+            </div>
+
           </div>
         `;
       });
 
       container.innerHTML = htmlBuilder;
-
-    } catch (err) {
-      console.error("Fout bij ophalen:", err);
-      container.innerHTML = `<p class="text-red-400 text-center py-8">Er is een fout opgetreden: ${err.message}</p>`;
     }
-  }
 
-  function berekenReferralBonus(profiles, predictions) {
-    const referralBonussen = {};
+    function berekenReferralBonus(profiles, predictions) {
+      const referralBonussen = {};
+      const spelersMetVoorspelling = new Set((predictions || []).map(p => p.username));
 
-    const actieveSpelers = new Set();
-    (predictions || []).forEach(p => {
-      if (p.user_id) actieveSpelers.add(String(p.user_id));
-      if (p.username) actieveSpelers.add(String(p.username));
-    });
+      // referred_by bevat het user-id van de uitnodiger (stabiel), niet diens gebruikersnaam
+      // (die kan wijzigen). We zoeken hier telkens de HUIDIGE gebruikersnaam van dat id op,
+      // zodat een naamswijziging de al verdiende bonus niet laat verdwijnen.
+      const profielPerId = {};
+      (profiles || []).forEach(p => { profielPerId[p.id] = p; });
 
-    const profileLookup = {};
-    (profiles || []).forEach(p => {
-      if (p.id) profileLookup[p.id] = p.username;
-      if (p.username) profileLookup[p.username] = p.username;
-    });
+      (profiles || []).forEach(profile => {
+        if (!profile.referred_by) return;
+        if (profile.referred_by === profile.id) return; // trivale zelf-referral blokkeren
+        if (!spelersMetVoorspelling.has(profile.username)) return;
 
-    (profiles || []).forEach(profile => {
-      const isActief = (profile.id && actieveSpelers.has(String(profile.id))) || 
-                      (profile.username && actieveSpelers.has(String(profile.username)));
+        const inviterProfiel = profielPerId[profile.referred_by];
+        const inviterNaam = inviterProfiel ? inviterProfiel.username : profile.referred_by;
+        if (!inviterNaam) return;
 
-      if (profile.referred_by && isActief) {
-        const inviterRaw = profile.referred_by;
-        const inviterUsername = profileLookup[inviterRaw] || inviterRaw;
-        
-        referralBonussen[inviterUsername] = (referralBonussen[inviterUsername] || 0) + 2;
-      }
-    });
+        referralBonussen[inviterNaam] = (referralBonussen[inviterNaam] || 0) + 2;
+      });
 
-    return referralBonussen;
-  }
+      return referralBonussen;
+    }
 
-  async function laadKlassementen() {
-    const { data: profiles } = await _supabase.from('profiles').select('*');
-    const { data: matches } = await _supabase.from('matches').select('*');
-    const { data: predictions } = await _supabase.from('predictions').select('*');
+    function huidigeMaandKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
 
-    const scoresGlobal = {};
-    const scoresMonthly = {};
+    function maandKeyVanMatch(match) {
+      if (!match || !match.match_date) return null;
+      const d = new Date(match.match_date);
+      if (isNaN(d.getTime())) return null;
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
 
-    (profiles || []).forEach(p => {
-      const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
-      scoresGlobal[nameToUse] = 0;
-      scoresMonthly[nameToUse] = 0;
-    });
+    // Kent de maandbonus (+10/+5/+3/+1) permanent toe voor elke AFGESLOTEN kalendermaand
+    // (de lopende maand telt nog niet mee, want die ligt nog niet vast). Elke voorspelling
+    // wordt toegewezen aan de groep waarin de speler zat op het moment van voorspellen
+    // (pred.group_code), met terugval op zijn HUIDIGE groep voor oudere rijen zonder die
+    // kolom (zie Supabase-instructies).
+    function berekenAfgeslotenMaandBonussen(profiles, matches, predictions) {
+      const huidigeMaand = huidigeMaandKey();
 
-    (predictions || []).forEach(pred => {
-      const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
-      if (match && match.home_score !== null && match.away_score !== null) {
-        const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
-        const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
+      const groepPerUsername = {};
+      (profiles || []).forEach(p => { groepPerUsername[p.username] = p.group_code || 'DEFAULT_GROUP'; });
 
-        const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
+      const matchById = {};
+      (matches || []).forEach(m => { matchById[String(m.id)] = m; });
 
-        if (pred.username) {
-          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
-          scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+      const perGroepMaand = {}; // "GROEP||MAAND" -> { username: score }
+
+      (predictions || []).forEach(pred => {
+        const match = matchById[String(pred.match_id)];
+        if (!match || match.home_score === null || match.away_score === null) return;
+
+        const maand = maandKeyVanMatch(match);
+        if (!maand || maand === huidigeMaand) return; // enkel afgesloten maanden tellen mee
+
+        const predHome = pred.predicted_home_score !== undefined && pred.predicted_home_score !== null ? parseInt(pred.predicted_home_score, 10) : (pred.home_prediction !== undefined ? parseInt(pred.home_prediction, 10) : null);
+        const predAway = pred.predicted_away_score !== undefined && pred.predicted_away_score !== null ? parseInt(pred.predicted_away_score, 10) : (pred.away_prediction !== undefined ? parseInt(pred.away_prediction, 10) : null);
+        const pts = berekenPuntenVoorVoorspelling(predHome, predAway, parseInt(match.home_score, 10), parseInt(match.away_score, 10));
+
+        const groep = pred.group_code || groepPerUsername[pred.username] || 'DEFAULT_GROUP';
+        const key = groep + '||' + maand;
+        if (!perGroepMaand[key]) perGroepMaand[key] = {};
+        perGroepMaand[key][pred.username] = (perGroepMaand[key][pred.username] || 0) + pts;
+      });
+
+      const bonusPerUser = {};
+      Object.values(perGroepMaand).forEach(scoresPerUser => {
+        const entries = Object.entries(scoresPerUser);
+        if (entries.length === 0) return;
+        const maxScore = Math.max(...entries.map(([, s]) => s));
+        if (maxScore <= 0) return;
+        const winnaars = entries.filter(([, s]) => s === maxScore).map(([u]) => u);
+
+        let bonus = 0;
+        if (winnaars.length === 1) bonus = 10;
+        else if (winnaars.length === 2) bonus = 5;
+        else if (winnaars.length === 3) bonus = 3;
+        else if (winnaars.length >= 4) bonus = 1;
+
+        winnaars.forEach(u => { bonusPerUser[u] = (bonusPerUser[u] || 0) + bonus; });
+      });
+
+      return bonusPerUser;
+    }
+
+    // Toont, voor een reeds gestarte wedstrijd, de voorspellingen (en behaalde punten) van
+    // iedereen in je HUIDIGE groep. Wordt bewust pas aangeboden nadat een wedstrijd is gestart
+    // (zie status.gestart in renderWedstrijdenLijst), zodat niemand elkaars pronostiek kan
+    // afkijken vóór de aftrap.
+    async function toonGroepsvoorspellingen(matchId) {
+      const modal = document.getElementById('match-predictions-modal');
+      const content = document.getElementById('match-predictions-content');
+      content.innerHTML = '<p class="text-gray-400 text-center py-6">Laden...</p>';
+      modal.classList.remove('hidden');
+
+      try {
+        const { data: match, error: matchErr } = await _supabase.from('matches').select('*').eq('id', matchId).maybeSingle();
+        if (matchErr || !match) {
+          content.innerHTML = `<p class="text-red-400 text-center py-6">Wedstrijd niet gevonden${matchErr ? ': ' + matchErr.message : ''}.</p>`;
+          return;
         }
+
+        const { data: teams } = await _supabase.from('teams').select('*');
+        const teamMap = {};
+        (teams || []).forEach(t => teamMap[t.id] = t);
+        const home = teamMap[match.home_team_id] || { name: match.home_team_name || 'Thuis' };
+        const away = teamMap[match.away_team_id] || { name: match.away_team_name || 'Uit' };
+
+        const { data: profiles } = await _supabase.from('profiles').select('*').eq('group_code', currentGroup);
+        const groepsleden = (profiles || []).map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler')).filter(Boolean);
+
+        const { data: predictions } = await _supabase.from('predictions').select('*').eq('match_id', matchId);
+        const predPerUser = {};
+        (predictions || []).forEach(p => { predPerUser[p.username] = p; });
+
+        const heeftUitslag = match.home_score !== null && match.away_score !== null;
+
+        const rijenHtml = groepsleden.length > 0 ? groepsleden.map(naam => {
+          const pred = predPerUser[naam];
+          const predHomeRaw = pred ? (pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction) : null;
+          const predAwayRaw = pred ? (pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction) : null;
+          const heeftVoorspeld = predHomeRaw !== null && predHomeRaw !== undefined && predAwayRaw !== null && predAwayRaw !== undefined;
+
+          let puntenHtml;
+          if (heeftVoorspeld && heeftUitslag) {
+            const pts = berekenPuntenVoorVoorspelling(parseInt(predHomeRaw, 10), parseInt(predAwayRaw, 10), parseInt(match.home_score, 10), parseInt(match.away_score, 10));
+            puntenHtml = `<span class="font-black text-emerald-400 text-sm">${pts} Ptn</span>`;
+          } else if (heeftVoorspeld && !heeftUitslag) {
+            puntenHtml = `<span class="text-[11px] text-gray-400">Wacht op uitslag</span>`;
+          } else {
+            puntenHtml = `<span class="text-[11px] text-gray-500">Geen voorspelling</span>`;
+          }
+
+          const scoreLabel = heeftVoorspeld ? `${predHomeRaw} - ${predAwayRaw}` : '–';
+          const isMe = naam === currentUser;
+
+          return `
+            <div class="flex justify-between items-center p-2.5 rounded-lg ${isMe ? 'bg-emerald-950/40 border-emerald-500/40' : 'bg-gray-900 border-gray-700'} border">
+              <span class="text-sm font-semibold text-gray-100">${naam}${isMe ? ' (Jij)' : ''}</span>
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-white text-sm">${scoreLabel}</span>
+                ${puntenHtml}
+              </div>
+            </div>
+          `;
+        }).join('') : '<p class="text-gray-400 text-center py-4 text-sm">Geen groepsgenoten gevonden.</p>';
+
+        content.innerHTML = `
+          <div class="text-center mb-2">
+            <div class="text-2xl mb-1">👥</div>
+            <h3 class="text-lg font-extrabold text-white">${home.name} - ${away.name}</h3>
+            <p class="text-xs text-gray-400 mt-1">${heeftUitslag ? `Eindstand: ${match.home_score} - ${match.away_score}` : 'Wedstrijd bezig / nog geen eindstand'}</p>
+          </div>
+          <div class="space-y-2">${rijenHtml}</div>
+        `;
+      } catch (err) {
+        content.innerHTML = `<p class="text-red-400 text-center py-6">Er is een fout opgetreden: ${err.message}</p>`;
       }
-    });
+    }
 
-    const refBonussen = berekenReferralBonus(profiles, predictions);
+    function closeMatchPredictionsModal() {
+      document.getElementById('match-predictions-modal').classList.add('hidden');
+    }
 
-    Object.keys(refBonussen).forEach(inviter => {
-      if (scoresGlobal[inviter] === undefined) scoresGlobal[inviter] = 0;
-      if (scoresMonthly[inviter] === undefined) scoresMonthly[inviter] = 0;
+    async function laadKlassementen() {
+      const { data: profiles } = await _supabase.from('profiles').select('*');
+      const { data: matches } = await _supabase.from('matches').select('*');
+      const { data: predictions } = await _supabase.from('predictions').select('*');
 
-      scoresGlobal[inviter] += refBonussen[inviter];
-      scoresMonthly[inviter] += refBonussen[inviter];
-    });
+      const scoresGlobal = {};
+      const scoresMonthly = {};
 
-    const sortedGlobal = Object.keys(scoresGlobal)
-      .map(user => ({ user, score: scoresGlobal[user] }))
-      .sort((a, b) => b.score - a.score);
+      (profiles || []).forEach(p => {
+        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        scoresGlobal[nameToUse] = 0;
+        scoresMonthly[nameToUse] = 0;
+      });
 
-    vulTabel('table-global-body', sortedGlobal);
+      (predictions || []).forEach(pred => {
+        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
+        if (match && match.home_score !== null && match.away_score !== null) {
+          const predHome = pred.predicted_home_score !== undefined && pred.predicted_home_score !== null ? parseInt(pred.predicted_home_score, 10) : (pred.home_prediction !== undefined ? parseInt(pred.home_prediction, 10) : null);
+          const predAway = pred.predicted_away_score !== undefined && pred.predicted_away_score !== null ? parseInt(pred.predicted_away_score, 10) : (pred.away_prediction !== undefined ? parseInt(pred.away_prediction, 10) : null);
 
-    const privateUsers = (profiles || [])
-      .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
-      .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+          const matchHome = parseInt(match.home_score, 10);
+          const matchAway = parseInt(match.away_score, 10);
 
-    const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
-    vulTabel('table-private-body', sortedPrivate);
+          const pts = berekenPuntenVoorVoorspelling(predHome, predAway, matchHome, matchAway);
 
-    const monthlyPrivate = Object.keys(scoresMonthly)
-      .filter(user => privateUsers.includes(user))
-      .map(user => ({ user, score: scoresMonthly[user] }))
-      .sort((a, b) => b.score - a.score);
-
-    let maxScore = monthlyPrivate.length > 0 ? monthlyPrivate[0].score : -1;
-    let winnaarsCount = monthlyPrivate.filter(u => u.score === maxScore && maxScore > 0).length;
-    
-    let bonusPunten = 0;
-    if (winnaarsCount === 1) bonusPunten = 10;
-    else if (winnaarsCount === 2) bonusPunten = 5;
-    else if (winnaarsCount === 3) bonusPunten = 3;
-    else if (winnaarsCount >= 4) bonusPunten = 1;
-
-    vulMaandTabel('table-monthly-body', monthlyPrivate, maxScore, bonusPunten);
-  }
-
-  function vulTabel(tabelId, data) {
-    const tbody = document.getElementById(tabelId);
-    tbody.innerHTML = '';
-    data.forEach((item, index) => {
-      const isMe = item.user === currentUser;
-      tbody.innerHTML += `
-        <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
-          <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
-          <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
-          <td class="p-3 text-right font-extrabold text-emerald-400">${item.score} Ptn</td>
-        </tr>
-      `;
-    });
-  }
-
-  function vulMaandTabel(tabelId, data, maxScore, bonusPunten) {
-    const tbody = document.getElementById(tabelId);
-    tbody.innerHTML = '';
-    data.forEach((item, index) => {
-      const isWinnaar = item.score === maxScore && maxScore > 0;
-      const bonus = isWinnaar ? bonusPunten : 0;
-      const isMe = item.user === currentUser;
-
-      tbody.innerHTML += `
-        <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
-          <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
-          <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
-          <td class="p-3 text-center font-bold">${item.score}</td>
-          <td class="p-3 text-right ${bonus > 0 ? 'text-emerald-400 font-black' : 'text-gray-500'}">
-            ${bonus > 0 ? `+${bonus} Ptn 🎁` : '-'}
-          </td>
-        </tr>
-      `;
-    });
-  }
-
-  async function laadDashboardStats() {
-    const { data: profiles } = await _supabase.from('profiles').select('*');
-    const { data: matches } = await _supabase.from('matches').select('*');
-    const { data: predictions } = await _supabase.from('predictions').select('*');
-
-    const scoresGlobal = {};
-    const scoresMonthly = {};
-    (profiles || []).forEach(p => { 
-      const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
-      scoresGlobal[nameToUse] = 0; 
-      scoresMonthly[nameToUse] = 0; 
-    });
-
-    (predictions || []).forEach(pred => {
-      const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
-      if (match && match.home_score !== null && match.away_score !== null) {
-        const predHome = pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction;
-        const predAway = pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction;
-
-        const pts = berekenMatchPunten(predHome, predAway, match.home_score, match.away_score);
-
-        if (pred.username) {
           scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
-          scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+
+          // "Maand Privé" toont enkel punten van wedstrijden uit de LOPENDE kalendermaand
+          // (voorheen werd hier per ongeluk hetzelfde als het totaal getoond, zonder filter).
+          if (maandKeyVanMatch(match) === huidigeMaandKey()) {
+            scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+          }
         }
-      }
+      });
+
+      const refBonussen = berekenReferralBonus(profiles, predictions);
+      Object.keys(refBonussen).forEach(inviter => {
+        if (scoresGlobal[inviter] !== undefined) {
+          scoresGlobal[inviter] += refBonussen[inviter];
+        }
+      });
+
+      // Maandbonussen van reeds AFGESLOTEN maanden worden hier definitief bij het totaal
+      // opgeteld (de lopende maand in tab-monthly hieronder is enkel een live-projectie,
+      // nog niet definitief zolang de maand loopt).
+      const maandBonussen = berekenAfgeslotenMaandBonussen(profiles, matches, predictions);
+      Object.keys(maandBonussen).forEach(user => {
+        if (scoresGlobal[user] !== undefined) {
+          scoresGlobal[user] += maandBonussen[user];
+        }
+      });
+
+      const sortedGlobal = Object.keys(scoresGlobal)
+        .map(user => ({ user, score: scoresGlobal[user] }))
+        .sort((a, b) => b.score - a.score);
+
+      vulTabel('table-global-body', sortedGlobal);
+
+      const privateUsers = (profiles || [])
+        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
+      const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
+      vulTabel('table-private-body', sortedPrivate);
+
+      const monthlyPrivate = Object.keys(scoresMonthly)
+        .filter(user => privateUsers.includes(user))
+        .map(user => ({ user, score: scoresMonthly[user] }))
+        .sort((a, b) => b.score - a.score);
+
+      let maxScore = monthlyPrivate.length > 0 ? monthlyPrivate[0].score : -1;
+      let winnaarsCount = monthlyPrivate.filter(u => u.score === maxScore && maxScore > 0).length;
+      
+      let bonusPunten = 0;
+      if (winnaarsCount === 1) bonusPunten = 10;
+      else if (winnaarsCount === 2) bonusPunten = 5;
+      else if (winnaarsCount === 3) bonusPunten = 3;
+      else if (winnaarsCount >= 4) bonusPunten = 1;
+
+      vulMaandTabel('table-monthly-body', monthlyPrivate, maxScore, bonusPunten);
+    }
+
+    function vulTabel(tabelId, data) {
+      const tbody = document.getElementById(tabelId);
+      tbody.innerHTML = '';
+      data.forEach((item, index) => {
+        const isMe = item.user === currentUser;
+        tbody.innerHTML += `
+          <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
+            <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
+            <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
+            <td class="p-3 text-right font-extrabold text-emerald-400">${item.score} Ptn</td>
+          </tr>
+        `;
+      });
+    }
+
+    function vulMaandTabel(tabelId, data, maxScore, bonusPunten) {
+      const tbody = document.getElementById(tabelId);
+      tbody.innerHTML = '';
+      data.forEach((item, index) => {
+        const isWinnaar = item.score === maxScore && maxScore > 0;
+        const bonus = isWinnaar ? bonusPunten : 0;
+        const isMe = item.user === currentUser;
+
+        tbody.innerHTML += `
+          <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
+            <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
+            <td class="p-3">${item.user} ${isMe ? '(Jij)' : ''}</td>
+            <td class="p-3 text-center font-bold">${item.score}</td>
+            <td class="p-3 text-right ${bonus > 0 ? 'text-emerald-400 font-black' : 'text-gray-500'}">
+              ${bonus > 0 ? `+${bonus} Ptn 🎁` : '-'}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    async function laadDashboardStats() {
+      const { data: profiles } = await _supabase.from('profiles').select('*');
+      const { data: matches } = await _supabase.from('matches').select('*');
+      const { data: predictions } = await _supabase.from('predictions').select('*');
+
+      const scoresGlobal = {};
+      const scoresMonthly = {};
+      (profiles || []).forEach(p => { 
+        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        scoresGlobal[nameToUse] = 0; 
+        scoresMonthly[nameToUse] = 0; 
+      });
+
+      (predictions || []).forEach(pred => {
+        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
+        if (match && match.home_score !== null && match.away_score !== null) {
+          const predHome = pred.predicted_home_score !== undefined && pred.predicted_home_score !== null ? parseInt(pred.predicted_home_score, 10) : (pred.home_prediction !== undefined ? parseInt(pred.home_prediction, 10) : null);
+          const predAway = pred.predicted_away_score !== undefined && pred.predicted_away_score !== null ? parseInt(pred.predicted_away_score, 10) : (pred.away_prediction !== undefined ? parseInt(pred.away_prediction, 10) : null);
+
+          const matchHome = parseInt(match.home_score, 10);
+          const matchAway = parseInt(match.away_score, 10);
+
+          const pts = berekenPuntenVoorVoorspelling(predHome, predAway, matchHome, matchAway);
+
+          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
+
+          if (maandKeyVanMatch(match) === huidigeMaandKey()) {
+            scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+          }
+        }
+      });
+
+      const refBonussen = berekenReferralBonus(profiles, predictions);
+      Object.keys(refBonussen).forEach(inviter => {
+        if (scoresGlobal[inviter] !== undefined) {
+          scoresGlobal[inviter] += refBonussen[inviter];
+        }
+      });
+
+      const maandBonussen = berekenAfgeslotenMaandBonussen(profiles, matches, predictions);
+      Object.keys(maandBonussen).forEach(user => {
+        if (scoresGlobal[user] !== undefined) {
+          scoresGlobal[user] += maandBonussen[user];
+        }
+      });
+
+      const myScore = scoresGlobal[currentUser] || 0;
+      document.getElementById('user-score').innerText = `${myScore} Ptn`;
+
+      const sortedGlobal = Object.keys(scoresGlobal).sort((a,b) => scoresGlobal[b] - scoresGlobal[a]);
+      const myGlobalPos = sortedGlobal.indexOf(currentUser) + 1;
+      document.getElementById('pos-global').innerText = myGlobalPos > 0 ? `#${myGlobalPos}` : '#-';
+
+      const privateUsers = (profiles || [])
+        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
+      const sortedPrivate = sortedGlobal.filter(u => privateUsers.includes(u));
+      const myPrivatePos = sortedPrivate.indexOf(currentUser) + 1;
+      document.getElementById('pos-private').innerText = myPrivatePos > 0 ? `#${myPrivatePos}` : '#-';
+
+      const sortedMonthlyPrivate = Object.keys(scoresMonthly).filter(u => privateUsers.includes(u)).sort((a,b) => scoresMonthly[b] - scoresMonthly[a]);
+      const myMonthlyPos = sortedMonthlyPrivate.indexOf(currentUser) + 1;
+      document.getElementById('pos-monthly').innerText = myMonthlyPos > 0 ? `#${myMonthlyPos}` : '#-';
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      _supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          toonScherm('login');
+          document.getElementById('form-login').classList.add('hidden');
+          document.getElementById('form-register').classList.add('hidden');
+          document.getElementById('form-reset').classList.add('hidden');
+          document.getElementById('form-new-password').classList.remove('hidden');
+          return;
+        }
+
+        if (session && session.user) {
+          await initialiseerUserSessie(session.user);
+        } else {
+          toonScherm('login');
+        }
+      });
     });
-
-    const refBonussen = berekenReferralBonus(profiles, predictions);
-    Object.keys(refBonussen).forEach(inviter => {
-      if (scoresGlobal[inviter] !== undefined) {
-        scoresGlobal[inviter] += refBonussen[inviter];
-        scoresMonthly[inviter] += refBonussen[inviter];
-      }
-    });
-
-    const myScore = scoresGlobal[currentUser] || 0;
-    document.getElementById('user-score').innerText = `${myScore} Ptn`;
-
-    const sortedGlobal = Object.keys(scoresGlobal).sort((a,b) => scoresGlobal[b] - scoresGlobal[a]);
-    const myGlobalPos = sortedGlobal.indexOf(currentUser) + 1;
-    document.getElementById('pos-global').innerText = myGlobalPos > 0 ? `#${myGlobalPos}` : '#-';
-
-    const privateUsers = (profiles || [])
-      .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
-      .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
-
-    const sortedPrivate = sortedGlobal.filter(u => privateUsers.includes(u));
-    const myPrivatePos = sortedPrivate.indexOf(currentUser) + 1;
-    document.getElementById('pos-private').innerText = myPrivatePos > 0 ? `#${myPrivatePos}` : '#-';
-
-    const sortedMonthlyPrivate = Object.keys(scoresMonthly).filter(u => privateUsers.includes(u)).sort((a,b) => scoresMonthly[b] - scoresMonthly[a]);
-    const myMonthlyPos = sortedMonthlyPrivate.indexOf(currentUser) + 1;
-    document.getElementById('pos-monthly').innerText = myMonthlyPos > 0 ? `#${myMonthlyPos}` : '#-';
-  }
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    _supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        toonScherm('login');
-        document.getElementById('form-login').classList.add('hidden');
-        document.getElementById('form-register').classList.add('hidden');
-        document.getElementById('form-reset').classList.add('hidden');
-        document.getElementById('form-new-password').classList.remove('hidden');
-        return;
-      }
-
-      if (session && session.user) {
-        await initialiseerUserSessie(session.user);
-      } else {
-        toonScherm('login');
-      }
-    });
-  });
-</script>
+  </script>
 </body>
 </html>
