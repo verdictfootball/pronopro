@@ -1,0 +1,2698 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PBHHZNS6W9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-PBHHZNS6W9');
+  </script>
+
+  <meta name="google-site-verification" content="ps1OYPX18QHaXeVX1E8pbkPp2PU5qC0syfViuhtm1jE" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PronoPro - Jupiler Pro League 2026-2027</title>
+  <meta name="description" content="Voorspel de Jupiler Pro League met je vrienden. Speel mee in PronoPro: maak een privégroep, voorspel elke wedstrijd en strijd voor de maandbonus.">
+
+  <!-- Favicon: dit bepaalt o.a. het icoontje dat Google in zoekresultaten toont. -->
+  <link rel="icon" type="image/png" href="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png">
+  <link rel="apple-touch-icon" href="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png">
+
+  <!-- Open Graph: bepaalt hoe de site verschijnt in Google en bij het delen van de link
+       (WhatsApp, Facebook, ...): correcte naam, beschrijving en voorbeeldafbeelding i.p.v.
+       een generieke "GitHub Pages"-omschrijving. -->
+  <meta property="og:site_name" content="PronoPro">
+  <meta property="og:title" content="PronoPro - Jupiler Pro League 2026-2027">
+  <meta property="og:description" content="Voorspel de Jupiler Pro League met je vrienden en strijd voor de maandbonus.">
+  <meta property="og:image" content="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://verdictfootball.github.io/pronopro/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PronoPro - Jupiler Pro League 2026-2027">
+  <meta name="twitter:description" content="Voorspel de Jupiler Pro League met je vrienden en strijd voor de maandbonus.">
+  <meta name="twitter:image" content="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png">
+
+  <link rel="canonical" href="https://verdictfootball.github.io/pronopro/">
+  <meta name="robots" content="index, follow">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "PronoPro",
+    "url": "https://verdictfootball.github.io/pronopro/",
+    "description": "Gratis voorspellingsspel voor de Belgische Jupiler Pro League. Maak een privé-liga met vrienden, voorspel elke wedstrijd en verzamel punten voor de maandbonus.",
+    "applicationCategory": "SportsApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    },
+    "inLanguage": "nl-BE"
+  }
+  </script>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    /* Verberg de standaard (witte) plus/min-pijltjes van <input type="number">, die niet
+       meestylen met de rest van het donkere thema. */
+    .score-input::-webkit-outer-spin-button,
+    .score-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .score-input {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .score-input.has-value,
+    .score-input:not(:placeholder-shown) {
+      background-color: #1e3a8a !important;
+      border-color: #3b82f6 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+    }
+
+    .score-input.is-saved {
+      border-color: #10b981 !important;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4) !important;
+    }
+
+    /* Groen zwevend vakje bovenaan */
+    .save-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #10b981;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+      z-index: 1000;
+    }
+
+    .save-indicator.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col font-sans pb-20 md:pb-0">
+
+  <!-- HET GROENE VAKJE BOVENAAN -->
+  <div id="save-indicator" class="save-indicator flex items-center gap-2">
+    <span>✓</span> Wijzigingen Opgeslagen
+  </div>
+
+  <button id="scroll-top-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="hidden fixed bottom-20 md:bottom-6 right-4 z-40 bg-emerald-600 hover:bg-emerald-500 text-white w-11 h-11 rounded-full shadow-2xl border border-emerald-400/40 flex items-center justify-center text-lg transition" aria-label="Terug naar boven">
+    ⬆️
+  </button>
+
+  <nav class="bg-gray-800 border-b border-gray-700 px-6 py-2 flex justify-between items-center shadow-lg">
+    <div class="flex items-center cursor-pointer" onclick="toonScherm('dashboard')">
+      <img src="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logo3/logo.png" alt="PronoPro Logo" class="h-20 w-auto object-contain" />
+    </div>
+    <div class="flex items-center gap-2 md:gap-3">
+      <button onclick="openRulesModal()" class="text-xs font-bold text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1.5">
+        <span>📜</span><span class="hidden sm:inline">Spelregels</span>
+      </button>
+      <div id="user-nav" class="hidden flex items-center gap-3">
+        <button onclick="toonScherm('settings')" id="nav-username" title="Instellingen" class="text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-full border border-gray-600 transition flex items-center gap-1">
+          ⚙️ Gast
+        </button>
+        <button onclick="uitloggen()" class="text-xs bg-red-600/80 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded transition">
+          Uitloggen
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto w-full px-4 mt-4">
+    <div id="status-banner" class="hidden p-4 rounded-lg text-sm font-semibold text-center transition"></div>
+  </div>
+
+  <div class="max-w-5xl mx-auto w-full px-4 py-6 flex-1">
+
+    <section id="screen-login" class="flex items-center justify-center py-6">
+      <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl w-full max-w-md">
+        
+        <div class="text-center mb-6">
+          <div class="text-5xl mb-2">⚽</div>
+          <h1 class="text-2xl font-bold text-white">PronoPro — Voorspel de Jupiler Pro League</h1>
+          <p class="text-gray-400 text-sm mt-2">Gratis voorspellingsspel voor de Belgische Jupiler Pro League. Maak een privé-liga met vrienden, voorspel elke wedstrijd en verzamel punten voor de maandbonus.</p>
+        </div>
+
+        <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700 mb-6 gap-1">
+          <button type="button" onclick="switchAuthTab('login')" id="tab-btn-login" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition">Inloggen</button>
+          <button type="button" onclick="switchAuthTab('register')" id="tab-btn-register" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">Registreren</button>
+          <button type="button" onclick="switchAuthTab('reset')" id="tab-btn-reset" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">Wachtwoord</button>
+        </div>
+
+        <form id="form-login" onsubmit="event.preventDefault(); inloggen();" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">E-mailadres</label>
+            <input type="email" id="login-email" placeholder="naam@voorbeeld.be" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Wachtwoord</label>
+            <div class="relative">
+              <input type="password" id="login-password" placeholder="••••••••" required class="w-full bg-gray-900 border border-gray-700 rounded-lg pl-4 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="togglePasswordVisibility('login-password', 'toggle-login-pass')" id="toggle-login-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-sm">👁️</button>
+            </div>
+          </div>
+          <button type="submit" id="btn-submit-login" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">Inloggen</button>
+        </form>
+
+        <form id="form-register" onsubmit="event.preventDefault(); registreren();" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Gebruikersnaam</label>
+            <input type="text" id="reg-username" placeholder="Bijv. ProVoorspeller" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">E-mailadres</label>
+            <input type="email" id="reg-email" placeholder="naam@voorbeeld.be" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Wachtwoord</label>
+            <div class="relative">
+              <input type="password" id="reg-password" placeholder="••••••••" minlength="6" required class="w-full bg-gray-900 border border-gray-700 rounded-lg pl-4 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="togglePasswordVisibility('reg-password', 'toggle-reg-pass')" id="toggle-reg-pass" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-sm">👁️</button>
+            </div>
+          </div>
+          <button type="submit" id="btn-submit-reg" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">Account Aanmaken</button>
+        </form>
+
+        <form id="form-reset" onsubmit="event.preventDefault(); resetWachtwoordAanvragen();" class="space-y-4 hidden">
+          <p class="text-xs text-gray-400">Vul je e-mailadres in om een reset-link te ontvangen.</p>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">E-mailadres</label>
+            <input type="email" id="reset-email" placeholder="naam@voorbeeld.be" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <button type="submit" id="btn-submit-reset" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">Verstuur Reset Link</button>
+        </form>
+
+        <form id="form-new-password" onsubmit="event.preventDefault(); opslaanNieuwWachtwoord();" class="space-y-4 hidden">
+          <p class="text-xs text-emerald-400 font-semibold">Stel hieronder je nieuwe wachtwoord in:</p>
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Nieuw Wachtwoord</label>
+            <div class="relative">
+              <input type="password" id="new-password" placeholder="••••••••" minlength="6" required class="w-full bg-gray-900 border border-gray-700 rounded-lg pl-4 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="togglePasswordVisibility('new-password', 'toggle-newpass')" id="toggle-newpass" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-sm">👁️</button>
+            </div>
+          </div>
+          <button type="submit" id="btn-submit-newpass" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">Opslaan & Inloggen</button>
+        </form>
+
+      </div>
+    </section>
+
+    <section id="screen-dashboard" class="hidden space-y-8">
+      <div class="bg-gradient-to-r from-emerald-900/60 to-gray-800 p-6 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white"><span id="dash-avatar">⚽</span> Welkom, <span id="dash-username" class="text-emerald-400">Speler</span>! 👋</h2>
+          <p class="text-gray-300 text-sm mt-1 flex items-center gap-2 flex-wrap">
+            <span>👥 Je groep: <span id="dash-groupcode" class="font-bold text-emerald-300">PRIVATESQUAD</span></span>
+            <button onclick="wijzigGroepscode()" class="text-[11px] bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-1 px-2.5 rounded-full border border-gray-600 transition">
+              ✏️ Groep beheren
+            </button>
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <button onclick="openShareModal()" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold py-2.5 px-3.5 rounded-xl shadow transition flex items-center gap-1.5">
+            <span>🎁</span> Nodig Uit (+2 Ptn)
+          </button>
+
+          <div class="bg-gray-900/80 px-4 py-2 rounded-xl border border-gray-700 text-center">
+            <span class="text-[10px] text-gray-400 block uppercase font-bold">Totale Score</span>
+            <span id="user-score" class="text-xl font-black text-emerald-400">0 Ptn</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
+            <span>📊</span> Jouw Huidige Posities
+          </h3>
+          <button onclick="openStatsModal()" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-1.5 px-3 rounded-full border border-gray-600 transition flex items-center gap-1.5">
+            <span>🏆</span> Mijn Statistieken
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center">
+            <span class="text-2xl mb-1 block">🌍</span>
+            <span class="text-xs text-gray-400 uppercase font-bold block">Wereldwijd</span>
+            <span id="pos-global" class="text-2xl font-extrabold text-white">#-</span>
+          </div>
+
+          <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center">
+            <span class="text-2xl mb-1 block">🔒</span>
+            <span class="text-xs text-gray-400 uppercase font-bold block">Privé Liga</span>
+            <span id="pos-private" class="text-2xl font-extrabold text-white">#-</span>
+          </div>
+
+          <div class="bg-gray-800 p-4 rounded-xl border border-emerald-500/40 text-center bg-emerald-950/20">
+            <span class="text-2xl mb-1 block">📅</span>
+            <span class="text-xs text-emerald-400 uppercase font-bold block">Maand</span>
+            <span id="pos-monthly" class="text-2xl font-extrabold text-emerald-300">#-</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-bold text-gray-200 mb-4 flex items-center gap-2">
+          <span>🏆</span> Competities
+        </h3>
+
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden shadow-lg flex flex-col justify-between hover:border-emerald-500/40 transition">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="bg-emerald-500/10 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/20">Actief Seizoen</span>
+              <span class="text-xs text-gray-400 font-semibold">2026 - 2027</span>
+            </div>
+
+            <div class="flex items-center gap-4 mb-3">
+              <div class="w-14 h-14 bg-gray-900 rounded-xl p-2 border border-gray-700/80 flex items-center justify-center flex-shrink-0 shadow-inner">
+                <img src="https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos%20competities/JPL.png" alt="Jupiler Pro League Logo" class="w-full h-full object-contain">
+              </div>
+              <div>
+                <h4 class="text-xl font-black text-white leading-tight">Jupiler Pro League</h4>
+                <span class="text-xs text-emerald-400 font-medium">België • Eerste Klasse A</span>
+              </div>
+            </div>
+
+            <p class="text-gray-400 text-sm mt-2">Speel mee en vul al je pronostieken in!</p>
+          </div>
+          
+          <div class="p-4 bg-gray-900/50 border-t border-gray-700/50 flex justify-between items-center">
+            <span class="text-xs text-gray-400 font-medium">18 Clubs • Alle Wedstrijden</span>
+            <button onclick="openSpeeldagTab('tab-predict')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center gap-1">
+              Open Wedstrijden & Rankings ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-matches" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <button onclick="toonScherm('dashboard')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition">
+          ⬅️ Terug naar Dashboard
+        </button>
+        <button onclick="openShareModal()" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold py-2 px-3 rounded-xl shadow transition flex items-center gap-1.5">
+          <span>🎁</span> Nodig Uit (+2 Ptn)
+        </button>
+      </div>
+
+      <div class="flex bg-gray-800 p-1.5 rounded-xl border border-gray-700 gap-1 overflow-x-auto">
+        <button onclick="switchTab('tab-predict')" id="btn-tab-predict" class="flex-1 py-2 px-3 text-xs md:text-sm font-bold rounded-lg bg-emerald-600 text-white transition">⚽ Voorspellen</button>
+        <button onclick="switchTab('tab-global')" id="btn-tab-global" class="flex-1 py-2 px-3 text-xs md:text-sm font-bold rounded-lg text-gray-400 hover:text-white transition">🌍 Wereldwijd</button>
+        <button onclick="switchTab('tab-private')" id="btn-tab-private" class="flex-1 py-2 px-3 text-xs md:text-sm font-bold rounded-lg text-gray-400 hover:text-white transition">🔒 Privé Liga</button>
+        <button onclick="switchTab('tab-monthly')" id="btn-tab-monthly" class="flex-1 py-2 px-3 text-xs md:text-sm font-bold rounded-lg text-gray-400 hover:text-white transition">📅 Maand Privé</button>
+      </div>
+
+      <div id="tab-predict" class="tab-content space-y-4">
+        <div class="flex justify-between items-center bg-gray-800 p-3.5 rounded-xl border border-gray-700">
+          <span class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span>📅</span> Status Voorspellingen:
+          </span>
+          <span id="active-speeldag-badge" class="bg-emerald-500/10 text-emerald-400 font-extrabold text-xs px-3 py-1 rounded-full border border-emerald-500/20">
+            Max. 2 speeldagen vooruit
+          </span>
+        </div>
+
+        <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700 gap-1">
+          <button type="button" onclick="setMatchFilter('toekomstig')" id="mfilter-toekomstig" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white transition">⏳ Nog te Spelen</button>
+          <button type="button" onclick="setMatchFilter('gespeeld')" id="mfilter-gespeeld" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">✅ Gespeeld</button>
+        </div>
+
+        <form id="predictions-form" onsubmit="event.preventDefault();">
+          <div id="matches-container" class="space-y-3">
+            <p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>
+          </div>
+        </form>
+      </div>
+
+      <div id="tab-global" class="tab-content hidden space-y-4">
+        <h3 class="text-lg font-bold text-white">🌍 Algemeen Klassement</h3>
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+          <table class="w-full text-left text-sm text-gray-300">
+            <thead class="bg-gray-900/80 text-xs text-gray-400 uppercase">
+              <tr>
+                <th class="p-3">#</th>
+                <th class="p-3">Speler</th>
+                <th class="p-3 text-right">Punten</th>
+              </tr>
+            </thead>
+            <tbody id="table-global-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-private" class="tab-content hidden space-y-4">
+        <div class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700">
+          <div>
+            <span class="text-xs text-gray-400 block uppercase font-bold">Jouw Groepscode</span>
+            <span id="current-group-display" class="font-extrabold text-emerald-400">PRIVATESQUAD</span>
+          </div>
+          <button onclick="wijzigGroepscode()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-3 rounded-lg border border-gray-600">
+            ✏️ Groep Beheren
+          </button>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+          <table class="w-full text-left text-sm text-gray-300">
+            <thead class="bg-gray-900/80 text-xs text-gray-400 uppercase">
+              <tr>
+                <th class="p-3">#</th>
+                <th class="p-3">Speler</th>
+                <th class="p-3 text-right">Punten</th>
+              </tr>
+            </thead>
+            <tbody id="table-private-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-monthly" class="tab-content hidden space-y-4">
+        <div class="bg-emerald-950/40 p-4 rounded-xl border border-emerald-500/30">
+          <h4 class="font-bold text-emerald-300 text-sm">💡 Maandbonus Regels (10 Punten Pot)</h4>
+          <p class="text-xs text-gray-300 mt-1">De winnaar van de maand pakt +10 bonuspunten. Bij gelijkspel worden de 10 punten verdeeld!</p>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+          <table class="w-full text-left text-sm text-gray-300">
+            <thead class="bg-gray-900/80 text-xs text-gray-400 uppercase">
+              <tr>
+                <th class="p-3">#</th>
+                <th class="p-3">Speler</th>
+                <th class="p-3 text-center">Maand Ptn</th>
+                <th class="p-3 text-right">Bonus</th>
+              </tr>
+            </thead>
+            <tbody id="table-monthly-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-settings" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <button onclick="toonScherm('dashboard')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition">
+          ⬅️ Terug naar Dashboard
+        </button>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-xl max-w-lg mx-auto space-y-6">
+        <div>
+          <h3 class="text-xl font-bold text-white flex items-center gap-2">⚙️ Accountinstellingen</h3>
+          <p class="text-xs text-gray-400 mt-1">Beheer hier je profiel en instellingen.</p>
+        </div>
+
+        <div class="bg-gray-900 p-5 rounded-xl border border-gray-700 space-y-4">
+          <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wide">Gebruikersnaam Wijzigen</h4>
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Huidige Weergavenaam</label>
+            <input type="text" id="setting-current-name" disabled class="w-full bg-gray-800 text-gray-400 border border-gray-700 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Nieuwe Weergavenaam</label>
+            <input type="text" id="setting-new-name" placeholder="Voer nieuwe naam in..." class="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+          </div>
+          <div class="bg-yellow-950/40 border border-yellow-600/30 p-3 rounded-lg text-xs text-yellow-200/90">
+            ⚠️ <strong>Regel:</strong> Je mag je gebruikersnaam <strong>maximaal 1x per maand (30 dagen)</strong> aanpassen.
+          </div>
+          <div id="name-change-cooldown-msg" class="hidden text-xs text-red-400 font-medium"></div>
+          <button id="btn-save-username" onclick="updateGebruikersnaam()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm">
+            💾 Opslaan & Naam Wijzigen
+          </button>
+        </div>
+
+        <div class="bg-gray-900 p-5 rounded-xl border border-gray-700 space-y-4">
+          <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wide">Avatar Kiezen</h4>
+          <p class="text-xs text-gray-400">Verschijnt naast je naam in de klassementen en bij groepsvoorspellingen.</p>
+          <div class="grid grid-cols-6 sm:grid-cols-8 gap-2" id="avatar-picker-grid">
+            <button type="button" data-emoji="⚽" onclick="kiesAvatar('⚽')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">⚽</button>
+            <button type="button" data-emoji="🥅" onclick="kiesAvatar('🥅')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🥅</button>
+            <button type="button" data-emoji="🏆" onclick="kiesAvatar('🏆')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🏆</button>
+            <button type="button" data-emoji="🥇" onclick="kiesAvatar('🥇')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🥇</button>
+            <button type="button" data-emoji="🎯" onclick="kiesAvatar('🎯')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🎯</button>
+            <button type="button" data-emoji="👟" onclick="kiesAvatar('👟')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">👟</button>
+            <button type="button" data-emoji="🧤" onclick="kiesAvatar('🧤')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🧤</button>
+            <button type="button" data-emoji="🎽" onclick="kiesAvatar('🎽')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🎽</button>
+            <button type="button" data-emoji="🦁" onclick="kiesAvatar('🦁')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦁</button>
+            <button type="button" data-emoji="🐯" onclick="kiesAvatar('🐯')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐯</button>
+            <button type="button" data-emoji="🦅" onclick="kiesAvatar('🦅')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦅</button>
+            <button type="button" data-emoji="🐺" onclick="kiesAvatar('🐺')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐺</button>
+            <button type="button" data-emoji="🐐" onclick="kiesAvatar('🐐')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐐</button>
+            <button type="button" data-emoji="🦈" onclick="kiesAvatar('🦈')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦈</button>
+            <button type="button" data-emoji="🐻" onclick="kiesAvatar('🐻')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐻</button>
+            <button type="button" data-emoji="🦍" onclick="kiesAvatar('🦍')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦍</button>
+            <button type="button" data-emoji="🐗" onclick="kiesAvatar('🐗')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐗</button>
+            <button type="button" data-emoji="🦊" onclick="kiesAvatar('🦊')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🦊</button>
+            <button type="button" data-emoji="🐴" onclick="kiesAvatar('🐴')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐴</button>
+            <button type="button" data-emoji="🐉" onclick="kiesAvatar('🐉')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🐉</button>
+            <button type="button" data-emoji="🔥" onclick="kiesAvatar('🔥')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🔥</button>
+            <button type="button" data-emoji="⭐" onclick="kiesAvatar('⭐')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">⭐</button>
+            <button type="button" data-emoji="😎" onclick="kiesAvatar('😎')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">😎</button>
+            <button type="button" data-emoji="🤡" onclick="kiesAvatar('🤡')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🤡</button>
+            <button type="button" data-emoji="👽" onclick="kiesAvatar('👽')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">👽</button>
+            <button type="button" data-emoji="🤖" onclick="kiesAvatar('🤖')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🤖</button>
+            <button type="button" data-emoji="💀" onclick="kiesAvatar('💀')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">💀</button>
+            <button type="button" data-emoji="👻" onclick="kiesAvatar('👻')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">👻</button>
+            <button type="button" data-emoji="🥷" onclick="kiesAvatar('🥷')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🥷</button>
+            <button type="button" data-emoji="🧙" onclick="kiesAvatar('🧙')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🧙</button>
+            <button type="button" data-emoji="🍀" onclick="kiesAvatar('🍀')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🍀</button>
+            <button type="button" data-emoji="🎩" onclick="kiesAvatar('🎩')" class="avatar-optie text-xl bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg py-2 transition">🎩</button>
+          </div>
+        </div>
+
+        <div id="admin-panel-trigger" class="hidden bg-gray-900 p-5 rounded-xl border border-amber-600/40 space-y-3">
+          <h4 class="text-sm font-bold text-amber-400 uppercase tracking-wide">🛠️ Beheer</h4>
+          <p class="text-xs text-gray-400">Je hebt beheerrechten op dit account. Hier kan je wedstrijduitslagen ingeven of corrigeren.</p>
+          <button onclick="openAdminModal()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm">
+            🛠️ Wedstrijduitslagen Beheren
+          </button>
+        </div>
+
+        <div class="bg-red-950/20 p-5 rounded-xl border border-red-600/40 space-y-3">
+          <h4 class="text-sm font-bold text-red-400 uppercase tracking-wide">⚠️ Gevarenzone</h4>
+          <p class="text-xs text-gray-400">Verwijdert je account en alle bijhorende gegevens (voorspellingen, reacties, profiel) definitief en onomkeerbaar.</p>
+          <button onclick="openDeleteAccountModal()" class="w-full bg-red-700 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm">
+            🗑️ Account Verwijderen
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="delete-account-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-red-600/50 p-6 max-w-sm w-full relative shadow-2xl space-y-4">
+      <button onclick="closeDeleteAccountModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      <div class="text-center">
+        <div class="text-3xl mb-1">⚠️</div>
+        <h3 class="text-lg font-extrabold text-white">Account definitief verwijderen?</h3>
+        <p class="text-xs text-gray-400 mt-2">Dit verwijdert je account, je profiel, al je voorspellingen en reacties. Dit kan <span class="text-red-400 font-bold">niet</span> ongedaan gemaakt worden.</p>
+      </div>
+      <div>
+        <label class="text-xs text-gray-400 block mb-1.5">Typ <span class="font-bold text-white">VERWIJDER</span> om te bevestigen:</label>
+        <input type="text" id="input-delete-confirm" placeholder="VERWIJDER" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm" oninput="document.getElementById('btn-confirm-delete').disabled = (this.value !== 'VERWIJDER')">
+      </div>
+      <button id="btn-confirm-delete" onclick="verwijderMijnAccount()" disabled class="w-full bg-red-700 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-2.5 px-4 rounded-lg transition text-sm">
+        Definitief Verwijderen
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: GROEP MAKEN OF LID WORDEN -->
+  <div id="group-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-sm w-full relative shadow-2xl space-y-4">
+      <button onclick="closeGroupModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      
+      <div class="text-center">
+        <div class="text-3xl mb-1">👥</div>
+        <h3 class="text-xl font-extrabold text-white">Privé Liga Beheren</h3>
+        <p class="text-xs text-gray-400">Maak een nieuwe groep aan of sluit je aan bij een bestaande groep via een code.</p>
+      </div>
+
+      <!-- TAB KEUZES -->
+      <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700 gap-1">
+        <button type="button" onclick="switchGroupModalTab('join')" id="gtab-join" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 text-white transition">Lid Worden</button>
+        <button type="button" onclick="switchGroupModalTab('create')" id="gtab-create" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">Nieuwe Groep</button>
+      </div>
+
+      <!-- FORM 1: LID WORDEN -->
+      <form id="form-join-group" onsubmit="event.preventDefault(); verwerkLidWorden();" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Groepscode</label>
+          <input type="text" id="input-join-code" placeholder="Bijv. SQUAD2026" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-emerald-500 text-sm">
+        </div>
+        <button type="submit" id="btn-submit-join" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-lg shadow-lg transition text-sm">
+          Word Lid van Groep
+        </button>
+      </form>
+
+      <!-- FORM 2: NIEUWE GROEP MAKEN -->
+      <form id="form-create-group" onsubmit="event.preventDefault(); verwerkGroepAanmaken();" class="space-y-3 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Groepsnaam</label>
+          <input type="text" id="input-create-name" placeholder="Bijv. De Voetbalvrienden" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Unieke Groepscode</label>
+          <input type="text" id="input-create-code" placeholder="Bijv. VRIENDEN26" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-emerald-500 text-sm">
+        </div>
+        <button type="submit" id="btn-submit-create" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-lg shadow-lg transition text-sm">
+          Groep Aanmaken & Deelnemen
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="share-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-sm w-full text-center relative shadow-2xl space-y-4">
+      <button onclick="closeShareModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      <div class="text-3xl">🎁</div>
+      <h3 class="text-xl font-extrabold text-white">Nodig Vrienden Uit</h3>
+      <p class="text-xs text-gray-400">Verdien <strong>+2 extra bonuspunten</strong> wanneer iemand zich via jouw link registreert en zijn/haar eerste voorspelling invult!</p>
+      <div class="bg-white p-4 rounded-xl flex items-center justify-center mx-auto w-48 h-48 shadow-inner" id="qrcode-container"></div>
+      <div class="bg-gray-900 p-3 rounded-xl border border-gray-700 text-left">
+        <span class="text-[10px] text-gray-400 uppercase font-bold block mb-1">Privé Groepscode</span>
+        <span id="share-modal-code" class="text-emerald-400 font-extrabold text-base">PRIVATESQUAD</span>
+      </div>
+      <button onclick="copyShareLink()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+        <span>📋</span> Kopieer Unieke Uitnodigingslink
+      </button>
+    </div>
+  </div>
+
+  <div id="rules-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-md w-full relative shadow-2xl space-y-5 max-h-[85vh] overflow-y-auto">
+      <button onclick="closeRulesModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+
+      <div class="text-center">
+        <div class="text-3xl mb-1">📜</div>
+        <h3 class="text-xl font-extrabold text-white">Spelregels PronoPro</h3>
+        <p class="text-xs text-gray-400 mt-1">Hoe worden de punten berekend?</p>
+      </div>
+
+      <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 space-y-2">
+        <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1.5">⚽ Punten per Wedstrijd</h4>
+        <ul class="text-xs text-gray-300 space-y-1.5 list-disc list-inside">
+          <li><strong class="text-white">10 Punten:</strong> Exact de juiste score voorspeld (bijv. Uitslag 2-1, Voorspelling 2-1).</li>
+          <li><strong class="text-white">7 Punten:</strong> Juiste winnaar én het juiste aantal doelpunten verschil voorspeld (bijv. Uitslag 3-1, Voorspelling 2-0).</li>
+          <li><strong class="text-white">5 Punten:</strong> Juiste winnaar of gelijkspel voorspeld, maar ander doelsaldo (bijv. Uitslag 3-0, Voorspelling 1-0).</li>
+          <li><strong class="text-white">1 Punt:</strong> Voorspelling ingevuld, maar de uitslag/winnaar is fout.</li>
+          <li><strong class="text-white">0 Punten:</strong> Geen voorspelling ingevuld.</li>
+        </ul>
+      </div>
+
+      <div class="bg-emerald-950/40 p-4 rounded-xl border border-emerald-500/30 space-y-2">
+        <h4 class="text-sm font-bold text-emerald-300 flex items-center gap-1.5">📅 Maandbonus (10 Ptn Pot)</h4>
+        <p class="text-xs text-gray-300">Elke maand strijden spelers in hun privé-liga voor de maandbonus:</p>
+        <ul class="text-xs text-gray-300 space-y-1 list-disc list-inside">
+          <li><strong class="text-white">1 Winnaar:</strong> Krijgt +10 bonuspunten.</li>
+          <li><strong class="text-white">2 Gedeelde winnaars:</strong> Krijgen elk +5 bonuspunten.</li>
+          <li><strong class="text-white">3 Gedeelde winnaars:</strong> Krijgen elk +3 bonuspunten.</li>
+          <li><strong class="text-white">4 of meer winnaars:</strong> Krijgen elk +1 bonuspunt.</li>
+        </ul>
+      </div>
+
+      <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 space-y-1.5">
+        <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-1.5">🎁 Uitnodigingsbonus</h4>
+        <p class="text-xs text-gray-300">Nodig vrienden uit via jouw unieke uitnodigingslink. Zodra zij zich registreren én hun eerste voorspelling invullen, ontvang jij <strong class="text-white">+2 bonuspunten</strong>!</p>
+      </div>
+
+      <div class="bg-yellow-950/40 border border-yellow-600/30 p-4 rounded-xl space-y-1.5">
+        <h4 class="text-sm font-bold text-yellow-300 flex items-center gap-1.5">🔒 Deadlines & Beperkingen</h4>
+        <ul class="text-xs text-yellow-200/90 space-y-1 list-disc list-inside">
+          <li>Voorspellingen sluiten zodra het aftrapsignaal van de wedstrijd klinkt.</li>
+          <li>Je kunt maximaal 2 speeldagen vooruit invullen.</li>
+        </ul>
+      </div>
+
+      <button onclick="closeRulesModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition text-sm">
+        Begrepen!
+      </button>
+    </div>
+  </div>
+
+  <div id="admin-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-2xl w-full relative shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+      <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      <div class="text-center mb-2">
+        <div class="text-2xl mb-1">🛠️</div>
+        <h3 class="text-lg font-extrabold text-white">Wedstrijduitslagen Beheren</h3>
+      </div>
+      <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700 gap-1">
+        <button type="button" onclick="setAdminFilter('open')" id="admin-filter-open" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 text-white transition">Zonder uitslag</button>
+        <button type="button" onclick="setAdminFilter('alles')" id="admin-filter-alles" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition">Alles</button>
+      </div>
+      <div id="admin-modal-content" class="space-y-2">
+        <p class="text-gray-400 text-center py-6">Laden...</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="stats-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-md w-full relative shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+      <button onclick="closeStatsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      <div id="stats-modal-content">
+        <p class="text-gray-400 text-center py-6">Laden...</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="invite-group-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-sm w-full text-center relative shadow-2xl space-y-4">
+      <div class="text-3xl">🎁</div>
+      <h3 class="text-lg font-extrabold text-white">Uitnodiging voor een groep</h3>
+      <p class="text-sm text-gray-300">Je bent uitgenodigd voor groep <span id="invite-group-code" class="font-bold text-emerald-400"></span>. Wil je hiernaar overstappen?</p>
+      <div class="flex gap-3">
+        <button onclick="weigerGroepUitnodiging()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2.5 rounded-lg transition text-sm">
+          Nee, blijf in mijn groep
+        </button>
+        <button onclick="aanvaardGroepUitnodiging()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg transition text-sm">
+          Ja, wissel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="match-predictions-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-md w-full relative shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+      <button onclick="closeMatchPredictionsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      <div id="match-predictions-content">
+        <p class="text-gray-400 text-center py-6">Laden...</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center py-6 pb-24 md:pb-6 space-x-4">
+    <button onclick="openPrivacyModal()" class="text-[11px] text-gray-500 hover:text-gray-300 underline transition">🔒 Privacybeleid</button>
+  </footer>
+
+  <div id="privacy-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl border border-gray-700 p-6 max-w-lg w-full relative shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto text-left">
+      <button onclick="closePrivacyModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+      <div class="text-center mb-2">
+        <div class="text-3xl mb-1">🔒</div>
+        <h3 class="text-xl font-extrabold text-white">Privacybeleid</h3>
+      </div>
+      <div class="space-y-3 text-xs text-gray-300 leading-relaxed">
+        <div>
+          <h4 class="text-sm font-bold text-emerald-400 mb-1">Welke gegevens verzamelen we?</h4>
+          <p>Je e-mailadres (voor inloggen), een zelfgekozen gebruikersnaam, je avatar-keuze, je groepslidmaatschap, en de wedstrijdvoorspellingen die je zelf invult.</p>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-emerald-400 mb-1">Waarvoor gebruiken we die?</h4>
+          <p>Uitsluitend om het spel te laten werken: inloggen, klassementen tonen, en punten berekenen. We verkopen geen gegevens aan derden en gebruiken ze niet voor doeleinden buiten deze app.</p>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-emerald-400 mb-1">Wie kan wat zien?</h4>
+          <p>Je gebruikersnaam, avatar en voorspellingen zijn zichtbaar voor andere ingelogde spelers (nodig voor de klassementen en groepsweergave). Je e-mailadres is nooit zichtbaar voor andere spelers.</p>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-emerald-400 mb-1">Externe diensten</h4>
+          <p>We gebruiken Supabase (databank en inloggen) en Google Analytics (bezoekersstatistieken). Deze partijen verwerken data volgens hun eigen privacybeleid.</p>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-emerald-400 mb-1">Je gegevens laten verwijderen</h4>
+          <p>Wil je je account en alle bijhorende gegevens laten verwijderen? Stuur een bericht naar de beheerder van deze site.</p>
+        </div>
+      </div>
+      <button onclick="closePrivacyModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl transition text-sm mt-2">
+        Begrepen
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-nav" class="hidden fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur border-t border-gray-700 z-40 flex justify-around py-2.5 px-2 md:hidden shadow-2xl">
+    <button onclick="mobileSwitch('dashboard')" id="mnav-dashboard" class="flex flex-col items-center gap-1 text-emerald-400 transition">
+      <span class="text-lg">🏠</span>
+      <span class="text-[10px] font-bold uppercase tracking-wider">Home</span>
+    </button>
+    <button onclick="mobileSwitch('predict')" id="mnav-predict" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
+      <span class="text-lg">⚽</span>
+      <span class="text-[10px] font-bold uppercase tracking-wider">Pronos</span>
+    </button>
+    <button onclick="mobileSwitch('global')" id="mnav-global" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
+      <span class="text-lg">🌍</span>
+      <span class="text-[10px] font-bold uppercase tracking-wider">Algemeen</span>
+    </button>
+    <button onclick="mobileSwitch('settings')" id="mnav-settings" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition">
+      <span class="text-lg">⚙️</span>
+      <span class="text-[10px] font-bold uppercase tracking-wider">Account</span>
+    </button>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://pitvmvbtourmonkwzwoq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdHZtdmJ0b3VybW9ua3d6d29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzI1MzAsImV4cCI6MjA5OTcwODUzMH0.JuZgmU-qTD5An29i3dRDSEUtyDjOTazj6Klekpbg508'; 
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteGroup = urlParams.get('group');
+    const inviteRef = urlParams.get('ref');
+
+    if (inviteGroup) localStorage.setItem('prono_group', inviteGroup.toUpperCase());
+    if (inviteRef) localStorage.setItem('prono_ref', inviteRef);
+
+    let currentUser = null;
+    let currentUserProfile = null;
+    let currentGroup = localStorage.getItem('prono_group') || 'DEFAULT_GROUP';
+    let currentRef = localStorage.getItem('prono_ref') || null;
+
+    // Als iemand een uitnodigingslink opent terwijl die AL een account heeft (of al ingelogd
+    // is in deze browser), gebeurde er voorheen niets: de group/ref-parameters werden enkel
+    // toegepast bij het aanmaken van een GLOEDNIEUW profiel. We onthouden hier expliciet of
+    // déze pagina-load een groepslink was, zodat we na het inloggen kunnen vragen of iemand
+    // wil overstappen (zie toonGroepUitnodigingIndienNodig, aangeroepen vanuit initialiseerUserSessie).
+    let pendingGroupInvite = inviteGroup ? inviteGroup.toUpperCase() : null;
+    
+    let hideIndicatorTimer = null;
+
+    const CLUB_LOGOS = {
+      "Club Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/club-brugge.png",
+      "Royal Antwerp FC": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/antwerp.png",
+      "Lommel SK": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lommel.png",
+      "SK Beveren": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/beveren.png",
+      "Sporting Charleroi": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/charleroi.png",
+      "KRC Genk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/genk.png",
+      "KV Kortrijk": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/kvkortrijk.png",
+      "RAAL La Louvière": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/lalouviere.png",
+      "STVV": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/sint-truiden.png",
+      "Standard Luik": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/standaard-liege.png",
+      "Royale Union SG": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/union.png",
+      "KVC Westerlo": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/westerlo.png",
+      "SV Zulte Waregem": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/zulte-waregem.png",
+      "RSC Anderlecht": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/anderlecht.png",
+      "KV Mechelen": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/mechelen.png",
+      "KAA Gent": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/gent.png",
+      "Cercle Brugge": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/cercle-brugge.png",
+      "OH Leuven": "https://pitvmvbtourmonkwzwoq.supabase.co/storage/v1/object/public/logos/leuven.png"
+    };
+
+    const DEFAULT_TIMES = {
+      "Club Brugge - KV Kortrijk": "20:45",
+      "Sporting Charleroi - OH Leuven": "16:00",
+      "Standard Luik - Cercle Brugge": "18:15",
+      "KVC Westerlo - Royale Union SG": "20:45",
+      "STVV - Lommel SK": "13:30",
+      "KAA Gent - KV Mechelen": "16:00",
+      "SV Zulte Waregem - KRC Genk": "18:30",
+      "RSC Anderlecht - RAAL La Louvière": "21:00",
+      "Royal Antwerp FC - SK Beveren": "21:00",
+      "SK Beveren - Standard Luik": "20:00",
+      "STVV - KVC Westerlo": "18:15"
+    };
+
+    function checkScoreInput(input) {
+      if (input.value !== '') {
+        let val = parseInt(input.value, 10);
+        if (isNaN(val) || val < 0) val = 0;
+        if (val > 99) val = 99;
+        input.value = val;
+      }
+
+      if (input.value !== '' && input.value !== null) {
+        input.classList.add('has-value');
+      } else {
+        input.classList.remove('has-value');
+      }
+    }
+
+    async function opslaanMatchVoorspelling(matchId) {
+      if (!currentUser) {
+        toonMelding("❌ Je moet ingelogd zijn om te voorspellen.", true);
+        return;
+      }
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) {
+        toonMelding("❌ Sessie niet gevonden. Log opnieuw in.", true);
+        return;
+      }
+
+      const homeInput = document.getElementById(`home-${matchId}`);
+      const awayInput = document.getElementById(`away-${matchId}`);
+      const savedBadge = document.getElementById(`saved-badge-${matchId}`);
+
+      const homeVal = homeInput ? homeInput.value : '';
+      const awayVal = awayInput ? awayInput.value : '';
+
+      if (homeVal === '' || awayVal === '') {
+        toonMelding("⚠️ Vul voor beide teams een score in.", true);
+        return;
+      }
+
+      // De "Opslaan"-knop is geen submit-knop, dus de HTML5 min/max-validatie op de
+      // inputs wordt nooit afgedwongen. Klem de waarden hier expliciet vast op 0-99.
+      let homeScore = parseInt(homeVal, 10);
+      let awayScore = parseInt(awayVal, 10);
+
+      if (isNaN(homeScore) || isNaN(awayScore)) {
+        toonMelding("⚠️ Vul voor beide teams een geldige score in.", true);
+        return;
+      }
+
+      homeScore = Math.min(99, Math.max(0, homeScore));
+      awayScore = Math.min(99, Math.max(0, awayScore));
+
+      // Vraag een bevestiging als er al een ANDERE voorspelling voor deze wedstrijd was
+      // opgeslagen, zodat een per ongeluk gewijzigd cijfer niet stilzwijgend de oude
+      // voorspelling overschrijft.
+      const bestaandePred = (wedstrijdenCache && wedstrijdenCache.predMap) ? wedstrijdenCache.predMap[String(matchId)] : null;
+      if (bestaandePred) {
+        const oudHome = bestaandePred.predicted_home_score !== undefined ? bestaandePred.predicted_home_score : bestaandePred.home_prediction;
+        const oudAway = bestaandePred.predicted_away_score !== undefined ? bestaandePred.predicted_away_score : bestaandePred.away_prediction;
+        const heeftOudeWaarde = oudHome !== undefined && oudHome !== null && oudAway !== undefined && oudAway !== null;
+
+        if (heeftOudeWaarde && (parseInt(oudHome, 10) !== homeScore || parseInt(oudAway, 10) !== awayScore)) {
+          const bevestigd = confirm(`Je had deze wedstrijd al voorspeld als ${oudHome}-${oudAway}.\nWil je dit wijzigen naar ${homeScore}-${awayScore}?`);
+          if (!bevestigd) return;
+        }
+      }
+
+      // We slaan ook de groep op waarin je zat op het moment van voorspellen. Dit is nodig
+      // om maandbonussen achteraf correct aan de juiste groep toe te kennen, ook als je later
+      // van groep wisselt. Vereist de kolom 'group_code' op de 'predictions'-tabel in Supabase
+      // (zie instructies) — als die nog niet bestaat, valt dit automatisch terug op de oude
+      // manier van opslaan zodat voorspellingen blijven werken.
+      let { error } = await _supabase.from('predictions').upsert({
+        user_id: user.id,
+        username: currentUser,
+        match_id: parseInt(matchId, 10),
+        predicted_home_score: homeScore,
+        predicted_away_score: awayScore,
+        group_code: currentGroup
+      }, { onConflict: 'user_id,match_id' });
+
+      if (error && /group_code/i.test(error.message || '')) {
+        ({ error } = await _supabase.from('predictions').upsert({
+          user_id: user.id,
+          username: currentUser,
+          match_id: parseInt(matchId, 10),
+          predicted_home_score: homeScore,
+          predicted_away_score: awayScore
+        }, { onConflict: 'user_id,match_id' }));
+      }
+
+      if (!error) {
+        if (homeInput) homeInput.classList.add('is-saved');
+        if (awayInput) awayInput.classList.add('is-saved');
+        
+        if (savedBadge) {
+          savedBadge.classList.remove('hidden');
+        }
+        
+        const saveIndicator = document.getElementById('save-indicator');
+        saveIndicator.classList.add('show');
+        
+        if (hideIndicatorTimer) clearTimeout(hideIndicatorTimer);
+        hideIndicatorTimer = setTimeout(() => {
+          saveIndicator.classList.remove('show');
+        }, 3500);
+
+        toonMelding("✅ Voorspelling opgeslagen!");
+        laadKlassementen();
+      } else {
+        console.error("Fout bij opslaan van voorspelling:", matchId, error);
+        toonMelding(`❌ Opslaan mislukt: ${error.message}`, true);
+      }
+    }
+
+    function togglePasswordVisibility(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.innerText = "🙈";
+      } else {
+        input.type = "password";
+        btn.innerText = "👁️";
+      }
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('form-login').classList.add('hidden');
+      document.getElementById('form-register').classList.add('hidden');
+      document.getElementById('form-reset').classList.add('hidden');
+      document.getElementById('form-new-password').classList.add('hidden');
+
+      const buttons = ['tab-btn-login', 'tab-btn-register', 'tab-btn-reset'];
+      buttons.forEach(id => {
+        const b = document.getElementById(id);
+        b.classList.remove('bg-emerald-600', 'text-white');
+        b.classList.add('text-gray-400');
+      });
+
+      if (tab === 'login') {
+        document.getElementById('form-login').classList.remove('hidden');
+        document.getElementById('tab-btn-login').classList.add('bg-emerald-600', 'text-white');
+      } else if (tab === 'register') {
+        document.getElementById('form-register').classList.remove('hidden');
+        document.getElementById('tab-btn-register').classList.add('bg-emerald-600', 'text-white');
+      } else if (tab === 'reset') {
+        document.getElementById('form-reset').classList.remove('hidden');
+        document.getElementById('tab-btn-reset').classList.add('bg-emerald-600', 'text-white');
+      }
+    }
+
+    async function inloggen() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-submit-login');
+
+      btn.innerText = '⌛ Inloggen...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+      btn.innerText = 'Inloggen';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+        return;
+      }
+
+      await initialiseerUserSessie(data.user);
+    }
+
+    async function registreren() {
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-submit-reg');
+
+      btn.innerText = '⌛ Account Aanmaken...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { username: username } }
+      });
+
+      btn.innerText = 'Account Aanmaken';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+        return;
+      }
+
+      // Als "Confirm email" aanstaat in Supabase Auth, geeft signUp() wel een user
+      // terug maar GEEN actieve sessie. Een profiel aanmaken zou dan mislukken
+      // (RLS vereist een ingelogde gebruiker) en initialiseerUserSessie() zou
+      // dezelfde reden falen. In dat geval tonen we een duidelijke melding i.p.v.
+      // een voorspelbaar mislukte upsert/inlog te proberen. Het profiel wordt
+      // automatisch aangemaakt bij de eerste echte login (zie initialiseerUserSessie).
+      if (data.user && data.session) {
+        await _supabase.from('profiles').upsert({ 
+          id: data.user.id,
+          username: username, 
+          group_code: currentGroup,
+          referred_by: currentRef,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+
+        toonMelding('✅ Account aangemaakt! Je bent ingelogd.');
+        await initialiseerUserSessie(data.user, username);
+      } else if (data.user && !data.session) {
+        toonMelding('📧 Account aangemaakt! Bevestig eerst je e-mailadres via de link die we je stuurden, en log daarna in.');
+        switchAuthTab('login');
+      }
+    }
+
+    async function resetWachtwoordAanvragen() {
+      const email = document.getElementById('reset-email').value.trim();
+      const btn = document.getElementById('btn-submit-reset');
+
+      btn.innerText = '⌛ Verzenden...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+
+      btn.innerText = 'Verstuur Reset Link';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+      } else {
+        toonMelding('📧 Reset-link is verzonden! Check je e-mail.');
+      }
+    }
+
+    async function opslaanNieuwWachtwoord() {
+      const newPassword = document.getElementById('new-password').value;
+      const btn = document.getElementById('btn-submit-newpass');
+
+      btn.innerText = '⌛ Opslaan...';
+      btn.disabled = true;
+
+      const { data, error } = await _supabase.auth.updateUser({ password: newPassword });
+
+      btn.innerText = 'Opslaan & Inloggen';
+      btn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ ' + error.message, true);
+      } else {
+        toonMelding('✅ Wachtwoord succesvol gewijzigd!');
+        await initialiseerUserSessie(data.user);
+      }
+    }
+
+    async function initialiseerUserSessie(userObj, optioneleNaam = null) {
+      if (!userObj) return;
+
+      const { data: profile } = await _supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userObj.id)
+        .maybeSingle();
+
+      if (profile && profile.username) {
+        currentUser = profile.username;
+        currentUserProfile = profile;
+        if (profile.group_code) currentGroup = profile.group_code;
+      } else {
+        let determinedUsername = optioneleNaam || (userObj.user_metadata && userObj.user_metadata.username);
+        if (!determinedUsername) {
+          determinedUsername = userObj.email ? userObj.email.split('@')[0] : 'Speler';
+        }
+
+        currentUser = determinedUsername;
+        const newProf = { 
+          id: userObj.id,
+          username: currentUser, 
+          group_code: currentGroup,
+          referred_by: currentRef,
+          updated_at: new Date().toISOString()
+        };
+        
+        await _supabase.from('profiles').upsert(newProf, { onConflict: 'id' });
+        currentUserProfile = newProf;
+      }
+
+      await _supabase
+        .from('profiles')
+        .update({ last_seen: new Date().toISOString() })
+        .eq('id', userObj.id);
+
+      localStorage.setItem('prono_username', currentUser);
+      localStorage.setItem('prono_group', currentGroup);
+      toonScherm('dashboard');
+      toonGroepUitnodigingIndienNodig();
+    }
+
+    // Vraagt (indien relevant) of iemand die via een groepslink binnenkwam, maar al een
+    // account/sessie had met een ANDERE groep, wil overstappen. Dit dekt het geval waarbij
+    // de link niet bij een gloednieuwe registratie werd gebruikt.
+    function toonGroepUitnodigingIndienNodig() {
+      if (!pendingGroupInvite) return;
+      if (pendingGroupInvite === currentGroup) {
+        pendingGroupInvite = null;
+        return;
+      }
+      document.getElementById('invite-group-code').innerText = pendingGroupInvite;
+      document.getElementById('invite-group-modal').classList.remove('hidden');
+    }
+
+    async function aanvaardGroepUitnodiging() {
+      const code = pendingGroupInvite;
+      pendingGroupInvite = null;
+      document.getElementById('invite-group-modal').classList.add('hidden');
+      if (!code) return;
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      await koppelGebruikerAanGroep(user.id, code);
+    }
+
+    function weigerGroepUitnodiging() {
+      pendingGroupInvite = null;
+      document.getElementById('invite-group-modal').classList.add('hidden');
+    }
+
+    async function updateGebruikersnaam() {
+      const newName = document.getElementById('setting-new-name').value.trim();
+      const saveBtn = document.getElementById('btn-save-username');
+
+      if (!newName || newName === currentUser) {
+        toonMelding('⚠️ Voer een nieuwe geldige naam in.', true);
+        return;
+      }
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      saveBtn.innerText = '⌛ Bezig met opslaan...';
+      saveBtn.disabled = true;
+
+      const { error } = await _supabase
+        .from('profiles')
+        .update({ 
+          username: newName, 
+          updated_at: new Date().toISOString() 
+        })
+        .eq('id', user.id);
+
+      saveBtn.innerText = '💾 Opslaan & Naam Wijzigen';
+      saveBtn.disabled = false;
+
+      if (error) {
+        toonMelding('❌ Opslaan mislukt: ' + error.message, true);
+      } else {
+        await _supabase
+          .from('predictions')
+          .update({ username: newName })
+          .eq('user_id', user.id);
+
+        currentUser = newName;
+        if (currentUserProfile) {
+          currentUserProfile.username = newName;
+          currentUserProfile.updated_at = new Date().toISOString();
+        }
+
+        localStorage.setItem('prono_username', currentUser);
+        toonMelding('✅ Gebruikersnaam succesvol gewijzigd!');
+        
+        laadSettingsScherm();
+        toonScherm('dashboard');
+      }
+    }
+
+    async function kiesAvatar(emoji) {
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await _supabase.from('profiles').update({ avatar: emoji }).eq('id', user.id);
+
+      if (error) {
+        toonMelding('❌ Fout bij opslaan avatar: ' + error.message, true);
+        return;
+      }
+
+      if (currentUserProfile) currentUserProfile.avatar = emoji;
+      toonMelding('✅ Avatar bijgewerkt!');
+      markeerActieveAvatar();
+
+      const dashAvatar = document.getElementById('dash-avatar');
+      if (dashAvatar) dashAvatar.innerText = emoji;
+    }
+
+    function markeerActieveAvatar() {
+      const huidige = (currentUserProfile && currentUserProfile.avatar) || '⚽';
+      document.querySelectorAll('.avatar-optie').forEach(btn => {
+        if (btn.dataset.emoji === huidige) {
+          btn.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-950/40', 'border-emerald-500');
+        } else {
+          btn.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-950/40', 'border-emerald-500');
+        }
+      });
+    }
+
+    function laadSettingsScherm() {
+      document.getElementById('setting-current-name').value = currentUser;
+      document.getElementById('setting-new-name').value = '';
+
+      markeerActieveAvatar();
+
+      const adminTrigger = document.getElementById('admin-panel-trigger');
+      if (adminTrigger) {
+        if (currentUserProfile && currentUserProfile.is_admin === true) {
+          adminTrigger.classList.remove('hidden');
+        } else {
+          adminTrigger.classList.add('hidden');
+        }
+      }
+
+      const cooldownMsg = document.getElementById('name-change-cooldown-msg');
+      const saveBtn = document.getElementById('btn-save-username');
+
+      if (currentUserProfile && currentUserProfile.updated_at) {
+        const lastChange = new Date(currentUserProfile.updated_at);
+        const diffDays = (new Date() - lastChange) / (1000 * 60 * 60 * 24);
+        
+        if (diffDays < 30) {
+          const overigeDagen = Math.ceil(30 - diffDays);
+          cooldownMsg.innerText = `⏳ Je kunt je naam pas weer wijzigen over ${overigeDagen} dag(en).`;
+          cooldownMsg.classList.remove('hidden');
+          saveBtn.disabled = true;
+          saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          return;
+        }
+      }
+
+      cooldownMsg.classList.add('hidden');
+      saveBtn.disabled = false;
+      saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    async function uitloggen() {
+      await _supabase.auth.signOut();
+      currentUser = null;
+      currentUserProfile = null;
+      localStorage.removeItem('prono_username');
+
+      // Voorkom dat een oude uitnodigingslink/groepscode van dit toestel blijft
+      // "kleven" aan een volgend account dat hier (zonder nieuwe link) aanmeldt.
+      localStorage.removeItem('prono_ref');
+      localStorage.removeItem('prono_group');
+      currentRef = null;
+      currentGroup = 'DEFAULT_GROUP';
+
+      toonScherm('login');
+    }
+
+    function openDeleteAccountModal() {
+      document.getElementById('input-delete-confirm').value = '';
+      document.getElementById('btn-confirm-delete').disabled = true;
+      document.getElementById('delete-account-modal').classList.remove('hidden');
+    }
+
+    function closeDeleteAccountModal() {
+      document.getElementById('delete-account-modal').classList.add('hidden');
+    }
+
+    // Verwijdert het eigen account onomkeerbaar via de beveiligde 'delete_own_account()'-functie
+    // in Supabase. Die functie werkt uitsluitend op auth.uid() (de ingelogde gebruiker zelf) —
+    // er is geen manier om via deze weg een ANDER account te verwijderen.
+    async function verwijderMijnAccount() {
+      const btn = document.getElementById('btn-confirm-delete');
+      btn.innerText = '⌛ Bezig met verwijderen...';
+      btn.disabled = true;
+
+      const { error } = await _supabase.rpc('delete_own_account');
+
+      if (error) {
+        btn.innerText = 'Definitief Verwijderen';
+        btn.disabled = false;
+        toonMelding('❌ Fout bij verwijderen: ' + error.message, true);
+        return;
+      }
+
+      closeDeleteAccountModal();
+      await _supabase.auth.signOut();
+
+      currentUser = null;
+      currentUserProfile = null;
+      localStorage.removeItem('prono_username');
+      localStorage.removeItem('prono_ref');
+      localStorage.removeItem('prono_group');
+      currentRef = null;
+      currentGroup = 'DEFAULT_GROUP';
+
+      toonScherm('login');
+      toonMelding('✅ Je account is verwijderd.');
+    }
+
+    function toonScherm(schermNaam) {
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-dashboard').classList.add('hidden');
+      document.getElementById('screen-matches').classList.add('hidden');
+      document.getElementById('screen-settings').classList.add('hidden');
+
+      if (schermNaam === 'login') {
+        document.getElementById('screen-login').classList.remove('hidden');
+        document.getElementById('user-nav').classList.add('hidden');
+        document.getElementById('mobile-nav').classList.add('hidden');
+      } else if (schermNaam === 'dashboard') {
+        document.getElementById('screen-dashboard').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+        document.getElementById('dash-username').innerText = currentUser;
+        document.getElementById('dash-avatar').innerText = (currentUserProfile && currentUserProfile.avatar) || '⚽';
+        document.getElementById('dash-groupcode').innerText = currentGroup;
+        document.getElementById('nav-username').innerText = '⚙️ ' + currentUser;
+        updateMobileNavActive('mnav-dashboard');
+        laadDashboardStats();
+      } else if (schermNaam === 'matches') {
+        document.getElementById('screen-matches').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+        laadWedstrijden();
+        laadKlassementen();
+      } else if (schermNaam === 'settings') {
+        document.getElementById('screen-settings').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+        updateMobileNavActive('mnav-settings');
+        laadSettingsScherm();
+      }
+    }
+
+    function openSpeeldagTab(tabTarget) {
+      toonScherm('matches');
+      switchTab(tabTarget);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+
+      const tabs = ['btn-tab-predict', 'btn-tab-global', 'btn-tab-private', 'btn-tab-monthly'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(t);
+        btn.classList.remove('bg-emerald-600', 'text-white');
+        btn.classList.add('text-gray-400');
+      });
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if(activeBtn) {
+        activeBtn.classList.add('bg-emerald-600', 'text-white');
+        activeBtn.classList.remove('text-gray-400');
+      }
+
+      if(tabId === 'tab-predict') updateMobileNavActive('mnav-predict');
+      if(tabId === 'tab-global') updateMobileNavActive('mnav-global');
+      // Geen eigen icoon voor Privé Liga / Maand in de onderste balk (slechts 4 slots):
+      // deze tabs worden bereikt via het wedstrijdenscherm, dus 'Pronos' blijft actief.
+      if(tabId === 'tab-private') updateMobileNavActive('mnav-predict');
+      if(tabId === 'tab-monthly') updateMobileNavActive('mnav-predict');
+    }
+
+    function mobileSwitch(target) {
+      if (target === 'dashboard') toonScherm('dashboard');
+      else if (target === 'predict') openSpeeldagTab('tab-predict');
+      else if (target === 'global') openSpeeldagTab('tab-global');
+      else if (target === 'settings') toonScherm('settings');
+    }
+
+    function updateMobileNavActive(activeId) {
+      const items = ['mnav-dashboard', 'mnav-predict', 'mnav-global', 'mnav-settings'];
+      items.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (id === activeId) {
+            el.classList.remove('text-gray-400');
+            el.classList.add('text-emerald-400');
+          } else {
+            el.classList.remove('text-emerald-400');
+            el.classList.add('text-gray-400');
+          }
+        }
+      });
+    }
+
+    function openShareModal() {
+      const modal = document.getElementById('share-modal');
+      const codeDisplay = document.getElementById('share-modal-code');
+      const qrContainer = document.getElementById('qrcode-container');
+
+      codeDisplay.innerText = currentGroup;
+
+      // We gebruiken het (onveranderlijke) user-id als ref-waarde, niet de gebruikersnaam:
+      // die kan later gewijzigd worden via Instellingen, wat anders de referral-bonus zou breken.
+      const refId = (currentUserProfile && currentUserProfile.id) ? currentUserProfile.id : currentUser;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(refId)}`;
+
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: shareUrl,
+        width: 160,
+        height: 160,
+        colorDark : "#064e3b",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.add('hidden');
+    }
+
+    function openRulesModal() {
+      document.getElementById('rules-modal').classList.remove('hidden');
+    }
+
+    function closeRulesModal() {
+      document.getElementById('rules-modal').classList.add('hidden');
+    }
+
+    function openPrivacyModal() {
+      document.getElementById('privacy-modal').classList.remove('hidden');
+    }
+
+    function closePrivacyModal() {
+      document.getElementById('privacy-modal').classList.add('hidden');
+    }
+
+    // Berekent de punten voor 1 voorspelling volgens het 10/7/5/1/0-systeem.
+    // 10 = exacte score, 7 = juiste winnaar + juist doelsaldo, 5 = juiste winnaar/gelijkspel maar ander doelsaldo,
+    // 1 = ingevuld maar fout, 0 = geen (geldige) voorspelling.
+    function berekenPuntenVoorVoorspelling(predHome, predAway, matchHome, matchAway) {
+      if (isNaN(predHome) || isNaN(predAway) || isNaN(matchHome) || isNaN(matchAway)) return 0;
+
+      if (predHome === matchHome && predAway === matchAway) return 10;
+
+      const predDiff = predHome - predAway;
+      const matchDiff = matchHome - matchAway;
+
+      if (Math.sign(predDiff) === Math.sign(matchDiff)) {
+        return Math.abs(predDiff) === Math.abs(matchDiff) ? 7 : 5;
+      }
+
+      return 1;
+    }
+
+    function copyShareLink() {
+      const refId = (currentUserProfile && currentUserProfile.id) ? currentUserProfile.id : currentUser;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(refId)}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        toonMelding('📋 Unieke uitnodigingslink gekopieerd!');
+        closeShareModal();
+      }).catch(err => {
+        prompt("Kopieer de onderstaande link:", shareUrl);
+      });
+    }
+
+    // --- GROEPEN FUNCTIES ---
+    function wijzigGroepscode() {
+      document.getElementById('group-modal').classList.remove('hidden');
+    }
+
+    function closeGroupModal() {
+      document.getElementById('group-modal').classList.add('hidden');
+    }
+
+    function switchGroupModalTab(tab) {
+      const formJoin = document.getElementById('form-join-group');
+      const formCreate = document.getElementById('form-create-group');
+      const btnJoin = document.getElementById('gtab-join');
+      const btnCreate = document.getElementById('gtab-create');
+
+      if (tab === 'join') {
+        formJoin.classList.remove('hidden');
+        formCreate.classList.add('hidden');
+        btnJoin.classList.add('bg-emerald-600', 'text-white');
+        btnJoin.classList.remove('text-gray-400');
+        btnCreate.classList.remove('bg-emerald-600', 'text-white');
+        btnCreate.classList.add('text-gray-400');
+      } else {
+        formCreate.classList.remove('hidden');
+        formJoin.classList.add('hidden');
+        btnCreate.classList.add('bg-emerald-600', 'text-white');
+        btnCreate.classList.remove('text-gray-400');
+        btnJoin.classList.remove('bg-emerald-600', 'text-white');
+        btnJoin.classList.add('text-gray-400');
+      }
+    }
+
+    async function verwerkGroepAanmaken() {
+      const name = document.getElementById('input-create-name').value.trim();
+      const code = document.getElementById('input-create-code').value.trim().toUpperCase();
+      const btn = document.getElementById('btn-submit-create');
+
+      if (!name || !code) return;
+
+      btn.innerText = '⌛ Bezig met aanmaken...';
+      btn.disabled = true;
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) {
+        btn.innerText = 'Groep Aanmaken & Deelnemen';
+        btn.disabled = false;
+        toonMelding('❌ Je moet ingelogd zijn om een groep aan te maken.', true);
+        return;
+      }
+
+      const { error: groupErr } = await _supabase
+        .from('groups')
+        .insert([{ name: name, code: code, created_by: user.id }]);
+
+      if (groupErr) {
+        btn.innerText = 'Groep Aanmaken & Deelnemen';
+        btn.disabled = false;
+        if (groupErr.code === '23505') {
+          toonMelding('❌ Deze groepscode bestaat al. Kies een andere code.', true);
+        } else {
+          console.error('Fout bij aanmaken groep:', groupErr);
+          toonMelding('❌ Fout bij aanmaken groep: ' + groupErr.message, true);
+        }
+        return;
+      }
+
+      await koppelGebruikerAanGroep(user.id, code);
+
+      btn.innerText = 'Groep Aanmaken & Deelnemen';
+      btn.disabled = false;
+      closeGroupModal();
+    }
+
+    async function verwerkLidWorden() {
+      const code = document.getElementById('input-join-code').value.trim().toUpperCase();
+      const btn = document.getElementById('btn-submit-join');
+
+      if (!code) return;
+
+      btn.innerText = '⌛ Zoeken...';
+      btn.disabled = true;
+
+      const { data: group, error } = await _supabase
+        .from('groups')
+        .select('*')
+        .eq('code', code)
+        .maybeSingle();
+
+      btn.innerText = 'Word Lid van Groep';
+      btn.disabled = false;
+
+      // Toon de échte foutmelding als de bevraging zelf faalt (bv. RLS blokkeert dit, of er
+      // bestaan per ongeluk meerdere groepen met dezelfde code omdat 'code' geen unieke
+      // constraint heeft) — anders leek dit ten onrechte op "code bestaat niet".
+      if (error) {
+        console.error('Fout bij opzoeken groep:', error);
+        toonMelding('❌ Fout bij opzoeken groep: ' + error.message, true);
+        return;
+      }
+
+      if (!group && code !== 'DEFAULT_GROUP') {
+        toonMelding('❌ Groepscode niet gevonden.', true);
+        return;
+      }
+
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) {
+        toonMelding('❌ Je moet ingelogd zijn om lid te worden van een groep.', true);
+        return;
+      }
+
+      await koppelGebruikerAanGroep(user.id, code);
+      closeGroupModal();
+    }
+
+    async function koppelGebruikerAanGroep(userId, code) {
+      const { error } = await _supabase
+        .from('profiles')
+        .update({ group_code: code })
+        .eq('id', userId);
+
+      if (error) {
+        toonMelding('❌ Fout bij koppelen aan groep: ' + error.message, true);
+      } else {
+        currentGroup = code;
+        localStorage.setItem('prono_group', currentGroup);
+
+        document.getElementById('dash-groupcode').innerText = currentGroup;
+        document.getElementById('current-group-display').innerText = currentGroup;
+
+        toonMelding(`✅ Succesvol overgestapt naar groep: ${currentGroup}`);
+        laadKlassementen();
+        laadDashboardStats();
+      }
+    }
+
+    function vindLogoUrl(teamNaam) {
+      if (!teamNaam) return '';
+      const naam = teamNaam.trim();
+      if (CLUB_LOGOS[naam]) return CLUB_LOGOS[naam];
+      const schoneNaam = Object.keys(CLUB_LOGOS).find(key => 
+        naam.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(naam.toLowerCase())
+      );
+      return schoneNaam ? CLUB_LOGOS[schoneNaam] : '';
+    }
+
+    function toonMelding(bericht, isFout = false) {
+      const banner = document.getElementById('status-banner');
+      banner.classList.remove('hidden', 'bg-red-900/80', 'text-red-200', 'border-red-700', 'bg-emerald-900/80', 'text-emerald-200', 'border-emerald-700');
+      banner.classList.add('border', isFout ? 'bg-red-900/80' : 'bg-emerald-900/80', isFout ? 'text-red-200' : 'text-emerald-200', isFout ? 'border-red-700' : 'border-emerald-700');
+      banner.innerText = bericht;
+      setTimeout(() => banner.classList.add('hidden'), 5000);
+    }
+
+    function formatteerDatum(datumString) {
+      if (!datumString) return 'TBD';
+      const d = new Date(datumString);
+      if (isNaN(d.getTime())) return datumString;
+      
+      const dag = String(d.getDate()).padStart(2, '0');
+      const maand = String(d.getMonth() + 1).padStart(2, '0');
+      const jaar = d.getFullYear();
+      return `${dag}/${maand}/${jaar}`;
+    }
+
+    function formatteerTijd(datumString, matchTimeVal, matchKey) {
+      if (matchTimeVal && matchTimeVal.includes(':')) {
+        const m = matchTimeVal.match(/\d{1,2}:\d{2}/);
+        if (m) return m[0].padStart(5, '0');
+      }
+
+      if (datumString && typeof datumString === 'string' && datumString.includes('T')) {
+        const timePart = datumString.split('T')[1];
+        if (timePart) {
+          const schoonUur = timePart.substring(0, 5);
+          if (schoonUur !== '00:00') {
+            return schoonUur;
+          }
+        }
+      }
+
+      if (matchKey && DEFAULT_TIMES[matchKey]) {
+        return DEFAULT_TIMES[matchKey];
+      }
+
+      return "20:00";
+    }
+
+    function isMatchOpenVoorVoorspelling(match, actieveSpeeldag) {
+      // LET OP: new Date(match.match_date) parseert verschillend naargelang match_date wel/niet
+      // een tijdzone-suffix bevat (bv. 'Z' of '+01:00'). Zonder suffix interpreteren browsers dit
+      // soms als lokale tijd, soms als UTC. Controleer dat de scraper altijd een ondubbelzinnig
+      // formaat wegschrijft (ISO 8601 met tijdzone), anders kan "🔒 Gestart" op het verkeerde
+      // moment afgaan. Test dit rond het aftrapmoment van een echte wedstrijd.
+      const nu = new Date();
+      const matchSpeeldag = match.round || match.speeldag || 1;
+
+      if (match.match_date) {
+        const matchDatum = new Date(match.match_date);
+        if (matchDatum < nu) {
+          return { open: false, gestart: true, bericht: '🔒 Gestart' };
+        }
+      }
+
+      if (actieveSpeeldag !== null && matchSpeeldag > (actieveSpeeldag + 1)) {
+        return { open: false, gestart: false, bericht: '🔒 Nog niet open' };
+      }
+
+      return { open: true, gestart: false, bericht: '🟢 Open' };
+    }
+
+    // Cache van de laatst opgehaalde wedstrijddata, zodat het wisselen tussen de
+    // "Nog te Spelen"/"Gespeeld"-tabs niet telkens een nieuwe Supabase-bevraging vergt.
+    let wedstrijdenCache = null; // { matches, teamMap, predMap, actieveSpeeldag }
+    let matchFilterMode = 'toekomstig'; // 'toekomstig' | 'gespeeld'
+
+    function setMatchFilter(mode) {
+      matchFilterMode = mode;
+
+      const btnToekomstig = document.getElementById('mfilter-toekomstig');
+      const btnGespeeld = document.getElementById('mfilter-gespeeld');
+      [btnToekomstig, btnGespeeld].forEach(b => {
+        b.classList.remove('bg-emerald-600', 'text-white');
+        b.classList.add('text-gray-400');
+      });
+      const actief = mode === 'toekomstig' ? btnToekomstig : btnGespeeld;
+      actief.classList.add('bg-emerald-600', 'text-white');
+      actief.classList.remove('text-gray-400');
+
+      renderWedstrijdenLijst();
+    }
+
+    async function laadWedstrijden() {
+      const container = document.getElementById('matches-container');
+      if (!container) return;
+
+      container.innerHTML = '<p class="text-gray-400 text-center py-8">Bezig met laden van wedstrijden...</p>';
+
+      try {
+        const { data: matches, error: matchesErr } = await _supabase.from('matches').select('*').order('id', { ascending: true });
+        const { data: teams } = await _supabase.from('teams').select('*');
+
+        const { data: myPredictions } = await _supabase.from('predictions').select('*').eq('username', currentUser);
+
+        if (matchesErr) {
+          console.error("Supabase Error:", matchesErr);
+          container.innerHTML = `<p class="text-red-400 text-center py-8">Fout bij laden: ${matchesErr.message}</p>`;
+          return;
+        }
+
+        const teamMap = {};
+        (teams || []).forEach(t => teamMap[t.id] = t);
+
+        const predMap = {};
+        (myPredictions || []).forEach(p => {
+          predMap[String(p.match_id)] = p;
+        });
+
+        if (!matches || matches.length === 0) {
+          wedstrijdenCache = null;
+          container.innerHTML = '<p class="text-gray-400 text-center py-8">Geen wedstrijden gevonden in de database.</p>';
+          return;
+        }
+
+        // Sorteer op speeldag, en binnen elke speeldag chronologisch op match_date.
+        // Belangrijk: de weergave groepeert wedstrijden per speeldag door opeenvolgende
+        // rijen te vergelijken, en de "actieve speeldag" wordt hieronder bepaald op basis
+        // van deze volgorde. Sorteren op 'id' (insertievolgorde van de scraper) is niet
+        // betrouwbaar als wedstrijden niet strikt in datumvolgorde worden toegevoegd
+        // (bijv. bij herplande wedstrijden of correcties).
+        matches.sort((a, b) => {
+          const roundA = a.round || a.speeldag || 1;
+          const roundB = b.round || b.speeldag || 1;
+          if (roundA !== roundB) return roundA - roundB;
+          const dateA = a.match_date ? new Date(a.match_date).getTime() : Infinity;
+          const dateB = b.match_date ? new Date(b.match_date).getTime() : Infinity;
+          return dateA - dateB;
+        });
+
+        const nu = new Date();
+        let actieveSpeeldag = 1;
+        const eerstkomendeMatch = matches.find(m => m.match_date && new Date(m.match_date) >= nu);
+        if (eerstkomendeMatch) {
+          actieveSpeeldag = eerstkomendeMatch.round || eerstkomendeMatch.speeldag || 1;
+        } else if (matches.length > 0) {
+          actieveSpeeldag = Math.max(...matches.map(m => m.round || m.speeldag || 1));
+        }
+
+        wedstrijdenCache = { matches, teamMap, predMap, actieveSpeeldag };
+        renderWedstrijdenLijst();
+
+      } catch (err) {
+        console.error("Fout bij ophalen:", err);
+        container.innerHTML = `<p class="text-red-400 text-center py-8">Er is een fout opgetreden: ${err.message}</p>`;
+      }
+    }
+
+    // Bepaalt welk label/kleur er in de statusbadge van een wedstrijd komt: de eindstand
+    // zodra die bekend is, "bezig" als de wedstrijd gestart is zonder gekende uitslag, een
+    // aftellende "sluit binnen..."-badge als de deadline nadert, of anders de normale
+    // open/gesloten-status.
+    function berekenStatusBadge(m, status, nu) {
+      const heeftUitslag = m.home_score !== undefined && m.home_score !== null && m.away_score !== undefined && m.away_score !== null;
+
+      if (heeftUitslag) {
+        return { tekst: `✅ Eindstand ${m.home_score}-${m.away_score}`, kleur: 'text-emerald-400' };
+      }
+
+      if (status.gestart) {
+        return { tekst: '⏱️ Bezig / nog geen uitslag', kleur: 'text-amber-400' };
+      }
+
+      if (!status.open) {
+        return { tekst: status.bericht, kleur: 'text-amber-400' };
+      }
+
+      if (m.match_date) {
+        const msResterend = new Date(m.match_date) - nu;
+        if (msResterend > 0 && msResterend <= 24 * 60 * 60 * 1000) {
+          const dringend = msResterend <= 3 * 60 * 60 * 1000;
+          return { tekst: `${dringend ? '🔥' : '⏳'} Sluit binnen ${formatteerAftelling(msResterend)}`, kleur: dringend ? 'text-red-400' : 'text-amber-300' };
+        }
+      }
+
+      return { tekst: status.bericht, kleur: 'text-emerald-400' };
+    }
+
+    function formatteerAftelling(ms) {
+      const totaalMinuten = Math.max(0, Math.floor(ms / 60000));
+      const uren = Math.floor(totaalMinuten / 60);
+      const minuten = totaalMinuten % 60;
+      if (uren <= 0) return `${minuten}m`;
+      return `${uren}u ${minuten}m`;
+    }
+
+    function renderWedstrijdenLijst() {
+      const container = document.getElementById('matches-container');
+      if (!container || !wedstrijdenCache) return;
+
+      const { matches, teamMap, predMap, actieveSpeeldag } = wedstrijdenCache;
+      const nu = new Date();
+
+      // "Gespeeld" = de wedstrijd is al afgetrapt (match_date in het verleden, of onbekende
+      // datum wordt als nog-te-spelen behandeld). "Nog te Spelen" is het omgekeerde.
+      const gefilterd = matches.filter(m => {
+        const isGestart = m.match_date ? (new Date(m.match_date) < nu) : false;
+        return matchFilterMode === 'gespeeld' ? isGestart : !isGestart;
+      });
+
+      if (gefilterd.length === 0) {
+        container.innerHTML = matchFilterMode === 'gespeeld'
+          ? '<p class="text-gray-400 text-center py-8">Nog geen gespeelde wedstrijden.</p>'
+          : '<p class="text-gray-400 text-center py-8">Geen aankomende wedstrijden gevonden (of alles is al gestart).</p>';
+        return;
+      }
+
+      let huidigeSpeeldag = null;
+      let htmlBuilder = '';
+
+      // Duidelijke herinnering tonen als er, binnen de momenteel opengestelde wedstrijden,
+      // nog helemaal niks werd ingevuld — makkelijk te missen tussen een lange lijst wedstrijden.
+      if (matchFilterMode === 'toekomstig') {
+        const openMatches = gefilterd.filter(m => isMatchOpenVoorVoorspelling(m, actieveSpeeldag).open);
+        const heeftAlIetsIngevuld = openMatches.some(m => {
+          const p = predMap[String(m.id)] || {};
+          const h = p.predicted_home_score !== undefined ? p.predicted_home_score : p.home_prediction;
+          const a = p.predicted_away_score !== undefined ? p.predicted_away_score : p.away_prediction;
+          return h !== undefined && h !== null && a !== undefined && a !== null;
+        });
+
+        if (openMatches.length > 0 && !heeftAlIetsIngevuld) {
+          htmlBuilder += `
+            <div class="p-3.5 bg-amber-950/30 border border-amber-600/40 rounded-xl text-xs text-amber-200/90 font-semibold flex items-center gap-2 mb-1">
+              <span>⚠️</span> Je hebt nog geen enkele voorspelling ingevuld voor de openstaande wedstrijden hieronder!
+            </div>
+          `;
+        }
+      }
+
+      gefilterd.forEach(m => {
+        const speeldagVanMatch = m.round || m.speeldag || 1;
+
+        if (huidigeSpeeldag !== null && huidigeSpeeldag !== speeldagVanMatch) {
+          htmlBuilder += `
+            <div class="my-6 flex items-center gap-4">
+              <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+              <span class="bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                🏆 Speeldag ${speeldagVanMatch}
+              </span>
+              <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+            </div>
+          `;
+        }
+        huidigeSpeeldag = speeldagVanMatch;
+
+        const home = teamMap[m.home_team_id] || { name: m.home_team_name || 'Thuis' };
+        const away = teamMap[m.away_team_id] || { name: m.away_team_name || 'Uit' };
+        const homeLogo = vindLogoUrl(home.name);
+        const awayLogo = vindLogoUrl(away.name);
+
+        const myPred = predMap[String(m.id)] || {};
+
+        const homePredVal = myPred.predicted_home_score !== undefined ? myPred.predicted_home_score : myPred.home_prediction;
+        const awayPredVal = myPred.predicted_away_score !== undefined ? myPred.predicted_away_score : myPred.away_prediction;
+
+        const homeVal = (homePredVal !== undefined && homePredVal !== null) ? homePredVal : '';
+        const awayVal = (awayPredVal !== undefined && awayPredVal !== null) ? awayPredVal : '';
+
+        const isSaved = (homeVal !== '' && awayVal !== '');
+        const matchKey = `${home.name} - ${away.name}`;
+
+        const datumBron = m.match_date || m.created_at;
+        const geformatteerdeDatum = formatteerDatum(datumBron);
+        const geformatteerdeTijd = formatteerTijd(datumBron, m.match_time, matchKey);
+
+        const status = isMatchOpenVoorVoorspelling(m, actieveSpeeldag);
+        const isEditable = status.open;
+        const statusBadge = berekenStatusBadge(m, status, nu);
+
+        htmlBuilder += `
+          <div class="p-4 bg-gray-800 rounded-xl border ${!isEditable ? 'border-gray-800 opacity-60 bg-gray-900/40' : (isSaved ? 'border-emerald-500/50 bg-emerald-950/10' : 'border-gray-700')} shadow-md transition relative mb-3">
+            
+            <div class="flex justify-between items-center text-xs mb-3">
+              <div class="flex items-center gap-2 font-semibold ${isEditable ? 'text-emerald-400' : 'text-gray-400'}">
+                <span class="bg-gray-700/60 text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded">SD ${speeldagVanMatch}</span>
+                <span>📅 ${geformatteerdeDatum}</span>
+                <span class="text-gray-400 text-[11px] font-normal">⏰ ${geformatteerdeTijd} uur</span>
+              </div>
+              <div class="text-[11px] font-bold ${statusBadge.kleur}">
+                ${statusBadge.tekst}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 md:gap-4 w-full flex-wrap sm:flex-nowrap">
+              
+              <div class="flex items-center justify-end gap-2.5 flex-1 text-right">
+                <span class="font-bold text-xs md:text-sm text-gray-100">${home.name}</span>
+                ${homeLogo ? `<img src="${homeLogo}" alt="${home.name}" class="w-7 h-7 md:w-8 md:h-8 object-contain">` : ''}
+              </div>
+
+              <div class="flex items-center gap-1.5 bg-gray-900 p-1.5 rounded-xl border ${isSaved ? 'border-emerald-500/60' : 'border-gray-700'} flex-shrink-0">
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="99" 
+                  id="home-${m.id}" 
+                  value="${homeVal}" 
+                  placeholder="-" 
+                  ${!isEditable ? 'disabled' : ''}
+                  class="score-input input-home w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${homeVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
+                  oninput="checkScoreInput(this)"
+                />
+                <span class="font-bold text-gray-500">:</span>
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="99" 
+                  id="away-${m.id}" 
+                  value="${awayVal}" 
+                  placeholder="-" 
+                  ${!isEditable ? 'disabled' : ''}
+                  class="score-input input-away w-9 h-9 md:w-10 md:h-9 text-center font-bold bg-gray-900 border border-gray-700 rounded-lg text-white ${awayVal !== '' ? 'has-value' : ''} ${isSaved ? 'is-saved' : ''} ${!isEditable ? 'opacity-50 cursor-not-allowed' : ''}" 
+                  oninput="checkScoreInput(this)"
+                />
+              </div>
+
+              <div class="flex items-center justify-start gap-2.5 flex-1 text-left">
+                ${awayLogo ? `<img src="${awayLogo}" alt="${away.name}" class="w-7 h-7 md:w-8 md:h-8 object-contain">` : ''}
+                <span class="font-bold text-xs md:text-sm text-gray-100">${away.name}</span>
+              </div>
+
+              <div class="flex items-center gap-2 justify-end flex-shrink-0">
+                ${isEditable ? `
+                  <button 
+                    type="button" 
+                    onclick="opslaanMatchVoorspelling(${m.id})" 
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow transition flex items-center gap-1">
+                    <span>💾</span> Opslaan
+                  </button>
+                ` : ''}
+
+                <div id="saved-badge-${m.id}" class="${isSaved ? '' : 'hidden '}transition-all duration-300 text-[10px] md:text-xs bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1 shadow-sm">
+                  <span>✓</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-gray-700/60 flex justify-end">
+              <button
+                type="button"
+                onclick="toonGroepsvoorspellingen(${m.id})"
+                class="text-[11px] md:text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-1.5 px-3 rounded-lg border border-gray-600 transition flex items-center gap-1.5">
+                <span>👥</span> Voorspellingen van je groep
+              </button>
+            </div>
+
+          </div>
+        `;
+      });
+
+      container.innerHTML = htmlBuilder;
+    }
+
+    // Berekent de uitnodigingsbonus via een beveiligde Postgres-functie (RPC) i.p.v.
+    // rechtstreeks in de browser: zo hoeft de client nooit ieders 'referred_by' (wie wie
+    // uitnodigde) of user-id op te vragen, wat anders voor vreemden opvraagbare persoonsdata
+    // zou zijn. Zie de instructies voor de bijhorende SQL-functie 'get_referral_bonuses'.
+    async function berekenReferralBonusVeilig() {
+      const { data, error } = await _supabase.rpc('get_referral_bonuses');
+      if (error) {
+        console.warn('Kon uitnodigingsbonussen niet ophalen:', error.message);
+        return {};
+      }
+      const referralBonussen = {};
+      (data || []).forEach(rij => { referralBonussen[rij.username] = rij.bonus; });
+      return referralBonussen;
+    }
+
+    function huidigeMaandKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function maandKeyVanMatch(match) {
+      if (!match || !match.match_date) return null;
+      const d = new Date(match.match_date);
+      if (isNaN(d.getTime())) return null;
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    // Kent de maandbonus (+10/+5/+3/+1) permanent toe voor elke AFGESLOTEN kalendermaand
+    // (de lopende maand telt nog niet mee, want die ligt nog niet vast). Elke voorspelling
+    // wordt toegewezen aan de groep waarin de speler zat op het moment van voorspellen
+    // (pred.group_code), met terugval op zijn HUIDIGE groep voor oudere rijen zonder die
+    // kolom (zie Supabase-instructies).
+    function berekenAfgeslotenMaandBonussen(profiles, matches, predictions) {
+      const huidigeMaand = huidigeMaandKey();
+
+      const groepPerUsername = {};
+      (profiles || []).forEach(p => { groepPerUsername[p.username] = p.group_code || 'DEFAULT_GROUP'; });
+
+      const matchById = {};
+      (matches || []).forEach(m => { matchById[String(m.id)] = m; });
+
+      const perGroepMaand = {}; // "GROEP||MAAND" -> { username: score }
+
+      (predictions || []).forEach(pred => {
+        const match = matchById[String(pred.match_id)];
+        if (!match || match.home_score === null || match.away_score === null) return;
+
+        const maand = maandKeyVanMatch(match);
+        if (!maand || maand === huidigeMaand) return; // enkel afgesloten maanden tellen mee
+
+        const predHome = pred.predicted_home_score !== undefined && pred.predicted_home_score !== null ? parseInt(pred.predicted_home_score, 10) : (pred.home_prediction !== undefined ? parseInt(pred.home_prediction, 10) : null);
+        const predAway = pred.predicted_away_score !== undefined && pred.predicted_away_score !== null ? parseInt(pred.predicted_away_score, 10) : (pred.away_prediction !== undefined ? parseInt(pred.away_prediction, 10) : null);
+        const pts = berekenPuntenVoorVoorspelling(predHome, predAway, parseInt(match.home_score, 10), parseInt(match.away_score, 10));
+
+        const groep = pred.group_code || groepPerUsername[pred.username] || 'DEFAULT_GROUP';
+        const key = groep + '||' + maand;
+        if (!perGroepMaand[key]) perGroepMaand[key] = {};
+        perGroepMaand[key][pred.username] = (perGroepMaand[key][pred.username] || 0) + pts;
+      });
+
+      const bonusPerUser = {};
+      Object.values(perGroepMaand).forEach(scoresPerUser => {
+        const entries = Object.entries(scoresPerUser);
+        if (entries.length === 0) return;
+        const maxScore = Math.max(...entries.map(([, s]) => s));
+        if (maxScore <= 0) return;
+        const winnaars = entries.filter(([, s]) => s === maxScore).map(([u]) => u);
+
+        let bonus = 0;
+        if (winnaars.length === 1) bonus = 10;
+        else if (winnaars.length === 2) bonus = 5;
+        else if (winnaars.length === 3) bonus = 3;
+        else if (winnaars.length >= 4) bonus = 1;
+
+        winnaars.forEach(u => { bonusPerUser[u] = (bonusPerUser[u] || 0) + bonus; });
+      });
+
+      return bonusPerUser;
+    }
+
+    // Vaste set reactie-emoji's op elkaars voorspellingen (👍 goedkeuring, 😂 humor,
+    // 🔥 gedurfd, 😱 shock, 💀 "dat wordt niks").
+    const REACTIE_EMOJIS = ['👍', '😂', '🔥', '😱', '💀'];
+
+    // Toont, voor een wedstrijd, de voorspellingen (en behaalde punten) van iedereen in je
+    // HUIDIGE groep, met avatar en de mogelijkheid om te reageren met een emoji.
+    async function toonGroepsvoorspellingen(matchId) {
+      const modal = document.getElementById('match-predictions-modal');
+      const content = document.getElementById('match-predictions-content');
+      content.innerHTML = '<p class="text-gray-400 text-center py-6">Laden...</p>';
+      modal.classList.remove('hidden');
+
+      try {
+        const { data: match, error: matchErr } = await _supabase.from('matches').select('*').eq('id', matchId).maybeSingle();
+        if (matchErr || !match) {
+          content.innerHTML = `<p class="text-red-400 text-center py-6">Wedstrijd niet gevonden${matchErr ? ': ' + matchErr.message : ''}.</p>`;
+          return;
+        }
+
+        const { data: teams } = await _supabase.from('teams').select('*');
+        const teamMap = {};
+        (teams || []).forEach(t => teamMap[t.id] = t);
+        const home = teamMap[match.home_team_id] || { name: match.home_team_name || 'Thuis' };
+        const away = teamMap[match.away_team_id] || { name: match.away_team_name || 'Uit' };
+
+        const { data: profiles } = await _supabase.from('public_profiles').select('*').eq('group_code', currentGroup);
+        const groepsleden = (profiles || []).map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler')).filter(Boolean);
+
+        const avatarPerUsername = {};
+        (profiles || []).forEach(p => {
+          const naam = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+          avatarPerUsername[naam] = p.avatar || '⚽';
+        });
+
+        const { data: predictions } = await _supabase.from('predictions').select('*').eq('match_id', matchId);
+        const predPerUser = {};
+        (predictions || []).forEach(p => { predPerUser[p.username] = p; });
+
+        const { data: reactions } = await _supabase.from('prediction_reactions').select('*').eq('match_id', matchId);
+
+        const heeftUitslag = match.home_score !== null && match.away_score !== null;
+
+        const rijenHtml = groepsleden.length > 0 ? groepsleden.map(naam => {
+          const pred = predPerUser[naam];
+          const predHomeRaw = pred ? (pred.predicted_home_score !== undefined ? pred.predicted_home_score : pred.home_prediction) : null;
+          const predAwayRaw = pred ? (pred.predicted_away_score !== undefined ? pred.predicted_away_score : pred.away_prediction) : null;
+          const heeftVoorspeld = predHomeRaw !== null && predHomeRaw !== undefined && predAwayRaw !== null && predAwayRaw !== undefined;
+
+          let puntenHtml;
+          if (heeftVoorspeld && heeftUitslag) {
+            const pts = berekenPuntenVoorVoorspelling(parseInt(predHomeRaw, 10), parseInt(predAwayRaw, 10), parseInt(match.home_score, 10), parseInt(match.away_score, 10));
+            puntenHtml = `<span class="font-black text-emerald-400 text-sm">${pts} Ptn</span>`;
+          } else if (heeftVoorspeld && !heeftUitslag) {
+            puntenHtml = `<span class="text-[11px] text-gray-400">Wacht op uitslag</span>`;
+          } else {
+            puntenHtml = `<span class="text-[11px] text-gray-500">Geen voorspelling</span>`;
+          }
+
+          const scoreLabel = heeftVoorspeld ? `${predHomeRaw} - ${predAwayRaw}` : '–';
+          const isMe = naam === currentUser;
+          const avatar = avatarPerUsername[naam] || '⚽';
+
+          const reactiesVoorNaam = (reactions || []).filter(r => r.target_username === naam);
+          const reactieKnoppenHtml = REACTIE_EMOJIS.map(emoji => {
+            const dezeReacties = reactiesVoorNaam.filter(r => r.emoji === emoji);
+            const aantal = dezeReacties.length;
+            const ikHeb = dezeReacties.some(r => r.reactor_username === currentUser);
+            return `<button type="button" onclick="toggleReactie(${matchId}, '${naam.replace(/'/g, "\\'")}', '${emoji}')" class="text-xs px-1.5 py-0.5 rounded-full border transition ${ikHeb ? 'bg-emerald-600/30 border-emerald-500 text-emerald-300' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-500'}">${emoji}${aantal > 0 ? ' ' + aantal : ''}</button>`;
+          }).join('');
+
+          return `
+            <div class="p-2.5 rounded-lg ${isMe ? 'bg-emerald-950/40 border-emerald-500/40' : 'bg-gray-900 border-gray-700'} border space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-semibold text-gray-100">${avatar} ${naam}${isMe ? ' (Jij)' : ''}</span>
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-white text-sm">${scoreLabel}</span>
+                  ${puntenHtml}
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap">${reactieKnoppenHtml}</div>
+            </div>
+          `;
+        }).join('') : '<p class="text-gray-400 text-center py-4 text-sm">Geen groepsgenoten gevonden.</p>';
+
+        content.innerHTML = `
+          <div class="text-center mb-2">
+            <div class="text-2xl mb-1">👥</div>
+            <h3 class="text-lg font-extrabold text-white">${home.name} - ${away.name}</h3>
+            <p class="text-xs text-gray-400 mt-1">${heeftUitslag ? `Eindstand: ${match.home_score} - ${match.away_score}` : 'Wedstrijd bezig / nog geen eindstand'}</p>
+          </div>
+          <div class="space-y-2">${rijenHtml}</div>
+        `;
+      } catch (err) {
+        content.innerHTML = `<p class="text-red-400 text-center py-6">Er is een fout opgetreden: ${err.message}</p>`;
+      }
+    }
+
+    // Voegt je reactie toe, of haalt ze weg als je al met diezelfde emoji had gereageerd
+    // (tik-om-aan/uit-te-zetten, zoals bij Discord/WhatsApp).
+    async function toggleReactie(matchId, targetUsername, emoji) {
+      const { data: { user } } = await _supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: bestaande } = await _supabase.from('prediction_reactions')
+        .select('*')
+        .eq('match_id', matchId)
+        .eq('target_username', targetUsername)
+        .eq('reactor_user_id', user.id)
+        .eq('emoji', emoji)
+        .maybeSingle();
+
+      if (bestaande) {
+        await _supabase.from('prediction_reactions').delete().eq('id', bestaande.id);
+      } else {
+        await _supabase.from('prediction_reactions').insert({
+          match_id: matchId,
+          target_username: targetUsername,
+          reactor_user_id: user.id,
+          reactor_username: currentUser,
+          emoji: emoji
+        });
+      }
+
+      toonGroepsvoorspellingen(matchId);
+    }
+
+    function closeMatchPredictionsModal() {
+      document.getElementById('match-predictions-modal').classList.add('hidden');
+    }
+
+    // Berekent en toont persoonlijke statistieken: aantal voorspellingen, exacte scores,
+    // gemiddelde punten per verwerkte voorspelling, beste speeldag ooit, en totaal verdiende
+    // maandbonuspunten uit afgesloten maanden.
+    async function openStatsModal() {
+      const modal = document.getElementById('stats-modal');
+      const content = document.getElementById('stats-modal-content');
+      content.innerHTML = '<p class="text-gray-400 text-center py-6">Laden...</p>';
+      modal.classList.remove('hidden');
+
+      try {
+        const { data: matches } = await _supabase.from('matches').select('*');
+        const { data: mijnVoorspellingen } = await _supabase.from('predictions').select('*').eq('username', currentUser);
+        const { data: profiles } = await _supabase.from('public_profiles').select('*');
+        const { data: allePredictions } = await _supabase.from('predictions').select('*');
+
+        const matchById = {};
+        (matches || []).forEach(m => { matchById[String(m.id)] = m; });
+
+        let totaalVoorspeld = 0;
+        let verwerkteVoorspellingen = 0;
+        let exacteScores = 0;
+        let totaalPunten = 0;
+        const puntenPerSpeeldag = {};
+
+        (mijnVoorspellingen || []).forEach(pred => {
+          const predHome = pred.predicted_home_score !== undefined && pred.predicted_home_score !== null ? parseInt(pred.predicted_home_score, 10) : (pred.home_prediction !== undefined ? parseInt(pred.home_prediction, 10) : null);
+          const predAway = pred.predicted_away_score !== undefined && pred.predicted_away_score !== null ? parseInt(pred.predicted_away_score, 10) : (pred.away_prediction !== undefined ? parseInt(pred.away_prediction, 10) : null);
+          if (predHome === null || predAway === null || isNaN(predHome) || isNaN(predAway)) return;
+
+          totaalVoorspeld++;
+
+          const match = matchById[String(pred.match_id)];
+          if (!match || match.home_score === null || match.away_score === null) return;
+
+          verwerkteVoorspellingen++;
+          const pts = berekenPuntenVoorVoorspelling(predHome, predAway, parseInt(match.home_score, 10), parseInt(match.away_score, 10));
+          totaalPunten += pts;
+          if (pts === 10) exacteScores++;
+
+          const sd = match.round || match.speeldag || 1;
+          puntenPerSpeeldag[sd] = (puntenPerSpeeldag[sd] || 0) + pts;
+        });
+
+        const gemiddelde = verwerkteVoorspellingen > 0 ? (totaalPunten / verwerkteVoorspellingen).toFixed(1) : '0.0';
+
+        let besteSpeeldag = null;
+        let besteSpeeldagPunten = -1;
+        Object.keys(puntenPerSpeeldag).forEach(sd => {
+          if (puntenPerSpeeldag[sd] > besteSpeeldagPunten) {
+            besteSpeeldagPunten = puntenPerSpeeldag[sd];
+            besteSpeeldag = sd;
+          }
+        });
+
+        const maandBonussen = berekenAfgeslotenMaandBonussen(profiles, matches, allePredictions);
+        const mijnMaandBonus = maandBonussen[currentUser] || 0;
+
+        // Voorspellingstreak: hoeveel AFGESLOTEN speeldagen op rij (vanaf de meest recente)
+        // je voor ELKE wedstrijd van die speeldag een voorspelling had ingevuld.
+        const matchesPerRonde = {};
+        (matches || []).forEach(m => {
+          const ronde = m.round || m.speeldag || 1;
+          if (!matchesPerRonde[ronde]) matchesPerRonde[ronde] = [];
+          matchesPerRonde[ronde].push(m);
+        });
+
+        const voorspeldeMatchIds = new Set(
+          (mijnVoorspellingen || [])
+            .filter(p => {
+              const h = p.predicted_home_score !== undefined && p.predicted_home_score !== null ? p.predicted_home_score : p.home_prediction;
+              const a = p.predicted_away_score !== undefined && p.predicted_away_score !== null ? p.predicted_away_score : p.away_prediction;
+              return h !== undefined && h !== null && a !== undefined && a !== null;
+            })
+            .map(p => String(p.match_id))
+        );
+
+        const afgeslotenRondes = Object.keys(matchesPerRonde)
+          .map(Number)
+          .filter(r => matchesPerRonde[r].every(m => m.home_score !== null && m.home_score !== undefined && m.away_score !== null && m.away_score !== undefined))
+          .sort((a, b) => b - a);
+
+        let streak = 0;
+        for (const ronde of afgeslotenRondes) {
+          const volledig = matchesPerRonde[ronde].every(m => voorspeldeMatchIds.has(String(m.id)));
+          if (volledig) streak++;
+          else break;
+        }
+
+        content.innerHTML = `
+          <div class="text-center mb-2">
+            <div class="text-3xl mb-1">🏆</div>
+            <h3 class="text-xl font-extrabold text-white">Mijn Statistieken</h3>
+            <p class="text-xs text-gray-400 mt-1">${currentUser}</p>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-gray-900 p-3 rounded-xl border border-gray-700 text-center">
+              <span class="text-[10px] text-gray-400 uppercase font-bold block">Voorspellingen</span>
+              <span class="text-xl font-black text-white">${totaalVoorspeld}</span>
+            </div>
+            <div class="bg-gray-900 p-3 rounded-xl border border-gray-700 text-center">
+              <span class="text-[10px] text-gray-400 uppercase font-bold block">Verwerkt</span>
+              <span class="text-xl font-black text-white">${verwerkteVoorspellingen}</span>
+            </div>
+            <div class="bg-emerald-950/40 p-3 rounded-xl border border-emerald-500/30 text-center">
+              <span class="text-[10px] text-emerald-400 uppercase font-bold block">Exacte Scores</span>
+              <span class="text-xl font-black text-emerald-300">${exacteScores}</span>
+            </div>
+            <div class="bg-gray-900 p-3 rounded-xl border border-gray-700 text-center">
+              <span class="text-[10px] text-gray-400 uppercase font-bold block">Gem. Ptn/Match</span>
+              <span class="text-xl font-black text-white">${gemiddelde}</span>
+            </div>
+          </div>
+          <div class="bg-orange-950/30 p-4 rounded-xl border border-orange-500/30 space-y-1">
+            <h4 class="text-sm font-bold text-orange-400">🔥 Huidige Reeks</h4>
+            <p class="text-xs text-gray-300">${streak > 0 ? `<span class="text-white font-bold">${streak}</span> speeldag${streak === 1 ? '' : 'en'} op rij volledig voorspeld.` : 'Nog geen volledig voorspelde afgesloten speeldag.'}</p>
+          </div>
+          <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 space-y-1">
+            <h4 class="text-sm font-bold text-emerald-400">📅 Beste Speeldag Ooit</h4>
+            <p class="text-xs text-gray-300">${besteSpeeldag ? `Speeldag ${besteSpeeldag} — <span class="text-white font-bold">${besteSpeeldagPunten} punten</span>` : 'Nog geen afgelopen speeldag met voorspellingen.'}</p>
+          </div>
+          <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 space-y-1">
+            <h4 class="text-sm font-bold text-emerald-400">🎁 Verdiende Maandbonussen</h4>
+            <p class="text-xs text-gray-300">In totaal <span class="text-white font-bold">${mijnMaandBonus} bonuspunten</span> verdiend uit afgesloten maanden.</p>
+          </div>
+          <button onclick="deelMijnStatistieken(${exacteScores}, ${streak}, ${besteSpeeldag ? besteSpeeldag : 'null'}, ${besteSpeeldagPunten})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2">
+            <span>📤</span> Deel mijn resultaten
+          </button>
+        `;
+      } catch (err) {
+        content.innerHTML = `<p class="text-red-400 text-center py-6">Er is een fout opgetreden: ${err.message}</p>`;
+      }
+    }
+
+    // Bouwt een leuk, deelbaar tekstberichtje van iemands stats mét de eigen uitnodigingslink
+    // erin verwerkt — via het systeemdeelvenster op mobiel (WhatsApp, enz.), of gewoon
+    // gekopieerd naar het klembord op desktop.
+    function deelMijnStatistieken(exacteScores, streak, besteSpeeldag, besteSpeeldagPunten) {
+      const refId = (currentUserProfile && currentUserProfile.id) ? currentUserProfile.id : currentUser;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(currentGroup)}&ref=${encodeURIComponent(refId)}`;
+
+      let tekst = `🔮 Mijn PronoPro-stats:\n🎯 ${exacteScores} exacte score${exacteScores === 1 ? '' : 's'}\n🔥 Reeks van ${streak} speeldag${streak === 1 ? '' : 'en'} op rij`;
+      if (besteSpeeldag) {
+        tekst += `\n📅 Beste speeldag: SD${besteSpeeldag} met ${besteSpeeldagPunten} punten`;
+      }
+      tekst += `\n\nDoe ook mee: ${shareUrl}`;
+
+      if (navigator.share) {
+        navigator.share({ title: 'PronoPro', text: tekst }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(tekst).then(() => {
+          toonMelding('📋 Tekst gekopieerd! Plak \'m waar je maar wil.');
+        }).catch(() => {
+          prompt('Kopieer de tekst:', tekst);
+        });
+      }
+    }
+
+    function closeStatsModal() {
+      document.getElementById('stats-modal').classList.add('hidden');
+    }
+
+    // --- ADMIN: wedstrijduitslagen ingeven/corrigeren ---
+    // Enkel zichtbaar/bruikbaar voor profielen met is_admin = true (kolom + RLS-policy op
+    // 'matches' voor UPDATE moet je zelf toevoegen in Supabase, zie instructies).
+    let adminMatchesCache = null;
+    let adminFilterMode = 'open';
+
+    async function openAdminModal() {
+      document.getElementById('admin-modal').classList.remove('hidden');
+      await laadAdminWedstrijden();
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.add('hidden');
+    }
+
+    function setAdminFilter(mode) {
+      adminFilterMode = mode;
+      ['admin-filter-open', 'admin-filter-alles'].forEach(id => {
+        const b = document.getElementById(id);
+        b.classList.remove('bg-emerald-600', 'text-white');
+        b.classList.add('text-gray-400');
+      });
+      const actief = document.getElementById(mode === 'open' ? 'admin-filter-open' : 'admin-filter-alles');
+      actief.classList.add('bg-emerald-600', 'text-white');
+      actief.classList.remove('text-gray-400');
+      renderAdminWedstrijden();
+    }
+
+    async function laadAdminWedstrijden() {
+      const content = document.getElementById('admin-modal-content');
+      content.innerHTML = '<p class="text-gray-400 text-center py-6">Laden...</p>';
+      try {
+        const { data: matches, error } = await _supabase.from('matches').select('*').order('id', { ascending: true });
+        const { data: teams } = await _supabase.from('teams').select('*');
+
+        if (error) {
+          content.innerHTML = `<p class="text-red-400 text-center py-6">Fout bij laden: ${error.message}</p>`;
+          return;
+        }
+
+        const teamMap = {};
+        (teams || []).forEach(t => teamMap[t.id] = t);
+
+        adminMatchesCache = { matches: matches || [], teamMap };
+        renderAdminWedstrijden();
+      } catch (err) {
+        content.innerHTML = `<p class="text-red-400 text-center py-6">Er is een fout opgetreden: ${err.message}</p>`;
+      }
+    }
+
+    function renderAdminWedstrijden() {
+      const content = document.getElementById('admin-modal-content');
+      if (!adminMatchesCache) return;
+
+      const { matches, teamMap } = adminMatchesCache;
+      const gefilterd = matches.filter(m => {
+        const heeftUitslag = m.home_score !== null && m.home_score !== undefined && m.away_score !== null && m.away_score !== undefined;
+        return adminFilterMode === 'open' ? !heeftUitslag : true;
+      });
+
+      if (gefilterd.length === 0) {
+        content.innerHTML = '<p class="text-gray-400 text-center py-6">Geen wedstrijden gevonden voor dit filter.</p>';
+        return;
+      }
+
+      content.innerHTML = gefilterd.map(m => {
+        const home = teamMap[m.home_team_id] || { name: m.home_team_name || 'Thuis' };
+        const away = teamMap[m.away_team_id] || { name: m.away_team_name || 'Uit' };
+        const sd = m.round || m.speeldag || 1;
+        const homeVal = (m.home_score !== null && m.home_score !== undefined) ? m.home_score : '';
+        const awayVal = (m.away_score !== null && m.away_score !== undefined) ? m.away_score : '';
+
+        return `
+          <div class="flex items-center justify-between gap-2 p-3 bg-gray-900 rounded-lg border border-gray-700">
+            <div class="flex-1 min-w-0">
+              <span class="text-[10px] bg-gray-700/60 text-gray-300 font-bold px-1.5 py-0.5 rounded mr-1.5">SD ${sd}</span>
+              <span class="text-sm font-semibold text-gray-100">${home.name} - ${away.name}</span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <input type="number" min="0" max="99" id="admin-home-${m.id}" value="${homeVal}" placeholder="-" class="score-input w-10 h-9 text-center font-bold bg-gray-800 border border-gray-600 rounded-lg text-white" oninput="checkScoreInput(this)">
+              <span class="text-gray-500 font-bold">:</span>
+              <input type="number" min="0" max="99" id="admin-away-${m.id}" value="${awayVal}" placeholder="-" class="score-input w-10 h-9 text-center font-bold bg-gray-800 border border-gray-600 rounded-lg text-white" oninput="checkScoreInput(this)">
+              <button type="button" onclick="opslaanAdminUitslag(${m.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-2.5 rounded-lg shadow transition">💾</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function opslaanAdminUitslag(matchId) {
+      const homeInput = document.getElementById(`admin-home-${matchId}`);
+      const awayInput = document.getElementById(`admin-away-${matchId}`);
+      const homeVal = homeInput ? homeInput.value : '';
+      const awayVal = awayInput ? awayInput.value : '';
+
+      const update = {
+        home_score: homeVal === '' ? null : Math.min(99, Math.max(0, parseInt(homeVal, 10))),
+        away_score: awayVal === '' ? null : Math.min(99, Math.max(0, parseInt(awayVal, 10)))
+      };
+
+      const { error } = await _supabase.from('matches').update(update).eq('id', matchId);
+
+      if (error) {
+        toonMelding('❌ Fout bij opslaan uitslag: ' + error.message, true);
+        return;
+      }
+
+      toonMelding('✅ Uitslag opgeslagen.');
+      if (adminMatchesCache) {
+        const m = adminMatchesCache.matches.find(x => String(x.id) === String(matchId));
+        if (m) { m.home_score = update.home_score; m.away_score = update.away_score; }
+      }
+      renderAdminWedstrijden();
+    }
+
+    async function laadKlassementen() {
+      const { data: profiles } = await _supabase.from('public_profiles').select('*');
+      const { data: matches } = await _supabase.from('matches').select('*');
+      const { data: predictions } = await _supabase.from('predictions').select('*');
+
+      const scoresGlobal = {};
+      const scoresMonthly = {};
+
+      (profiles || []).forEach(p => {
+        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        scoresGlobal[nameToUse] = 0;
+        scoresMonthly[nameToUse] = 0;
+      });
+
+      (predictions || []).forEach(pred => {
+        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
+        if (match && match.home_score !== null && match.away_score !== null) {
+          const predHome = pred.predicted_home_score !== undefined && pred.predicted_home_score !== null ? parseInt(pred.predicted_home_score, 10) : (pred.home_prediction !== undefined ? parseInt(pred.home_prediction, 10) : null);
+          const predAway = pred.predicted_away_score !== undefined && pred.predicted_away_score !== null ? parseInt(pred.predicted_away_score, 10) : (pred.away_prediction !== undefined ? parseInt(pred.away_prediction, 10) : null);
+
+          const matchHome = parseInt(match.home_score, 10);
+          const matchAway = parseInt(match.away_score, 10);
+
+          const pts = berekenPuntenVoorVoorspelling(predHome, predAway, matchHome, matchAway);
+
+          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
+
+          // "Maand Privé" toont enkel punten van wedstrijden uit de LOPENDE kalendermaand
+          // (voorheen werd hier per ongeluk hetzelfde als het totaal getoond, zonder filter).
+          if (maandKeyVanMatch(match) === huidigeMaandKey()) {
+            scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+          }
+        }
+      });
+
+      const refBonussen = await berekenReferralBonusVeilig();
+      Object.keys(refBonussen).forEach(inviter => {
+        if (scoresGlobal[inviter] !== undefined) {
+          scoresGlobal[inviter] += refBonussen[inviter];
+        }
+      });
+
+      // Maandbonussen van reeds AFGESLOTEN maanden worden hier definitief bij het totaal
+      // opgeteld (de lopende maand in tab-monthly hieronder is enkel een live-projectie,
+      // nog niet definitief zolang de maand loopt).
+      const maandBonussen = berekenAfgeslotenMaandBonussen(profiles, matches, predictions);
+      Object.keys(maandBonussen).forEach(user => {
+        if (scoresGlobal[user] !== undefined) {
+          scoresGlobal[user] += maandBonussen[user];
+        }
+      });
+
+      const avatarPerUsername = {};
+      (profiles || []).forEach(p => {
+        const naam = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        avatarPerUsername[naam] = p.avatar || '⚽';
+      });
+
+      const sortedGlobal = Object.keys(scoresGlobal)
+        .map(user => ({ user, score: scoresGlobal[user] }))
+        .sort((a, b) => b.score - a.score);
+
+      vulTabel('table-global-body', sortedGlobal, avatarPerUsername);
+
+      const privateUsers = (profiles || [])
+        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
+      const sortedPrivate = sortedGlobal.filter(item => privateUsers.includes(item.user));
+      vulTabel('table-private-body', sortedPrivate, avatarPerUsername);
+
+      const monthlyPrivate = Object.keys(scoresMonthly)
+        .filter(user => privateUsers.includes(user))
+        .map(user => ({ user, score: scoresMonthly[user] }))
+        .sort((a, b) => b.score - a.score);
+
+      let maxScore = monthlyPrivate.length > 0 ? monthlyPrivate[0].score : -1;
+      let winnaarsCount = monthlyPrivate.filter(u => u.score === maxScore && maxScore > 0).length;
+      
+      let bonusPunten = 0;
+      if (winnaarsCount === 1) bonusPunten = 10;
+      else if (winnaarsCount === 2) bonusPunten = 5;
+      else if (winnaarsCount === 3) bonusPunten = 3;
+      else if (winnaarsCount >= 4) bonusPunten = 1;
+
+      vulMaandTabel('table-monthly-body', monthlyPrivate, maxScore, bonusPunten, avatarPerUsername);
+    }
+
+    function vulTabel(tabelId, data, avatarPerUsername) {
+      const tbody = document.getElementById(tabelId);
+      tbody.innerHTML = '';
+      data.forEach((item, index) => {
+        const isMe = item.user === currentUser;
+        const avatar = (avatarPerUsername && avatarPerUsername[item.user]) || '⚽';
+        tbody.innerHTML += `
+          <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
+            <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
+            <td class="p-3">${avatar} ${item.user} ${isMe ? '(Jij)' : ''}</td>
+            <td class="p-3 text-right font-extrabold text-emerald-400">${item.score} Ptn</td>
+          </tr>
+        `;
+      });
+    }
+
+    function vulMaandTabel(tabelId, data, maxScore, bonusPunten, avatarPerUsername) {
+      const tbody = document.getElementById(tabelId);
+      tbody.innerHTML = '';
+      data.forEach((item, index) => {
+        const isWinnaar = item.score === maxScore && maxScore > 0;
+        const bonus = isWinnaar ? bonusPunten : 0;
+        const isMe = item.user === currentUser;
+        const avatar = (avatarPerUsername && avatarPerUsername[item.user]) || '⚽';
+
+        tbody.innerHTML += `
+          <tr class="border-b border-gray-700/50 ${isMe ? 'bg-emerald-950/40 font-bold text-emerald-300' : ''}">
+            <td class="p-3">${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : index + 1}</td>
+            <td class="p-3">${avatar} ${item.user} ${isMe ? '(Jij)' : ''}</td>
+            <td class="p-3 text-center font-bold">${item.score}</td>
+            <td class="p-3 text-right ${bonus > 0 ? 'text-emerald-400 font-black' : 'text-gray-500'}">
+              ${bonus > 0 ? `+${bonus} Ptn 🎁` : '-'}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    async function laadDashboardStats() {
+      const { data: profiles } = await _supabase.from('public_profiles').select('*');
+      const { data: matches } = await _supabase.from('matches').select('*');
+      const { data: predictions } = await _supabase.from('predictions').select('*');
+
+      const scoresGlobal = {};
+      const scoresMonthly = {};
+      (profiles || []).forEach(p => { 
+        const nameToUse = p.username || (p.email ? p.email.split('@')[0] : 'Speler');
+        scoresGlobal[nameToUse] = 0; 
+        scoresMonthly[nameToUse] = 0; 
+      });
+
+      (predictions || []).forEach(pred => {
+        const match = (matches || []).find(m => String(m.id) === String(pred.match_id));
+        if (match && match.home_score !== null && match.away_score !== null) {
+          const predHome = pred.predicted_home_score !== undefined && pred.predicted_home_score !== null ? parseInt(pred.predicted_home_score, 10) : (pred.home_prediction !== undefined ? parseInt(pred.home_prediction, 10) : null);
+          const predAway = pred.predicted_away_score !== undefined && pred.predicted_away_score !== null ? parseInt(pred.predicted_away_score, 10) : (pred.away_prediction !== undefined ? parseInt(pred.away_prediction, 10) : null);
+
+          const matchHome = parseInt(match.home_score, 10);
+          const matchAway = parseInt(match.away_score, 10);
+
+          const pts = berekenPuntenVoorVoorspelling(predHome, predAway, matchHome, matchAway);
+
+          scoresGlobal[pred.username] = (scoresGlobal[pred.username] || 0) + pts;
+
+          if (maandKeyVanMatch(match) === huidigeMaandKey()) {
+            scoresMonthly[pred.username] = (scoresMonthly[pred.username] || 0) + pts;
+          }
+        }
+      });
+
+      const refBonussen = await berekenReferralBonusVeilig();
+      Object.keys(refBonussen).forEach(inviter => {
+        if (scoresGlobal[inviter] !== undefined) {
+          scoresGlobal[inviter] += refBonussen[inviter];
+        }
+      });
+
+      const maandBonussen = berekenAfgeslotenMaandBonussen(profiles, matches, predictions);
+      Object.keys(maandBonussen).forEach(user => {
+        if (scoresGlobal[user] !== undefined) {
+          scoresGlobal[user] += maandBonussen[user];
+        }
+      });
+
+      const myScore = scoresGlobal[currentUser] || 0;
+      document.getElementById('user-score').innerText = `${myScore} Ptn`;
+
+      const sortedGlobal = Object.keys(scoresGlobal).sort((a,b) => scoresGlobal[b] - scoresGlobal[a]);
+      const myGlobalPos = sortedGlobal.indexOf(currentUser) + 1;
+      document.getElementById('pos-global').innerText = myGlobalPos > 0 ? `#${myGlobalPos}` : '#-';
+
+      const privateUsers = (profiles || [])
+        .filter(p => (p.group_code || 'DEFAULT_GROUP') === currentGroup)
+        .map(p => p.username || (p.email ? p.email.split('@')[0] : 'Speler'));
+
+      const sortedPrivate = sortedGlobal.filter(u => privateUsers.includes(u));
+      const myPrivatePos = sortedPrivate.indexOf(currentUser) + 1;
+      document.getElementById('pos-private').innerText = myPrivatePos > 0 ? `#${myPrivatePos}` : '#-';
+
+      const sortedMonthlyPrivate = Object.keys(scoresMonthly).filter(u => privateUsers.includes(u)).sort((a,b) => scoresMonthly[b] - scoresMonthly[a]);
+      const myMonthlyPos = sortedMonthlyPrivate.indexOf(currentUser) + 1;
+      document.getElementById('pos-monthly').innerText = myMonthlyPos > 0 ? `#${myMonthlyPos}` : '#-';
+    }
+
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('scroll-top-btn');
+      if (!btn) return;
+      if (window.scrollY > 400) {
+        btn.classList.remove('hidden');
+      } else {
+        btn.classList.add('hidden');
+      }
+    });
+
+    // Registreert de service worker (sw.js) voor installeerbaarheid en een basis offline-cache
+    // van de pagina zelf. Vereist dat sw.js en manifest.json mee geüpload staan naast index.html
+    // in dezelfde map op GitHub Pages (zie instructies).
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service worker registratie mislukt:', err));
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      _supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          toonScherm('login');
+          document.getElementById('form-login').classList.add('hidden');
+          document.getElementById('form-register').classList.add('hidden');
+          document.getElementById('form-reset').classList.add('hidden');
+          document.getElementById('form-new-password').classList.remove('hidden');
+          return;
+        }
+
+        if (session && session.user) {
+          await initialiseerUserSessie(session.user);
+        } else {
+          toonScherm('login');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
